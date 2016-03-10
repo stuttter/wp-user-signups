@@ -166,7 +166,7 @@ function wp_user_signups_clear_aliases_on_delete( $site_id = 0 ) {
 		if ( is_wp_error( $error ) ) {
 			$message = sprintf(
 				__( 'Unable to delete alias %d for site %d', 'wp-user-signups' ),
-				$signup->get_id(),
+				$signup->signup_id,
 				$site_id
 			);
 			trigger_error( $message, E_USER_WARNING );

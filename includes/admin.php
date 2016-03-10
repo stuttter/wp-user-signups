@@ -78,7 +78,7 @@ function wp_user_signups_fix_menu_highlight() {
 
 	if ( is_network_admin() ) {
 		$parent_file  = 'users.php';
-		$submenu_file = 'users.php';
+		$submenu_file = 'network_user_signups';
 	} elseif ( is_blog_admin() ) {
 		$parent_file  = 'index.php';
 		$submenu_file = 'user_signups';
@@ -303,7 +303,7 @@ function wp_user_signups_handle_actions() {
 			check_admin_referer( "site_alias_edit-{$site_id}" );
 
 			// Check that the parameters are correct first
-			$params = wp_user_signups_validate_alias_parameters( wp_unslash( $_POST ) );
+			$params = wp_user_signups_validate_signup_parameters( wp_unslash( $_POST ) );
 
 			// Error messages
 			if ( is_wp_error( $params ) ) {

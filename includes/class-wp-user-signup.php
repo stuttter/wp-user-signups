@@ -21,7 +21,7 @@ class WP_User_Signups {
 	 *
 	 * @var array
 	 */
-	protected $data;
+	public $data;
 
 	/**
 	 * Constructor
@@ -94,7 +94,7 @@ class WP_User_Signups {
 			return false;
 		}
 
-		$id           = $this->get_id();
+		$id           = $this->signup_id;
 		$where        = array( 'id' => $id );
 		$where_format = array( '%d' );
 		$result       = $wpdb->update( $wpdb->signups, $fields, $where, $formats, $where_format );
@@ -134,7 +134,7 @@ class WP_User_Signups {
 	public function delete() {
 		global $wpdb;
 
-		$where        = array( 'id' => $this->get_id() );
+		$where        = array( 'id' => $this->signup_id );
 		$where_format = array( '%d' );
 		$result       = $wpdb->delete( $wpdb->signups, $where, $where_format );
 
@@ -228,15 +228,15 @@ class WP_User_Signups {
 
 		// Suppress errors in case the table doesn't exist
 		$suppress = $wpdb->suppress_errors();
-		$signup    = $wpdb->get_results( "SELECT * FROM {$wpdb->signups}" );
+		$signups  = $wpdb->get_results( "SELECT * FROM {$wpdb->signups}" );
 
 		$wpdb->suppress_errors( $suppress );
 
-		if ( empty( $signup ) ) {
+		if ( empty( $signups ) ) {
 			return null;
 		}
 
-		return new static( $signup );
+		return static::to_instances( $signups );
 	}
 
 	/**

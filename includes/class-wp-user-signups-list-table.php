@@ -37,14 +37,14 @@ final class WP_User_Signups_List_Table extends WP_List_Table {
 	 */
 	public function get_columns() {
 		return array(
-			'cb'         => '<input type="checkbox" />',
-			'user'       => _x( 'User',       'wp-user-signups' ),
-			'email'      => _x( 'Email',      'wp-user-signups' ),
-			'domain'     => _x( 'Domain',     'wp-user-signups' ),
-			'path'       => _x( 'Path',       'wp-user-signups' ),
-			'key'        => _x( 'Key',        'wp-user-signups' ),
-			'registered' => _x( 'Registered', 'wp-user-signups' ),
-			'activated'  => _x( 'Activated',  'wp-user-signups' )
+			'cb'             => '<input type="checkbox" />',
+			'user_login'     => _x( 'User',       'wp-user-signups' ),
+			'user_email'     => _x( 'Email',      'wp-user-signups' ),
+			'domain'         => _x( 'Domain',     'wp-user-signups' ),
+			'path'           => _x( 'Path',       'wp-user-signups' ),
+			'activation_key' => _x( 'Key',        'wp-user-signups' ),
+			'registered'     => _x( 'Registered', 'wp-user-signups' ),
+			'activated'      => _x( 'Activated',  'wp-user-signups' )
 		);
 	}
 
@@ -147,8 +147,8 @@ final class WP_User_Signups_List_Table extends WP_List_Table {
 	 * @return string HTML for the cell
 	 */
 	protected function column_cb( $signup ) {
-		$signup_id = $signup->get_id();
-		$domain   = $signup->get_domain();
+		$signup_id = $signup->data->signup_id;
+		$domain    = $signup->data->domain;
 
 		return '<label class="screen-reader-text" for="cb-select-' . esc_attr( $signup_id ) . '">'
 			. sprintf( __( 'Select %s' ), esc_html( $domain ) ) . '</label>'
@@ -165,15 +165,15 @@ final class WP_User_Signups_List_Table extends WP_List_Table {
 	 * @param WP_User_Signups $signup Current signup item
 	 * @return string HTML for the cell
 	 */
-	protected function column_user( $signup ) {
+	protected function column_user_login( $signup ) {
 
 		// Default empty actions
 		$actions = array();
 
 		// Get vars
-		$domain    = $signup->user_login;
+		$domain    = $signup->data->user_login;
 		$site_id   = 0;
-		$signup_id = $signup->signup_id;
+		$signup_id = $signup->data->signup_id;
 
 		// Edit
 		$edit_link = wp_user_signups_admin_url( array(
@@ -232,8 +232,8 @@ final class WP_User_Signups_List_Table extends WP_List_Table {
 	 * @param WP_User_Signups $signup Current signup item
 	 * @return string HTML for the cell
 	 */
-	protected function column_email( $signup ) {
-		return $signup->user_email;
+	protected function column_user_email( $signup ) {
+		return $signup->data->user_email;
 	}
 
 	/**
@@ -245,8 +245,8 @@ final class WP_User_Signups_List_Table extends WP_List_Table {
 	 * @param WP_User_Signups $signup Current signup item
 	 * @return string HTML for the cell
 	 */
-	protected function column_key( $signup ) {
-		return $signup->key;
+	protected function column_activation_key( $signup ) {
+		return $signup->data->activation_key;
 	}
 
 	/**
@@ -259,7 +259,7 @@ final class WP_User_Signups_List_Table extends WP_List_Table {
 	 * @return string HTML for the cell
 	 */
 	protected function column_active( $signup ) {
-		return ( 'active' === $signup->active )
+		return ( 'active' === $signup->data->active )
 			? esc_html__( 'Active',   'wp-user-signups' )
 			: esc_html__( 'Inactive', 'wp-user-signups' );
 	}
@@ -275,8 +275,8 @@ final class WP_User_Signups_List_Table extends WP_List_Table {
 	 * @return string HTML for the cell
 	 */
 	protected function column_registered( $signup ) {
-		return mysql2date( get_option( 'date_format' ), $signup->registered ) . '<br>' .
-			   mysql2date( get_option( 'time_format' ), $signup->registered );
+		return mysql2date( get_option( 'date_format' ), $signup->data->registered ) . '<br>' .
+			   mysql2date( get_option( 'time_format' ), $signup->data->registered );
 	}
 
 	/**
@@ -290,7 +290,7 @@ final class WP_User_Signups_List_Table extends WP_List_Table {
 	 * @return string HTML for the cell
 	 */
 	protected function column_activated( $signup ) {
-		return mysql2date( get_option( 'date_format' ), $signup->activated ) . '<br>' .
-			   mysql2date( get_option( 'time_format' ), $signup->activated );
+		return mysql2date( get_option( 'date_format' ), $signup->data->activated ) . '<br>' .
+			   mysql2date( get_option( 'time_format' ), $signup->data->activated );
 	}
 }
