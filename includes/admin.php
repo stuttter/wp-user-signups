@@ -494,9 +494,6 @@ function wp_user_signups_output_network_list_page() {
 			</form>
 		</div>
 	</div><?php
-
-	// Footer
-	wp_user_signups_output_page_footer();
 }
 
 /**

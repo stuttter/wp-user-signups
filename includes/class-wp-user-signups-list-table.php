@@ -40,8 +40,7 @@ final class WP_User_Signups_List_Table extends WP_List_Table {
 			'cb'             => '<input type="checkbox" />',
 			'user_login'     => _x( 'User',       'wp-user-signups' ),
 			'user_email'     => _x( 'Email',      'wp-user-signups' ),
-			'domain'         => _x( 'Domain',     'wp-user-signups' ),
-			'path'           => _x( 'Path',       'wp-user-signups' ),
+			'origin'         => _x( 'Origin',     'wp-user-signups' ),
 			'activation_key' => _x( 'Key',        'wp-user-signups' ),
 			'registered'     => _x( 'Registered', 'wp-user-signups' ),
 			'activated'      => _x( 'Activated',  'wp-user-signups' )
@@ -244,6 +243,19 @@ final class WP_User_Signups_List_Table extends WP_List_Table {
 	 */
 	protected function column_user_email( $signup ) {
 		return $signup->data->user_email;
+	}
+
+	/**
+	 * Get value for the email column
+	 *
+	 * @since 0.1.0
+	 * @access protected
+	 *
+	 * @param WP_User_Signups $signup Current signup item
+	 * @return string HTML for the cell
+	 */
+	protected function column_origin( $signup ) {
+		return $signup->data->domain . $signup->data->path;
 	}
 
 	/**
