@@ -38,8 +38,7 @@ final class WP_User_Signups_List_Table extends WP_List_Table {
 	public function get_columns() {
 		return array(
 			'cb'             => '<input type="checkbox" />',
-			'user_login'     => _x( 'User',       'wp-user-signups' ),
-			'user_email'     => _x( 'Email',      'wp-user-signups' ),
+			'user'           => _x( 'User',       'wp-user-signups' ),
 			'origin'         => _x( 'Origin',     'wp-user-signups' ),
 			'activation_key' => _x( 'Key',        'wp-user-signups' ),
 			'registered'     => _x( 'Registered', 'wp-user-signups' ),
@@ -164,13 +163,14 @@ final class WP_User_Signups_List_Table extends WP_List_Table {
 	 * @param WP_User_Signups $signup Current signup item
 	 * @return string HTML for the cell
 	 */
-	protected function column_user_login( $signup ) {
+	protected function column_user( $signup ) {
 
 		// Default empty actions
 		$actions = array();
 
 		// Get vars
-		$domain    = $signup->data->user_login;
+		$login     = $signup->data->user_login;
+		$email     = $signup->data->user_email;
 		$site_id   = 0;
 		$signup_id = $signup->data->signup_id;
 
@@ -229,7 +229,7 @@ final class WP_User_Signups_List_Table extends WP_List_Table {
 		// Get HTML from actions
 		$action_html = $this->row_actions( $actions, false );
 
-		return '<strong>' . esc_html( $domain ) . '</strong>' . $action_html;
+		return '<strong>' . esc_html( $login ) . '</strong> &mdash; ' . esc_html( $email ) . $action_html;
 	}
 
 	/**

@@ -1,7 +1,12 @@
 @media screen and ( min-width: 786px ) {
-	.wp-list-table.sites .column-lastupdated,
-	.wp-list-table.sites .column-registered,
-	.wp-list-table.sites .column-aliases {
+	.wp-list-table .column-activated,
+	.wp-list-table .column-registered,
+	.wp-list-table .column-email,
+	.wp-list-table .column-activation_key {
 		width: 14%;
+	}
+
+	.wp-list-table .column-activation_key code {
+		white-space: nowrap;
 	}
 }

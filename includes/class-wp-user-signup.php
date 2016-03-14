@@ -53,6 +53,7 @@ class WP_User_Signups {
 	 *
 	 * @since 0.1.0
 	 *
+	 * @global WPDB $wpdb
 	 * @param array|stdClass $data Signup fields (associative array or object properties)
 	 *
 	 * @return bool|WP_Error True if we updated, false if we didn't need to, or WP_Error if an error occurred
@@ -61,46 +62,30 @@ class WP_User_Signups {
 		global $wpdb;
 
 		$data    = (array) $data;
-		$fields  = array();
-		$formats = array();
+		$formats = array( '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%s' );
+		$fields  = wp_parse_args( $data, array(
+			'domain'         => $this->data->domain,
+			'path'           => $this->data->path,
+			'title'          => $this->data->title,
+			'user_login'     => $this->data->user_login,
+			'user_email'     => $this->data->user_email,
+			'registered'     => $this->data->registered,
+			'activated'      => $this->data->activated,
+			'active'         => $this->data->active,
+			'activation_key' => $this->data->activation_key,
+			'meta'           => $this->data->meta
+		) );
 
-		// Were we given a domain (and is it not the current one?)
-		if ( ! empty( $data['domain'] ) && ( $this->data->domain !== $data['domain'] ) ) {
-
-			// Does this domain exist already?
-			$existing = static::get_by_domain( $data['domain'] );
-			if ( is_wp_error( $existing ) ) {
-				return $existing;
-			}
-
-			// Domain exists already and points to another site
-			if ( ! empty( $existing ) ) {
-				return new WP_Error( 'wp_user_signups_alias_domain_exists' );
-			}
-
-			// No uppercase letters in domains
-			$fields['domain'] = strtolower( $data['domain'] );
-			$formats[]        = '%s';
-		}
-
-		// Were we given a status (and is it not the current one?)
-		if ( ! empty( $data['status'] ) && ( $this->data->status !== $data['status'] ) ) {
-			$fields['status'] = sanitize_key( $data['status'] );
-			$formats[]        = '%s';
-		}
-
-		// Do we have things to update?
-		if ( empty( $fields ) ) {
-			return false;
-		}
+		// Maybe serialize meta
+		$fields['meta'] = maybe_serialize( $fields['meta'] );
 
 		$id           = $this->signup_id;
-		$where        = array( 'id' => $id );
+		$where        = array( 'signup_id' => $id );
 		$where_format = array( '%d' );
 		$result       = $wpdb->update( $wpdb->signups, $fields, $where, $formats, $where_format );
 
 		if ( empty( $result ) && ! empty( $wpdb->last_error ) ) {
-			return new WP_Error( 'wp_user_signups_alias_update_failed' );
+			return new WP_Error( 'wp_user_signups_update_failed' );
 		}
 
 		$old_alias = clone( $this );
@@ -111,7 +96,7 @@ class WP_User_Signups {
 		}
 
 		// Update the domain cache
-		wp_cache_set( "{$domain}:{$path}", $this->data, 'user_signups' );
+		wp_cache_set( $result, $this->data, 'user_signups' );
 
 		/**
 		 * Fires after a alias has been updated.
@@ -134,15 +119,18 @@ class WP_User_Signups {
 	public function delete() {
 		global $wpdb;
 
-		$where        = array( 'id' => $this->signup_id );
+		// Delete
+		$where        = array( 'signup_id' => $this->data->signup_id );
 		$where_format = array( '%d' );
 		$result       = $wpdb->delete( $wpdb->signups, $where, $where_format );
 
+		// Bail with error
 		if ( empty( $result ) ) {
-			return new WP_Error( 'wp_user_signups_alias_delete_failed' );
+			return new WP_Error( 'wp_user_signups_delete_failed' );
 		}
 
-		// Delete the cache
+		// Delete cache
+		wp_cache_delete( $this->data->signup_id, 'user_signups' );
 
 		/**
 		 * Fires after a alias has been delete.
@@ -197,14 +185,14 @@ class WP_User_Signups {
 		}
 
 		if ( ! is_numeric( $signup ) ) {
-			return new WP_Error( 'wp_user_signups_alias_invalid_id' );
+			return new WP_Error( 'wp_user_signups_invalid_id' );
 		}
 
 		$signup = absint( $signup );
 
 		// Suppress errors in case the table doesn't exist
 		$suppress = $wpdb->suppress_errors();
-		$signup    = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->signups} WHERE id = %d", $signup ) );
+		$signup   = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->signups} WHERE signup_id = %d", $signup ) );
 
 		$wpdb->suppress_errors( $suppress );
 
@@ -244,37 +232,26 @@ class WP_User_Signups {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @param string|array $domains Domain(s) to match against
+	 * @param string $domain Domain to match against
+	 * @param string $path   Path to match against
+	 *
 	 * @return WP_User_Signups|WP_Error|null Signup on success, WP_Error if error occurred, or null if no alias found
 	 */
-	public static function get_by_domain_and_path( $domains = array(), $paths = array() ) {
+	public static function get_by_domain_and_path( $domain = '', $path = '' ) {
 		global $wpdb;
 
-		$domains = (array) $domains;
-
 		// Check cache first
-		$not_exists = 0;
-		foreach ( $domains as $domain ) {
-			$data = wp_cache_get( "{$domain}:{$path}", 'user_signups' );
+		$data = wp_cache_get( "{$domain}:{$path}", 'user_signups' );
 
-			if ( ! empty( $data ) && ( 'notexists' !== $data ) ) {
-				return new static( $data );
-			} elseif ( 'notexists' === $data ) {
-				$not_exists++;
-			}
-		}
-
-		// Every domain was found in the cache, but doesn't exist
-		if ( $not_exists === count( $domains ) ) {
+		if ( ! empty( $data ) && ( 'notexists' !== $data ) ) {
+			return new static( $data );
+		} elseif ( 'notexists' === $data ) {
 			return null;
 		}
 
-		$placeholders    = array_fill( 0, count( $domains ), '%s' );
-		$placeholders_in = implode( ',', $placeholders );
-
 		// Prepare the query
-		$query = "SELECT * FROM {$wpdb->signups} WHERE domain IN ($placeholders_in) ORDER BY CHAR_LENGTH(domain) DESC LIMIT 1";
-		$query = $wpdb->prepare( $query, $domains );
+		$query = "SELECT * FROM {$wpdb->signups} WHERE domain = %s AND path = %s ORDER BY CHAR_LENGTH(domain) DESC LIMIT 1";
+		$query = $wpdb->prepare( $query, $domain, $path );
 
 		// Suppress errors in case the table doesn't exist
 		$suppress = $wpdb->suppress_errors();
@@ -284,9 +261,7 @@ class WP_User_Signups {
 
 		// Cache that it doesn't exist
 		if ( empty( $signup ) ) {
-			foreach ( $domains as $domain ) {
-				wp_cache_set( "{$domain}:{$path}", 'notexists', 'user_signups' );
-			}
+			wp_cache_set( "{$domain}:{$path}", 'notexists', 'user_signups' );
 
 			return null;
 		}
@@ -299,44 +274,36 @@ class WP_User_Signups {
 	/**
 	 * Create a new signup
 	 *
-	 * @param $site Site ID, or site object from {@see get_blog_details}
+	 * @param array $args Array of signup details
+	 *
 	 * @return WP_User_Signups|WP_Error
 	 */
-	public static function create( $site, $domain, $status ) {
+	public static function create( $args = array() ) {
 		global $wpdb;
 
-		// Allow passing a site object in
-		if ( is_object( $site ) && isset( $site->blog_id ) ) {
-			$site = $site->blog_id;
+		// Parse arguments
+		$r = wp_parse_args( $args, array(
+			'domain'         => '',
+			'path'           => '',
+			'title'          => '',
+			'user_login'     => '',
+			'user_email'     => '',
+			'registered'     => '',
+			'activated'      => '',
+			'active'         => '',
+			'activation_key' => '',
+			'meta'           => array()
+		) );
+
+		if ( empty( $r['user_login'] ) || empty( $r['user_email'] ) ) {
+			return new WP_Error( 'wp_user_signups_invalid_id' );
 		}
 
-		if ( ! is_numeric( $site ) ) {
-			return new WP_Error( 'wp_user_signups_alias_invalid_id' );
-		}
-
-		$site   = absint( $site );
-		$status = sanitize_key( $status );
-
-		// Did we get a full URL?
-		if ( strpos( $domain, '://' ) !== false ) {
-			$domain = parse_url( $domain, PHP_URL_HOST );
-		}
-
-		// Does this domain exist already?
-		$existing = static::get_by_domain( $domain );
-		if ( is_wp_error( $existing ) ) {
-			return $existing;
-		}
+		$existing = false;
 
 		// Domain exists already...
 		if ( ! empty( $existing ) ) {
-
-			if ( $site !== $existing->get_site_id() ) {
-				return new WP_Error( 'wp_user_signups_alias_domain_exists', esc_html__( 'That alias is already in use.', 'wp-user-signups' ) );
-			}
-
-			// ...and points to this site, so nothing to do
-			return $existing;
+			return new WP_Error( 'wp_user_signups_domain_exists', esc_html__( 'That alias is already in use.', 'wp-user-signups' ) );
 		}
 
 		// Create the alias!
@@ -344,13 +311,8 @@ class WP_User_Signups {
 		$suppress    = $wpdb->suppress_errors( true );
 		$result      = $wpdb->insert(
 			$wpdb->signups,
-			array(
-				'blog_id' => $site,
-				'domain'  => $domain,
-				'created' => current_time( 'mysql' ),
-				'status'  => $status
-			),
-			array( '%d', '%s', '%s', '%d' )
+			$r,
+			array( '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%s' )
 		);
 
 		$wpdb->suppress_errors( $suppress );
@@ -365,11 +327,11 @@ class WP_User_Signups {
 				$wpdb->print_error( $error['error_str'] );
 			}
 
-			return new WP_Error( 'wp_user_signups_alias_insert_failed' );
+			return new WP_Error( 'wp_user_signups_insert_failed' );
 		}
 
 		// Ensure the cache is flushed
-		wp_cache_delete( "{$domain}:{$path}", 'user_signups' );
+		wp_cache_delete( $result, 'user_signups' );
 
 		$signup = static::get( $wpdb->insert_id );
 
