@@ -488,6 +488,8 @@ function wp_user_signups_output_list_page() {
 	wp_user_signups_output_page_header( $site_id ); ?>
 
 	<div class="form-wrap">
+		<?php $wp_list_table->views(); ?>
+
 		<form method="post" action="<?php echo esc_url( $form_url ); ?>">
 			<?php $wp_list_table->display(); ?>
 		</form>
@@ -512,6 +514,8 @@ function wp_user_signups_output_network_list_page() {
 		<h1 id="edit-signup"><?php esc_html_e( 'User Sign-ups', 'wp-user-signups' ); ?></h1>
 
 		<div class="form-wrap">
+			<?php $wp_list_table->views(); ?>
+
 			<form method="post" action="<?php echo esc_url( $form_url ); ?>">
 				<?php $wp_list_table->display(); ?>
 			</form>

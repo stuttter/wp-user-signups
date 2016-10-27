@@ -138,6 +138,40 @@ final class WP_User_Signups_List_Table extends WP_List_Table {
 	}
 
 	/**
+	 * Custom no items text
+	 *
+	 * @since 1.0.0
+	 *
+	 * @access public
+	 */
+	public function no_items() {
+		esc_html_e( 'No sign-ups found.', 'wp-user-signups' );
+	}
+
+	/**
+	 * Get an array of sign-ups views
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return array
+	 */
+	protected function get_views() {
+
+		$view_links = array();
+		$statuses   = wp_user_signups_get_statuses();
+
+		// Loop through statuses
+		foreach ( $statuses as $status ) {
+			$url = wp_user_signups_admin_url( array(
+				'status' => $status->id
+			) );
+			$view_links[ $status->id ] = "<a href='" . esc_url( $url ) . "'>" . sprintf( _nx( $status->name . ' <span class="count">(%s)</span>', $status->name . ' <span class="count">(%s)</span>', 0, 'users' ), number_format_i18n( 0 ) ) . '</a>';
+		}
+
+		return $view_links;
+	}
+
+	/**
 	 * Get cell value for the checkbox column
 	 *
 	 * @since 1.0.0

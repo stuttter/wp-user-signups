@@ -41,12 +41,14 @@ function wp_user_signups_is_network_edit() {
 function wp_user_signups_get_statuses() {
 	return apply_filters( 'wp_user_signups_get_statuses', array(
 		(object) array(
-			'id'   => 'active',
-			'name' => _x( 'Active', 'site aliases', 'wp-site-aliases' )
+			'id'    => 'pending',
+			'value' => 0,
+			'name'  => _x( 'Pending', 'user sign-ups', 'wp-user-signups' )
 		),
 		(object) array(
-			'id'   => 'inactive',
-			'name' => _x( 'Inactive', 'site aliases', 'wp-site-aliases' )
+			'id'    => 'active',
+			'value' => 1,
+			'name'  => _x( 'Active', 'user sign-ups', 'wp-user-signups' )
 		),
 	) );
 }
