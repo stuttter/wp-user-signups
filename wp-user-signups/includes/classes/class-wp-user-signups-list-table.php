@@ -178,9 +178,12 @@ final class WP_User_Signups_List_Table extends WP_List_Table {
 
 		// Edit
 		$edit_link = wp_user_signups_admin_url( array(
-			'page'    => 'site_signup_edit',
-			'signups' => $signup_id,
-			'id'      => $site_id
+			'id'        => $site_id,
+			'signups'   => $signup_id,
+			'page'      => 'site_signup_edit',
+			'referrer'  => wp_user_signups_is_network_list()
+				? 'network'
+				: 'site'
 		) );
 
 		// Active

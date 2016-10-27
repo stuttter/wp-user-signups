@@ -42,13 +42,41 @@ function wp_user_signups_get_site_id() {
  */
 function wp_user_signups_admin_url( $args = array() ) {
 
-	// Action
-	if ( is_network_admin() ) {
-		$admin_url = network_admin_url( 'users.php' );
-	} else {
-		$admin_url = admin_url( 'index.php' );
+	// Network aliases?
+	$network_aliases = wp_user_signups_is_network_list();
+
+	// Parse args
+	$r = wp_parse_args( $args, array(
+		'id'   => wp_user_signups_get_site_id(),
+		'page' => ( true === $network_aliases )
+			? 'network_user_signups'
+			: 'user_signups',
+	) );
+
+	// File
+	$file = ( true === $network_aliases )
+		? 'users.php'
+		: 'sites.php';
+
+	// Override for network edit
+	if ( wp_user_signups_is_network_edit() ) {
+		$file = 'admin.php';
+		$r['page'] = 'network_user_signups';
 	}
 
+	// Location
+	$admin_url = is_network_admin()
+		? network_admin_url( $file )
+		: admin_url( 'index.php' );
+
+	// Unset ID if viewing network aliases
+	if ( true === $network_aliases ) {
+		unset( $r['id'] );
+	}
+
+	// Add query args
+	$url = add_query_arg( $r, $admin_url );
+
 	// Add args and return
-	return add_query_arg( $args, $admin_url );
+	return apply_filters( 'wp_user_signups_admin_url', $url, $admin_url, $r, $args );
 }
