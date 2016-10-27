@@ -1,14 +1,14 @@
 <?php
 
 /**
- * Plugin Name: WP User Signups
+ * Plugin Name: WP User Sign-ups
  * Plugin URI:  http://wordpress.org/plugins/wp-user-signups/
  * Author:      John James Jacoby
  * Author URI:  https://profiles.wordpress.org/johnjamesjacoby/
  * License:     GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Description: User signup management for WordPress
- * Version:     0.1.0
+ * Version:     1.0.0
  * Text Domain: wp-user-signups
  * Domain Path: /assets/lang/
  */
@@ -25,24 +25,36 @@ if ( empty( $GLOBALS['wpdb']->signups ) ) {
 // Ensure cache is shared
 wp_cache_add_global_groups( array( 'user_signups' ) );
 
-// Get the plugin path
-$plugin_path = dirname( __FILE__ ) . '/';
+// Execute immediately
+_wp_user_signups();
 
-// Classes
-require_once $plugin_path . 'includes/class-wp-user-signup.php';
-require_once $plugin_path . 'includes/class-wp-user-signups-db-table.php';
+/**
+ * Include the required files
+ *
+ * @since 1.0.0
+ */
+function _wp_user_signups() {
 
-// Required Files
-require_once $plugin_path . 'includes/admin.php';
-require_once $plugin_path . 'includes/assets.php';
-require_once $plugin_path . 'includes/capabilities.php';
-require_once $plugin_path . 'includes/functions.php';
-require_once $plugin_path . 'includes/hooks.php';
+	// Get the plugin path
+	$plugin_path = wp_user_signups_get_plugin_path();
+
+	// Classes
+	require_once $plugin_path . 'includes/classes/class-wp-user-signup.php';
+	require_once $plugin_path . 'includes/classes/class-wp-user-signups-db-table.php';
+
+	// Required Files
+	require_once $plugin_path . 'includes/admin.php';
+	require_once $plugin_path . 'includes/assets.php';
+	require_once $plugin_path . 'includes/common.php';
+	require_once $plugin_path . 'includes/capabilities.php';
+	require_once $plugin_path . 'includes/functions.php';
+	require_once $plugin_path . 'includes/hooks.php';
+}
 
 /**
  * Return the plugin's root file
  *
- * @since 0.1.0
+ * @since 1.0.0
  *
  * @return string
  */
@@ -51,23 +63,34 @@ function wp_user_signups_get_plugin_file() {
 }
 
 /**
+ * Return the plugin's path
+ *
+ * @since 1.0.0
+ *
+ * @return string
+ */
+function wp_user_signups_get_plugin_path() {
+	return plugin_dir_path( __FILE__ ) . 'wp-user-signups/';
+}
+
+/**
  * Return the plugin's URL
  *
- * @since 0.1.0
+ * @since 1.0.0
  *
  * @return string
  */
 function wp_user_signups_get_plugin_url() {
-	return plugin_dir_url( wp_user_signups_get_plugin_file() );
+	return plugin_dir_url( wp_user_signups_get_plugin_file() ) . 'wp-user-signups/';
 }
 
 /**
  * Return the asset version
  *
- * @since 0.1.0
+ * @since 1.0.0
  *
  * @return int
  */
 function wp_user_signups_get_asset_version() {
-	return 201603100001;
+	return 201610270001;
 }

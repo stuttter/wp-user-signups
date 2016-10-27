@@ -1,7 +1,7 @@
 <?php
 
 /**
- * User Signups Assets
+ * User Sign-ups Assets
  *
  * @package Plugins/User/Signups/Assets
  */
@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Enqueue admin scripts
  *
- * @since 0.1.0
+ * @since 1.0.0
  */
 function wp_user_signups_admin_enqueue_scripts() {
 

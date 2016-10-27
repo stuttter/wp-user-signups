@@ -1,7 +1,7 @@
 <?php
 
 /**
- * User Signups Class
+ * User Sign-ups Class
  *
  * @package Plugins/User/Signups/Class
  */
@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Site Signup Class
  *
- * @since 0.1.0
+ * @since 1.0.0
  */
 class WP_User_Signups {
 
@@ -26,7 +26,7 @@ class WP_User_Signups {
 	/**
 	 * Constructor
 	 *
-	 * @since 0.1.0
+	 * @since 1.0.0
 	 *
 	 * @param array $data Signup data
 	 */
@@ -40,7 +40,7 @@ class WP_User_Signups {
 	 * As the internal data is stored in an object, we have to make a copy
 	 * when this object is cloned.
 	 *
-	 * @since 0.1.0
+	 * @since 1.0.0
 	 */
 	public function __clone() {
 		$this->data = clone( $this->data );
@@ -51,7 +51,7 @@ class WP_User_Signups {
 	 *
 	 * See also, {@see set_domain} and {@see set_status} as convenience methods.
 	 *
-	 * @since 0.1.0
+	 * @since 1.0.0
 	 *
 	 * @global WPDB $wpdb
 	 * @param array|stdClass $data Signup fields (associative array or object properties)
@@ -112,7 +112,7 @@ class WP_User_Signups {
 	/**
 	 * Delete the alias
 	 *
-	 * @since 0.1.0
+	 * @since 1.0.0
 	 *
 	 * @return bool|WP_Error True if we updated, false if we didn't need to, or WP_Error if an error occurred
 	 */
@@ -147,7 +147,7 @@ class WP_User_Signups {
 	 *
 	 * Allows use as a callback, such as in `array_map`
 	 *
-	 * @since 0.1.0
+	 * @since 1.0.0
 	 *
 	 * @param stdClass $data Raw alias data
 	 * @return Signup
@@ -159,7 +159,7 @@ class WP_User_Signups {
 	/**
 	 * Convert list of data to Signup instances
 	 *
-	 * @since 0.1.0
+	 * @since 1.0.0
 	 *
 	 * @param stdClass[] $data Raw alias rows
 	 * @return Signup[]
@@ -171,7 +171,7 @@ class WP_User_Signups {
 	/**
 	 * Get alias by alias ID
 	 *
-	 * @since 0.1.0
+	 * @since 1.0.0
 	 *
 	 * @param int|WP_User_Signups $signup Signup ID or instance
 	 * @return WP_User_Signups|WP_Error|null Signup on success, WP_Error if error occurred, or null if no alias found
@@ -206,7 +206,7 @@ class WP_User_Signups {
 	/**
 	 * Get alias by alias ID
 	 *
-	 * @since 0.1.0
+	 * @since 1.0.0
 	 *
 	 * @param int|WP_User_Signups $signup Signup ID or instance
 	 * @return WP_User_Signups|WP_Error|null Signup on success, WP_Error if error occurred, or null if no alias found
@@ -230,7 +230,7 @@ class WP_User_Signups {
 	/**
 	 * Get alias by domain(s)
 	 *
-	 * @since 0.1.0
+	 * @since 1.0.0
 	 *
 	 * @param string $domain Domain to match against
 	 * @param string $path   Path to match against

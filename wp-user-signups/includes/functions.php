@@ -1,7 +1,7 @@
 <?php
 
 /**
- * User Signups Functions
+ * User Sign-ups Functions
  *
  * @package Plugins/User/Signups/Functions
  */
@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Return the site ID being modified
  *
- * @since 0.1.0
+ * @since 1.0.0
  *
  * @return int
  */
@@ -35,7 +35,7 @@ function wp_user_signups_get_site_id() {
 /**
  * Wrapper for admin URLs
  *
- * @since 0.1.0
+ * @since 1.0.0
  *
  * @param array $args
  * @return array

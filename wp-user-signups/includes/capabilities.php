@@ -1,7 +1,7 @@
 <?php
 
 /**
- * User Signups Capabilities
+ * User Sign-ups Capabilities
  *
  * @package Plugins/User/Signups/Capabilities
  */
@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Map site alias meta capabilites
  *
- * @since 0.1.0
+ * @since 1.0.0
  *
  * @param array   $caps
  * @param string  $cap
@@ -20,7 +20,8 @@ defined( 'ABSPATH' ) || exit;
  */
 function wp_user_signups_map_meta_cap( $caps = array(), $cap = '', $user_id = 0, $args = array() ) {
 
-	if ( 'manage_signups' === $cap ) {
+	// Map to 'create_users' for now
+	if ( 'manage_user_signups' === $cap ) {
 		$caps = array( 'create_users' );
 	}
 

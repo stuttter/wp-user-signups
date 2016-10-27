@@ -4,21 +4,21 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Main WP User Signups class
+ * Main WP User Sign-ups class
  *
  * This class facilitates the following functionality:
  *
  * - Creates & maintains the `wp_signups` table
  * - Adds `wp_signups` to the main database object when appropriate
  *
- * @since 0.1.0
+ * @since 1.0.0
  */
 final class WP_User_Signups_DB {
 
 	/**
 	 * @var string Plugin version
 	 */
-	public $version = '0.1.0';
+	public $version = '1.0.0';
 
 	/**
 	 * @var string Database version
@@ -40,7 +40,7 @@ final class WP_User_Signups_DB {
 	/**
 	 * Hook into queries, admin screens, and more!
 	 *
-	 * @since 0.1.0
+	 * @since 1.0.0
 	 */
 	public function __construct() {
 
@@ -63,7 +63,7 @@ final class WP_User_Signups_DB {
 	/**
 	 * Administration area hooks
 	 *
-	 * @since 0.1.0
+	 * @since 1.0.0
 	 */
 	public function admin_init() {
 		$this->maybe_upgrade_database();
@@ -75,7 +75,7 @@ final class WP_User_Signups_DB {
 	 * This is necessary to do directly because WordPress does have a mechanism
 	 * for manipulating them safely. It's pretty fragile, but oh well.
 	 *
-	 * @since 0.1.0
+	 * @since 1.0.0
 	 */
 	public function add_table_to_db_object() {
 		$this->db->signups       = "{$this->db->base_prefix}signups";
@@ -85,7 +85,7 @@ final class WP_User_Signups_DB {
 	/**
 	 * Install this plugin on a specific site
 	 *
-	 * @since 0.1.0
+	 * @since 1.0.0
 	 *
 	 * @param int $site_id
 	 */
@@ -98,7 +98,7 @@ final class WP_User_Signups_DB {
 	 *
 	 * Handles both single & multi site installations
 	 *
-	 * @since 0.1.0
+	 * @since 1.0.0
 	 *
 	 * @param   bool    $network_wide
 	 */
@@ -111,7 +111,7 @@ final class WP_User_Signups_DB {
 	 *
 	 * Runs on `admin_init`
 	 *
-	 * @since 0.1.0
+	 * @since 1.0.0
 	 */
 	private function maybe_upgrade_database() {
 
@@ -127,7 +127,7 @@ final class WP_User_Signups_DB {
 	/**
 	 * Create the database table
 	 *
-	 * @since 0.1.0
+	 * @since 1.0.0
 	 *
 	 * @param  int $old_version
 	 */
@@ -148,7 +148,7 @@ final class WP_User_Signups_DB {
 	/**
 	 * Create the table
 	 *
-	 * @since 0.1.0
+	 * @since 1.0.0
 	 */
 	private function create_table() {
 
@@ -195,7 +195,7 @@ final class WP_User_Signups_DB {
 /**
  * Load the DB as early as possible, but after WordPress core is included
  *
- * @since 0.1.0
+ * @since 1.0.0
  */
 function wp_user_signups_db() {
 	new WP_User_Signups_DB();

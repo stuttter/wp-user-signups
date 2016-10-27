@@ -1,7 +1,7 @@
 <?php
 
 /**
- * User Signups List Table
+ * User Sign-ups List Table
  *
  * @package Plugins/User/Signups/ListTable
  */
@@ -10,14 +10,14 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * List table for signups
+ * List table for sign-ups
  */
 final class WP_User_Signups_List_Table extends WP_List_Table {
 
 	/**
 	 * Prepare items for the list table
 	 *
-	 * @since 0.1.0
+	 * @since 1.0.0
 	 */
 	public function prepare_items() {
 		$this->items = array();
@@ -31,7 +31,7 @@ final class WP_User_Signups_List_Table extends WP_List_Table {
 	/**
 	 * Get columns for the table
 	 *
-	 * @since 0.1.0
+	 * @since 1.0.0
 	 *
 	 * @return array Map of column ID => title
 	 */
@@ -39,7 +39,7 @@ final class WP_User_Signups_List_Table extends WP_List_Table {
 		return array(
 			'cb'             => '<input type="checkbox" />',
 			'user'           => _x( 'User',       'wp-user-signups' ),
-			'origin'         => _x( 'Origin',     'wp-user-signups' ),
+			'site'           => _x( 'Site',       'wp-user-signups' ),
 			'activation_key' => _x( 'Key',        'wp-user-signups' ),
 			'registered'     => _x( 'Registered', 'wp-user-signups' ),
 			'activated'      => _x( 'Activated',  'wp-user-signups' )
@@ -50,7 +50,7 @@ final class WP_User_Signups_List_Table extends WP_List_Table {
 	 * Get an associative array ( option_name => option_title ) with the list
 	 * of bulk actions available on this table.
 	 *
-	 * @since 0.1.0
+	 * @since 1.0.0
 	 * @access protected
 	 *
 	 * @return array
@@ -66,7 +66,7 @@ final class WP_User_Signups_List_Table extends WP_List_Table {
 	/**
 	 * Display the bulk actions dropdown.
 	 *
-	 * @since 0.1.0
+	 * @since 1.0.0
 	 * @access protected
 	 *
 	 * @param string $which The location of the bulk actions: 'top' or 'bottom'.
@@ -100,12 +100,14 @@ final class WP_User_Signups_List_Table extends WP_List_Table {
 			return;
 		}
 
-		echo "<label for='bulk-action-selector-" . esc_attr( $which ) . "' class='screen-reader-text'>" . __( 'Select bulk action' ) . "</label>";
-		echo "<select name='bulk_action$two' id='bulk-action-selector-" . esc_attr( $which ) . "'>\n";
+		echo "<label for='bulk-action-selector-" . esc_attr( $which ) . "' class='screen-reader-text'>" . esc_html__( 'Select bulk action', 'wp-user-signups' ) . "</label>";
+		echo "<select name='bulk_action{$two}' id='bulk-action-selector-" . esc_attr( $which ) . "'>\n";
 		echo "<option value='-1' selected='selected'>" . __( 'Bulk Actions' ) . "</option>\n";
 
 		foreach ( $this->_actions as $name => $title ) {
-			$class = 'edit' == $name ? ' class="hide-if-no-js"' : '';
+			$class = ( 'edit' === $name )
+				? ' class="hide-if-no-js"'
+				: '';
 
 			echo "\t<option value='{$name}'{$class}>{$title}</option>\n";
 		}
@@ -118,7 +120,7 @@ final class WP_User_Signups_List_Table extends WP_List_Table {
 	/**
 	 * Get the current action selected from the bulk actions dropdown.
 	 *
-	 * @since 0.1.0
+	 * @since 1.0.0
 	 *
 	 * @return string|bool The action name or False if no action was selected
 	 */
@@ -138,10 +140,10 @@ final class WP_User_Signups_List_Table extends WP_List_Table {
 	/**
 	 * Get cell value for the checkbox column
 	 *
-	 * @since 0.1.0
+	 * @since 1.0.0
 	 * @access protected
 	 *
-	 * @param WP_User_Signups $signup Current signup item
+	 * @param WP_User_Signups $signup Current sign-up item
 	 * @return string HTML for the cell
 	 */
 	protected function column_cb( $signup ) {
@@ -157,10 +159,10 @@ final class WP_User_Signups_List_Table extends WP_List_Table {
 	/**
 	 * Get cell value for the domain column
 	 *
-	 * @since 0.1.0
+	 * @since 1.0.0
 	 * @access protected
 	 *
-	 * @param WP_User_Signups $signup Current signup item
+	 * @param WP_User_Signups $signup Current sign-up item
 	 * @return string HTML for the cell
 	 */
 	protected function column_user( $signup ) {
@@ -171,14 +173,14 @@ final class WP_User_Signups_List_Table extends WP_List_Table {
 		// Get vars
 		$login     = $signup->data->user_login;
 		$email     = $signup->data->user_email;
-		$site_id   = 0;
 		$signup_id = $signup->data->signup_id;
+		$site_id   = wp_user_signups_get_site_id();
 
 		// Edit
 		$edit_link = wp_user_signups_admin_url( array(
 			'page'    => 'site_signup_edit',
-			'id'      => $site_id,
 			'signups' => $signup_id,
+			'id'      => $site_id
 		) );
 
 		// Active
@@ -189,8 +191,8 @@ final class WP_User_Signups_List_Table extends WP_List_Table {
 		$args = array(
 			'page'     => 'user_signups',
 			'action'   => $action,
-			'id'       => $site_id,
 			'signups'  => $signup_id,
+			'id'       => $site_id,
 			'_wpnonce' => wp_create_nonce( "user_signups-bulk-{$this->_args['site_id']}" )
 		);
 
@@ -235,10 +237,10 @@ final class WP_User_Signups_List_Table extends WP_List_Table {
 	/**
 	 * Get value for the email column
 	 *
-	 * @since 0.1.0
+	 * @since 1.0.0
 	 * @access protected
 	 *
-	 * @param WP_User_Signups $signup Current signup item
+	 * @param WP_User_Signups $signup Current sign-up item
 	 * @return string HTML for the cell
 	 */
 	protected function column_user_email( $signup ) {
@@ -246,25 +248,25 @@ final class WP_User_Signups_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Get value for the email column
+	 * Get value for the site column, made of domain & path
 	 *
-	 * @since 0.1.0
+	 * @since 1.0.0
 	 * @access protected
 	 *
-	 * @param WP_User_Signups $signup Current signup item
+	 * @param WP_User_Signups $signup Current sign-up item
 	 * @return string HTML for the cell
 	 */
-	protected function column_origin( $signup ) {
+	protected function column_site( $signup ) {
 		return $signup->data->domain . $signup->data->path;
 	}
 
 	/**
 	 * Get value for the key column
 	 *
-	 * @since 0.1.0
+	 * @since 1.0.0
 	 * @access protected
 	 *
-	 * @param WP_User_Signups $signup Current signup item
+	 * @param WP_User_Signups $signup Current sign-up item
 	 * @return string HTML for the cell
 	 */
 	protected function column_activation_key( $signup ) {
@@ -274,25 +276,10 @@ final class WP_User_Signups_List_Table extends WP_List_Table {
 	/**
 	 * Get value for the status column
 	 *
-	 * @since 0.1.0
+	 * @since 1.0.0
 	 * @access protected
 	 *
-	 * @param WP_User_Signups $signup Current signup item
-	 * @return string HTML for the cell
-	 */
-	protected function column_active( $signup ) {
-		return ( 'active' === $signup->data->active )
-			? esc_html__( 'Active',   'wp-user-signups' )
-			: esc_html__( 'Inactive', 'wp-user-signups' );
-	}
-
-	/**
-	 * Get value for the status column
-	 *
-	 * @since 0.1.0
-	 * @access protected
-	 *
-	 * @param WP_User_Signups $signup Current signup item
+	 * @param WP_User_Signups $signup Current sign-up item
 	 *
 	 * @return string HTML for the cell
 	 */
@@ -304,15 +291,23 @@ final class WP_User_Signups_List_Table extends WP_List_Table {
 	/**
 	 * Get value for the status column
 	 *
-	 * @since 0.1.0
+	 * @since 1.0.0
 	 * @access protected
 	 *
-	 * @param WP_User_Signups $signup Current signup item
+	 * @param WP_User_Signups $signup Current sign-up item
 	 *
 	 * @return string HTML for the cell
 	 */
 	protected function column_activated( $signup ) {
-		return mysql2date( get_option( 'date_format' ), $signup->data->activated ) . '<br>' .
-			   mysql2date( get_option( 'time_format' ), $signup->data->activated );
+
+		// Not yet active
+		if (  '0000-00-00 00:00:00' === $signup->data->activated ) {
+			return esc_html__( '&mdash;', 'wp-user-signups' );
+
+		// Activated
+		} else {
+			return mysql2date( get_option( 'date_format' ), $signup->data->activated ) . '<br>' .
+				   mysql2date( get_option( 'time_format' ), $signup->data->activated );
+		}
 	}
 }
