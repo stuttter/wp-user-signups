@@ -277,7 +277,13 @@ function wp_user_signups_handle_actions() {
 				}
 
 				// Process switch
-				if ( $signup->set_status( 'active' ) ) {
+				$activated = $signup->update( array(
+					'active'    => 1,
+					'activated' => date( 'Y-m-d H:i:s' )
+				) );
+
+				// Maybe add to processed
+				if ( true === $activated ) {
 					$processed[] = $signup_id;
 				}
 			}
