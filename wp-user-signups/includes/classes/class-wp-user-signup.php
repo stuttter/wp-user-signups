@@ -346,4 +346,110 @@ class WP_User_Signups {
 
 		return $signup;
 	}
+
+	/**
+	 * Activate a sign-up
+	 *
+	 * @see wpmu_activate_signup()
+	 *
+	 * @since 1.0.0
+	 *
+	 * @global WPDB $wpdb
+	 * @return WP_Error
+	 */
+	public function activate() {
+		global $wpdb;
+
+		// Already active
+		if ( true === (bool) $this->active ) {
+			return empty( $this->domain )
+				? new WP_Error( 'already_active', __( 'The user is already active.', 'wp-user-signups' ), $this )
+				: new WP_Error( 'already_active', __( 'The site is already active.', 'wp-user-signups' ), $this );
+		}
+
+		// Prepare some signup info
+		$meta     = maybe_unserialize( $this->meta );
+		$password = wp_generate_password( 12, false );
+		$user_id  = username_exists( $this->user_login );
+
+		// Does the user already exist?
+		$user_already_exists = ( false !== $user_id );
+
+		// Try to create user
+		if ( false === $user_already_exists ) {
+			$user_id = is_multisite()
+				? wpmu_create_user( $this->user_login, $password, $this->user_email )
+				: wp_create_user( $this->user_login, $password, $this->user_email );
+		}
+
+		// Bail if no user was created
+		if ( empty( $user_id ) ) {
+			return new WP_Error( 'create_user', __( 'Could not create user', 'wp-user-signups' ), $this );
+		}
+
+		// Get the current time, we'll use it in a few places
+		$now = current_time( 'mysql', true );
+
+		// Update the signup
+		$this->update( array(
+			'active'    => 1,
+			'activated' => $now
+		) );
+
+		// Default return value
+		$retval = array(
+			'user_id'  => $user_id,
+			'password' => $password,
+			'meta'     => $meta
+		);
+
+		// Try to create a site
+		if ( empty( $this->domain ) ) {
+
+			// Bail if user already exists
+			if ( true === $user_already_exists ) {
+				return new WP_Error( 'user_already_exists', __( 'That username is already activated.' ), $this );
+			}
+
+			/**
+			 * Fires immediately after a new user is activated.
+			 *
+			 * @since MU
+			 *
+			 * @param int   $user_id  User ID.
+			 * @param int   $password User password.
+			 * @param array $meta     Signup meta data.
+			 */
+			do_action( 'wpmu_activate_user', $user_id, $password, $meta );
+
+		// Try to create a site
+		} else {
+			$blog_id = wpmu_create_blog( $this->domain, $this->path, $this->title, $user_id, $meta, $wpdb->siteid );
+
+			// Created a user but cannot create a site
+			if ( is_wp_error( $blog_id ) ) {
+				$blog_id->add_data( $this );
+				return $blog_id;
+			}
+
+			/**
+			 * Fires immediately after a site is activated.
+			 *
+			 * @since MU
+			 *
+			 * @param int    $blog_id  Blog ID.
+			 * @param int    $user_id  User ID.
+			 * @param int    $password User password.
+			 * @param string $title    Site title.
+			 * @param array  $meta     Signup meta data.
+			 */
+			do_action( 'wpmu_activate_blog', $blog_id, $user_id, $password, $this->title, $meta );
+
+			// Add site-specific data to return value
+			$retval['blog_id'] = $blog_id;
+			$retval['title']   = $this->title;
+		}
+
+		return $retval;
+	}
 }
