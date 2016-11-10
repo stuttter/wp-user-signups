@@ -94,51 +94,6 @@ function wp_user_signups_fix_hidden_menu_highlight() {
 	}
 }
 
-
-/**
- * Add site list column to list
- *
- * @since 1.0.0
- *
- * @param   array  $columns  Column map of ID => title
- *
- * @return  array
- */
-function wp_user_signups_add_site_list_column( $columns ) {
-	$columns['signups'] = esc_html__( 'Sign ups', 'wp-user-signups' );
-	return $columns;
-}
-
-/**
- * Output the site list column
- *
- * @since 1.0.0
- *
- * @param  string  $column   Column ID
- * @param  int     $site_id  Site ID
- */
-function wp_user_signups_output_site_list_column( $column, $site_id ) {
-
-	// Bail if not for signups column
-	if ( 'signups' !== $column ) {
-		return;
-	}
-
-	// Get signups
-	$signups = WP_User_Signups::get_by_domain_and_path( $site_id );
-
-	// Show all signups
-	if ( ! empty( $signups ) ) {
-		foreach ( $signups as $signup ) {
-			echo esc_html( $signup->get_domain() ) . '<br>';
-		}
-
-	// No signups
-	} else {
-		esc_html_e( '&mdash;', 'wp-user-signups' );
-	}
-}
-
 /**
  * Add tab to end of tabs array
  *

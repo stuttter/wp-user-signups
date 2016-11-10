@@ -208,6 +208,8 @@ class WP_User_Signups {
 	/**
 	 * Get signup by signup ID
 	 *
+	 * @todo use WP_User_Signup_Query
+	 *
 	 * @since 1.0.0
 	 *
 	 * @param int|WP_User_Signups $signup Signup ID or instance
@@ -227,50 +229,6 @@ class WP_User_Signups {
 		}
 
 		return static::to_instances( $signups );
-	}
-
-	/**
-	 * Get signup by domain(s)
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param string $domain Domain to match against
-	 * @param string $path   Path to match against
-	 *
-	 * @return WP_User_Signups|WP_Error|null Signup on success, WP_Error if error occurred, or null if no signup found
-	 */
-	public static function get_by_domain_and_path( $domain = '', $path = '' ) {
-		global $wpdb;
-
-		// Check cache first
-		$data = wp_cache_get( "{$domain}:{$path}", 'user_signups' );
-
-		if ( ! empty( $data ) && ( 'notexists' !== $data ) ) {
-			return new static( $data );
-		} elseif ( 'notexists' === $data ) {
-			return null;
-		}
-
-		// Prepare the query
-		$query = "SELECT * FROM {$wpdb->signups} WHERE domain = %s AND path = %s ORDER BY CHAR_LENGTH(domain) DESC LIMIT 1";
-		$query = $wpdb->prepare( $query, $domain, $path );
-
-		// Suppress errors in case the table doesn't exist
-		$suppress = $wpdb->suppress_errors();
-		$signup    = $wpdb->get_row( $query );
-
-		$wpdb->suppress_errors( $suppress );
-
-		// Cache that it doesn't exist
-		if ( empty( $signup ) ) {
-			wp_cache_set( "{$domain}:{$path}", 'notexists', 'user_signups' );
-
-			return null;
-		}
-
-		wp_cache_set( "{$domain}:{$path}", $signup, 'user_signups' );
-
-		return new static( $signup );
 	}
 
 	/**
