@@ -42,19 +42,19 @@ function wp_user_signups_get_site_id() {
  */
 function wp_user_signups_admin_url( $args = array() ) {
 
-	// Network aliases?
-	$network_aliases = wp_user_signups_is_network_list();
+	// Network admin?
+	$network_signups = wp_user_signups_is_network_list();
 
 	// Parse args
 	$r = wp_parse_args( $args, array(
 		'id'   => wp_user_signups_get_site_id(),
-		'page' => ( true === $network_aliases )
+		'page' => ( true === $network_signups )
 			? 'network_user_signups'
 			: 'user_signups',
 	) );
 
 	// File
-	$file = ( true === $network_aliases )
+	$file = ( true === $network_signups )
 		? 'users.php'
 		: 'sites.php';
 
@@ -69,8 +69,8 @@ function wp_user_signups_admin_url( $args = array() ) {
 		? network_admin_url( $file )
 		: admin_url( 'index.php' );
 
-	// Unset ID if viewing network aliases
-	if ( true === $network_aliases ) {
+	// Unset ID if viewing network admin
+	if ( true === $network_signups ) {
 		unset( $r['id'] );
 	}
 
