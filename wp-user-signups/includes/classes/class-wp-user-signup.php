@@ -79,15 +79,17 @@ class WP_User_Signups {
 		// Maybe serialize meta
 		$fields['meta'] = maybe_serialize( $fields['meta'] );
 
-		$id           = $this->signup_id;
-		$where        = array( 'signup_id' => $id );
+		// Query
+		$where        = array( 'signup_id' => (int) $this->data->signup_id );
 		$where_format = array( '%d' );
 		$result       = $wpdb->update( $wpdb->signups, $fields, $where, $formats, $where_format );
 
+		// Check for errors
 		if ( empty( $result ) && ! empty( $wpdb->last_error ) ) {
 			return new WP_Error( 'wp_user_signups_update_failed' );
 		}
 
+		// Clone object to pass into object later
 		$old_alias = clone( $this );
 
 		// Update internal state
@@ -95,7 +97,7 @@ class WP_User_Signups {
 			$this->data->{$key} = $val;
 		}
 
-		// Update the domain cache
+		// Update the sign-up cache
 		wp_cache_set( $result, $this->data, 'user_signups' );
 
 		/**
