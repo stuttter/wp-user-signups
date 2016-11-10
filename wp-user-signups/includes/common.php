@@ -10,7 +10,7 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Is this the all aliases screen?
+ * Is this the all signups screen?
  *
  * @since 1.0.0
  *
@@ -21,7 +21,7 @@ function wp_user_signups_is_network_list() {
 }
 
 /**
- * Is this the network alias edit screen?
+ * Is this the network signup edit screen?
  *
  * @since 1.0.0
  *
@@ -32,7 +32,7 @@ function wp_user_signups_is_network_edit() {
 }
 
 /**
- * Get all available site alias statuses
+ * Get all available site signup statuses
  *
  * @since 1.0.0
  *
@@ -54,21 +54,21 @@ function wp_user_signups_get_statuses() {
 }
 
 /**
- * Sanitize requested alias ID values
+ * Sanitize requested signup ID values
  *
  * @since 1.0.0
  *
  * @param bool $single
  * @return mixed
  */
-function wp_user_signups_sanitize_alias_ids( $single = false ) {
+function wp_user_signups_sanitize_signup_ids( $single = false ) {
 
 	// Default value
 	$retval = array();
 
 	//
-	if ( isset( $_REQUEST['alias_ids'] ) ) {
-		$retval = array_map( 'absint', (array) $_REQUEST['alias_ids'] );
+	if ( isset( $_REQUEST['signup_ids'] ) ) {
+		$retval = array_map( 'absint', (array) $_REQUEST['signup_ids'] );
 	}
 
 	// Return the first item
@@ -77,5 +77,5 @@ function wp_user_signups_sanitize_alias_ids( $single = false ) {
 	}
 
 	// Filter & return
-	return apply_filters( 'wp_user_signups_sanitize_alias_ids', $retval );
+	return apply_filters( 'wp_user_signups_sanitize_signup_ids', $retval );
 }

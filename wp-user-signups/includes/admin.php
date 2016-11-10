@@ -31,8 +31,8 @@ function wp_user_signups_add_menu_item() {
 
 	// Blog admin page
 	} elseif ( is_blog_admin() ) {
-		$hooks[] = add_users_page( esc_html__( 'Sign ups', 'wp-user-signups' ), esc_html__( 'Sign ups', 'wp-user-signups' ), 'manage_aliases', 'user_signups',     'wp_user_signups_output_list_page' );
-		$hooks[] = add_users_page( esc_html__( 'Sign ups', 'wp-user-signups' ), esc_html__( 'Sign ups', 'wp-user-signups' ), 'edit_aliases',   'user_signup_edit', 'wp_user_signups_output_edit_page' );
+		$hooks[] = add_users_page( esc_html__( 'Sign ups', 'wp-user-signups' ), esc_html__( 'Sign ups', 'wp-user-signups' ), 'manage_signups', 'user_signups',     'wp_user_signups_output_list_page' );
+		$hooks[] = add_users_page( esc_html__( 'Sign ups', 'wp-user-signups' ), esc_html__( 'Sign ups', 'wp-user-signups' ), 'edit_signups',   'user_signup_edit', 'wp_user_signups_output_edit_page' );
 		remove_submenu_page( 'users.php', 'user_signup_edit' );
 	}
 
@@ -119,21 +119,21 @@ function wp_user_signups_add_site_list_column( $columns ) {
  */
 function wp_user_signups_output_site_list_column( $column, $site_id ) {
 
-	// Bail if not for aliases column
+	// Bail if not for signups column
 	if ( 'signups' !== $column ) {
 		return;
 	}
 
-	// Get aliases
+	// Get signups
 	$signups = WP_User_Signups::get_by_domain_and_path( $site_id );
 
-	// Show all aliases
+	// Show all signups
 	if ( ! empty( $signups ) ) {
 		foreach ( $signups as $signup ) {
 			echo esc_html( $signup->get_domain() ) . '<br>';
 		}
 
-	// No aliases
+	// No signups
 	} else {
 		esc_html_e( '&mdash;', 'wp-user-signups' );
 	}
@@ -236,7 +236,7 @@ function wp_user_signups_handle_actions() {
 		$redirect_to = wp_user_signups_admin_url();
 	}
 
-	// Get aliases being bulk actioned
+	// Get signups being bulk actioned
 	$processed = array();
 	$signups   = ! empty( $_REQUEST['signups'] )
 		? array_map( 'absint', (array) $_REQUEST['signups'] )
@@ -271,19 +271,16 @@ function wp_user_signups_handle_actions() {
 			foreach ( $signups as $signup_id ) {
 				$signup = WP_User_Signups::get( $signup_id );
 
-				// Skip erroneous aliases
+				// Skip erroneous signups
 				if ( is_wp_error( $signup ) ) {
 					continue;
 				}
 
-				// Process switch
-				$activated = $signup->update( array(
-					'active'    => 1,
-					'activated' => date( 'Y-m-d H:i:s' )
-				) );
+				// Try to activate
+				$activated = $signup->activate();
 
 				// Maybe add to processed
-				if ( true === $activated ) {
+				if ( ! is_wp_error( $activated ) ) {
 					$processed[] = $signup_id;
 				}
 			}
@@ -294,10 +291,16 @@ function wp_user_signups_handle_actions() {
 			foreach ( $signups as $signup_id ) {
 				$signup = WP_User_Signups::get( $signup_id );
 
-				// Skip erroneous aliases
+				// Skip erroneous signups
 				if ( is_wp_error( $signup ) ) {
 					continue;
 				}
+
+				// Resend activation emails
+				$resent = $signup->update( array(
+					'active'    => 1,
+					'activated' => date( 'Y-m-d H:i:s' )
+				) );
 
 				// Process switch
 				if ( $signup->set_status( 'inactive' ) ) {
@@ -313,13 +316,16 @@ function wp_user_signups_handle_actions() {
 			foreach ( $signups as $signup_id ) {
 				$signup = WP_User_Signups::get( $signup_id );
 
-				// Skip erroneous aliases
+				// Skip erroneous signups
 				if ( is_wp_error( $signup ) ) {
 					continue;
 				}
 
+				// Try to delete
+				$deleted = $signup->delete();
+
 				// Signups don't exist after we delete them
-				if ( $signup->delete() ) {
+				if ( true === $deleted ) {
 					$args['signups'][] = $signup->signup_id;
 					$processed[]       = $signup_id;
 				}
@@ -369,12 +375,12 @@ function wp_user_signups_handle_actions() {
 		// Any other bingos
 		default:
 			check_admin_referer( "user_signups-bulk-{$site_id}" );
-			do_action_ref_array( "aliases_bulk_action-{$action}", array( $signups, &$processed, $action ) );
+			do_action_ref_array( "signups_bulk_action-{$action}", array( $signups, &$processed, $action ) );
 
 			break;
 	}
 
-	// Add processed aliases to redirection
+	// Add processed signups to redirection
 	$args['processed'] = $processed;
 	$redirect_to = add_query_arg( $args, $redirect_to );
 
@@ -384,7 +390,7 @@ function wp_user_signups_handle_actions() {
 }
 
 /**
- * Output alias editing page
+ * Output signup editing page
  *
  * @since 1.0.0
  */
@@ -432,10 +438,10 @@ function wp_user_signups_output_edit_page() {
 		<table class="form-table">
 			<tr>
 				<th scope="row">
-					<label for="blog_alias"><?php echo esc_html_x( 'Domain Name', 'field name', 'wp-user-signups' ); ?></label>
+					<label for="blog_signup"><?php echo esc_html_x( 'Domain Name', 'field name', 'wp-user-signups' ); ?></label>
 				</th>
 				<td>
-					<input type="text" class="regular-text code" name="domain" id="blog_alias" value="<?php echo esc_attr( $domain ); ?>">
+					<input type="text" class="regular-text code" name="domain" id="blog_signup" value="<?php echo esc_attr( $domain ); ?>">
 				</td>
 			</tr>
 			<tr>
@@ -454,7 +460,7 @@ function wp_user_signups_output_edit_page() {
 
 		<input type="hidden" name="action"  value="<?php echo esc_attr( $action   ); ?>">
 		<input type="hidden" name="id"      value="<?php echo esc_attr( $site_id  ); ?>">
-		<input type="hidden" name="aliases" value="<?php echo esc_attr( $signup_id ); ?>"><?php
+		<input type="hidden" name="signups" value="<?php echo esc_attr( $signup_id ); ?>"><?php
 
 		// Add
 		if ( 'add' === $action ) {
@@ -477,7 +483,7 @@ function wp_user_signups_output_edit_page() {
 }
 
 /**
- * Output alias editing page
+ * Output signup editing page
  *
  * @since 1.0.0
  */
@@ -506,7 +512,7 @@ function wp_user_signups_output_list_page() {
 }
 
 /**
- * Output alias editing page
+ * Output signup editing page
  *
  * @since 1.0.0
  */
@@ -577,11 +583,11 @@ function wp_user_signups_output_admin_notices() {
 		$count         = count( $processed );
 		$placeholder   = number_format_i18n( $count );
 		$bulk_messages = array(
-			'activate'   => _n( '%s alias activated.',   '%s aliases activated.',   $count, 'wp-user-signups' ),
-			'deactivate' => _n( '%s alias deactivated.', '%s aliases deactivated.', $count, 'wp-user-signups' ),
-			'delete'     => _n( '%s alias deleted.',     '%s aliases deleted.',     $count, 'wp-user-signups' ),
-			'add'        => _n( '%s alias added.',       '%s aliases added.',       $count, 'wp-user-signups' ),
-			'edit'       => _n( '%s alias updated.',     '%s aliases updated.',     $count, 'wp-user-signups' )
+			'activate'   => _n( '%s signup activated.',   '%s signups activated.',   $count, 'wp-user-signups' ),
+			'deactivate' => _n( '%s signup deactivated.', '%s signups deactivated.', $count, 'wp-user-signups' ),
+			'delete'     => _n( '%s signup deleted.',     '%s signups deleted.',     $count, 'wp-user-signups' ),
+			'add'        => _n( '%s signup added.',       '%s signups added.',       $count, 'wp-user-signups' ),
+			'edit'       => _n( '%s signup updated.',     '%s signups updated.',     $count, 'wp-user-signups' )
 		);
 	}
 

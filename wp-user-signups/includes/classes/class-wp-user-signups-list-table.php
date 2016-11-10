@@ -205,10 +205,11 @@ final class WP_User_Signups_List_Table extends WP_List_Table {
 		$actions = array();
 
 		// Get vars
-		$login     = $signup->data->user_login;
-		$email     = $signup->data->user_email;
-		$signup_id = $signup->data->signup_id;
 		$site_id   = wp_user_signups_get_site_id();
+		$login     =        $signup->data->user_login;
+		$email     =        $signup->data->user_email;
+		$signup_id = (int)  $signup->data->signup_id;
+		$active    = (bool) $signup->data->active;
 
 		// Edit
 		$edit_link = wp_user_signups_admin_url( array(
@@ -226,7 +227,6 @@ final class WP_User_Signups_List_Table extends WP_List_Table {
 
 		// Default args
 		$args = array(
-			'page'     => 'user_signups',
 			'action'   => $action,
 			'signups'  => $signup_id,
 			'id'       => $site_id,
@@ -255,8 +255,8 @@ final class WP_User_Signups_List_Table extends WP_List_Table {
 			$actions['resend'] = sprintf( '<a href="%s">%s</a>', esc_url( $resend_link ), esc_html__( 'Resend', 'wp-user-signups' ) );
 		}
 
-		// Activate/deactivate
-		if ( current_user_can( "{$action}_signup", $signup_id ) ) {
+		// Activate
+		if ( ( false === $active ) && current_user_can( "{$action}_signup", $signup_id ) ) {
 			$actions[ $action ] = sprintf( '<a href="%s">%s</a>', esc_url( $status_link ), esc_html( $text ) );
 		}
 

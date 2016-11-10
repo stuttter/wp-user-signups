@@ -10,7 +10,7 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Map site alias meta capabilites
+ * Map site signup meta capabilites
  *
  * @since 1.0.0
  *

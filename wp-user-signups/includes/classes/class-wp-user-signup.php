@@ -47,7 +47,7 @@ class WP_User_Signups {
 	}
 
 	/**
-	 * Update the alias
+	 * Update the signup
 	 *
 	 * See also, {@see set_domain} and {@see set_status} as convenience methods.
 	 *
@@ -90,7 +90,7 @@ class WP_User_Signups {
 		}
 
 		// Clone object to pass into object later
-		$old_alias = clone( $this );
+		$old_signup = clone( $this );
 
 		// Update internal state
 		foreach ( $fields as $key => $val ) {
@@ -101,18 +101,18 @@ class WP_User_Signups {
 		wp_cache_set( $result, $this->data, 'user_signups' );
 
 		/**
-		 * Fires after a alias has been updated.
+		 * Fires after a signup has been updated.
 		 *
-		 * @param  WP_User_Signups  $signup  The alias object.
-		 * @param  WP_User_Signups  $signup  The previous alias object.
+		 * @param  WP_User_Signups  $signup  The signup object.
+		 * @param  WP_User_Signups  $signup  The previous signup object.
 		 */
-		do_action( 'wp_user_signups_updated', $this, $old_alias );
+		do_action( 'wp_user_signups_updated', $this, $old_signup );
 
 		return true;
 	}
 
 	/**
-	 * Delete the alias
+	 * Delete the signup
 	 *
 	 * @since 1.0.0
 	 *
@@ -135,9 +135,9 @@ class WP_User_Signups {
 		wp_cache_delete( $this->data->signup_id, 'user_signups' );
 
 		/**
-		 * Fires after a alias has been delete.
+		 * Fires after a signup has been delete.
 		 *
-		 * @param  WP_User_Signups  $signup The alias object.
+		 * @param  WP_User_Signups  $signup The signup object.
 		 */
 		do_action( 'wp_user_signups_deleted', $this );
 
@@ -151,7 +151,7 @@ class WP_User_Signups {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param stdClass $data Raw alias data
+	 * @param stdClass $data Raw signup data
 	 * @return Signup
 	 */
 	protected static function to_instance( $data ) {
@@ -163,7 +163,7 @@ class WP_User_Signups {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param stdClass[] $data Raw alias rows
+	 * @param stdClass[] $data Raw signup rows
 	 * @return Signup[]
 	 */
 	protected static function to_instances( $data ) {
@@ -171,12 +171,12 @@ class WP_User_Signups {
 	}
 
 	/**
-	 * Get alias by alias ID
+	 * Get signup by signup ID
 	 *
 	 * @since 1.0.0
 	 *
 	 * @param int|WP_User_Signups $signup Signup ID or instance
-	 * @return WP_User_Signups|WP_Error|null Signup on success, WP_Error if error occurred, or null if no alias found
+	 * @return WP_User_Signups|WP_Error|null Signup on success, WP_Error if error occurred, or null if no signup found
 	 */
 	public static function get( $signup ) {
 		global $wpdb;
@@ -206,12 +206,12 @@ class WP_User_Signups {
 	}
 
 	/**
-	 * Get alias by alias ID
+	 * Get signup by signup ID
 	 *
 	 * @since 1.0.0
 	 *
 	 * @param int|WP_User_Signups $signup Signup ID or instance
-	 * @return WP_User_Signups|WP_Error|null Signup on success, WP_Error if error occurred, or null if no alias found
+	 * @return WP_User_Signups|WP_Error|null Signup on success, WP_Error if error occurred, or null if no signup found
 	 */
 	public static function get_all() {
 		global $wpdb;
@@ -230,14 +230,14 @@ class WP_User_Signups {
 	}
 
 	/**
-	 * Get alias by domain(s)
+	 * Get signup by domain(s)
 	 *
 	 * @since 1.0.0
 	 *
 	 * @param string $domain Domain to match against
 	 * @param string $path   Path to match against
 	 *
-	 * @return WP_User_Signups|WP_Error|null Signup on success, WP_Error if error occurred, or null if no alias found
+	 * @return WP_User_Signups|WP_Error|null Signup on success, WP_Error if error occurred, or null if no signup found
 	 */
 	public static function get_by_domain_and_path( $domain = '', $path = '' ) {
 		global $wpdb;
@@ -297,18 +297,28 @@ class WP_User_Signups {
 			'meta'           => array()
 		) );
 
+		// Bail if missing login or email
 		if ( empty( $r['user_login'] ) || empty( $r['user_email'] ) ) {
 			return new WP_Error( 'wp_user_signups_invalid_id' );
 		}
 
-		$existing = false;
+		// Check for previous signup
+		$existing = false; // new WP_User_Signups_Query
 
 		// Domain exists already...
 		if ( ! empty( $existing ) ) {
-			return new WP_Error( 'wp_user_signups_domain_exists', esc_html__( 'That alias is already in use.', 'wp-user-signups' ) );
+			return new WP_Error( 'wp_user_signups_domain_exists', esc_html__( 'That signup already exists.', 'wp-user-signups' ) );
 		}
 
-		// Create the alias!
+		// Sanitize submitted data
+		if ( empty( $r['activation_key'] ) ) {
+			$r['activation_key'] = substr( md5( time() . rand() . $r['user_email'] ), 0, 16 );
+		}
+		$r['user_login'] = preg_replace( '/\s+/', '', sanitize_user( $r['user_login'], true ) );
+		$r['user_email'] = sanitize_email( $r['user_email'] );		
+		$r['user_login'] = maybe_serialize( $r['user_login'] );
+
+		// Create the signup!
 		$prev_errors = ! empty( $GLOBALS['EZSQL_ERROR'] ) ? $GLOBALS['EZSQL_ERROR'] : array();
 		$suppress    = $wpdb->suppress_errors( true );
 		$result      = $wpdb->insert(
@@ -335,14 +345,27 @@ class WP_User_Signups {
 		// Ensure the cache is flushed
 		wp_cache_delete( $result, 'user_signups' );
 
+		// Prime the cache
 		$signup = static::get( $wpdb->insert_id );
 
 		/**
-		 * Fires after a alias has been created.
+		 * Fires after a signup has been created.
 		 *
-		 * @param  WP_User_Signups  $signup  The alias object.
+		 * @param  WP_User_Signups  $signup  The signup object.
 		 */
 		do_action( 'wp_user_signups_created', $signup );
+
+		/**
+		 * Fires after a user's signup information has been written to the database.
+		 *
+		 * @since 4.4.0
+		 *
+		 * @param string $user       The user's requested login name.
+		 * @param string $user_email The user's email address.
+		 * @param string $key        The user's activation key
+		 * @param array  $meta       Additional signup meta. By default, this is an empty array.
+		 */
+		do_action( 'after_signup_user', $signup, $signup->data->user_email, $signup->data->key, $signup->data->meta );
 
 		return $signup;
 	}
@@ -361,16 +384,16 @@ class WP_User_Signups {
 		global $wpdb;
 
 		// Already active
-		if ( true === (bool) $this->active ) {
+		if ( true === (bool) $this->data->active ) {
 			return empty( $this->domain )
 				? new WP_Error( 'already_active', __( 'The user is already active.', 'wp-user-signups' ), $this )
 				: new WP_Error( 'already_active', __( 'The site is already active.', 'wp-user-signups' ), $this );
 		}
 
 		// Prepare some signup info
-		$meta     = maybe_unserialize( $this->meta );
+		$meta     = maybe_unserialize( $this->data->meta );
 		$password = wp_generate_password( 12, false );
-		$user_id  = username_exists( $this->user_login );
+		$user_id  = username_exists( $this->data->user_login );
 
 		// Does the user already exist?
 		$user_already_exists = ( false !== $user_id );
@@ -378,8 +401,8 @@ class WP_User_Signups {
 		// Try to create user
 		if ( false === $user_already_exists ) {
 			$user_id = is_multisite()
-				? wpmu_create_user( $this->user_login, $password, $this->user_email )
-				: wp_create_user( $this->user_login, $password, $this->user_email );
+				? wpmu_create_user( $this->data->user_login, $password, $this->data->user_email )
+				: wp_create_user( $this->data->user_login, $password, $this->data->user_email );
 		}
 
 		// Bail if no user was created
@@ -404,7 +427,7 @@ class WP_User_Signups {
 		);
 
 		// Try to create a site
-		if ( empty( $this->domain ) ) {
+		if ( empty( $this->data->domain ) ) {
 
 			// Bail if user already exists
 			if ( true === $user_already_exists ) {
@@ -424,7 +447,7 @@ class WP_User_Signups {
 
 		// Try to create a site
 		} else {
-			$blog_id = wpmu_create_blog( $this->domain, $this->path, $this->title, $user_id, $meta, $wpdb->siteid );
+			$blog_id = wpmu_create_blog( $this->data->domain, $this->data->path, $this->data->title, $user_id, $meta, $wpdb->siteid );
 
 			// Created a user but cannot create a site
 			if ( is_wp_error( $blog_id ) ) {
@@ -443,11 +466,11 @@ class WP_User_Signups {
 			 * @param string $title    Site title.
 			 * @param array  $meta     Signup meta data.
 			 */
-			do_action( 'wpmu_activate_blog', $blog_id, $user_id, $password, $this->title, $meta );
+			do_action( 'wpmu_activate_blog', $blog_id, $user_id, $password, $this->data->title, $meta );
 
 			// Add site-specific data to return value
 			$retval['blog_id'] = $blog_id;
-			$retval['title']   = $this->title;
+			$retval['title']   = $this->data->title;
 		}
 
 		return $retval;
