@@ -43,12 +43,12 @@ function wp_user_signups_get_statuses() {
 		(object) array(
 			'id'    => 'pending',
 			'value' => 0,
-			'name'  => _x( 'Pending', 'user sign-ups', 'wp-user-signups' )
+			'name'  => _x( 'Pending', 'User sign-ups', 'wp-user-signups' )
 		),
 		(object) array(
-			'id'    => 'active',
+			'id'    => 'activated',
 			'value' => 1,
-			'name'  => _x( 'Active', 'user sign-ups', 'wp-user-signups' )
+			'name'  => _x( 'Activated', 'User sign-ups', 'wp-user-signups' )
 		),
 	) );
 }
