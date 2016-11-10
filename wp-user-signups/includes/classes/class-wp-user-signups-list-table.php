@@ -294,7 +294,9 @@ final class WP_User_Signups_List_Table extends WP_List_Table {
 	 * @return string HTML for the cell
 	 */
 	protected function column_site( $signup ) {
-		return $signup->data->domain . $signup->data->path;
+		return ! empty( $signup->data->domain . $signup->data->path )
+			? $signup->data->domain . $signup->data->path
+			: '&mdash;';
 	}
 
 	/**
