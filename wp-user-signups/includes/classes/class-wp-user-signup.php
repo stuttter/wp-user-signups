@@ -67,7 +67,7 @@ class WP_User_Signup {
 	 *
 	 * @param type $params
 	 */
-	public function validate( $params = array() ) {
+	public static function validate( $params = array() ) {
 
 		// Whitelist keys
 		$params = array_intersect_key( $params, array(
@@ -140,7 +140,7 @@ class WP_User_Signup {
 		$where        = array( 'signup_id' => (int) $this->signup_id );
 		$where_format = array( '%d' );
 		$formats      = array( '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%s', '%s' );
-		$fields       = $this->validate( (array) $data );
+		$fields       = self::validate( (array) $data );
 		$result       = $wpdb->update( $wpdb->signups, $fields, $where, $formats, $where_format );
 
 		// Check for errors
@@ -300,19 +300,7 @@ class WP_User_Signup {
 	public static function create( $args = array() ) {
 		global $wpdb;
 
-		// Parse arguments
-		$r = wp_parse_args( $args, array(
-			'domain'         => '',
-			'path'           => '',
-			'title'          => '',
-			'user_login'     => '',
-			'user_email'     => '',
-			'registered'     => '',
-			'activated'      => '',
-			'active'         => '',
-			'activation_key' => '',
-			'meta'           => array()
-		) );
+		$r = self::validate( $args );
 
 		// Bail if missing login or email
 		if ( empty( $r['user_login'] ) || empty( $r['user_email'] ) ) {
@@ -327,22 +315,11 @@ class WP_User_Signup {
 			return new WP_Error( 'wp_user_signups_domain_exists', esc_html__( 'That signup already exists.', 'wp-user-signups' ) );
 		}
 
-		// Sanitize submitted data
-		if ( empty( $r['activation_key'] ) ) {
-			$r['activation_key'] = substr( md5( time() . rand() . $r['user_email'] ), 0, 16 );
-		}
-		$r['user_login'] = preg_replace( '/\s+/', '', sanitize_user( $r['user_login'], true ) );
-		$r['user_email'] = sanitize_email( $r['user_email'] );
-		$r['user_login'] = maybe_serialize( $r['user_login'] );
-
 		// Create the signup!
 		$prev_errors = ! empty( $GLOBALS['EZSQL_ERROR'] ) ? $GLOBALS['EZSQL_ERROR'] : array();
 		$suppress    = $wpdb->suppress_errors( true );
-		$result      = $wpdb->insert(
-			$wpdb->signups,
-			$r,
-			array( '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%s' )
-		);
+		$format      = array( '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%s', '%s' );
+		$result      = $wpdb->insert( $wpdb->signups, $r, $format );
 
 		$wpdb->suppress_errors( $suppress );
 
@@ -382,7 +359,7 @@ class WP_User_Signup {
 		 * @param string $key        The user's activation key
 		 * @param array  $meta       Additional signup meta. By default, this is an empty array.
 		 */
-		do_action( 'after_signup_user', $signup, $signup->user_email, $signup->key, $signup->meta );
+		do_action( 'after_signup_user', $signup->user_login, $signup->user_email, $signup->key, $signup->meta );
 
 		return $signup;
 	}

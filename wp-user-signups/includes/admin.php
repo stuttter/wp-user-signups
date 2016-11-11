@@ -337,6 +337,24 @@ function wp_user_signups_handle_actions() {
 
 			break;
 
+		// Single Add
+		case 'add' :
+			check_admin_referer( "user_signup_add-{$site_id}" );
+
+			// Update
+			$values = wp_unslash( $_POST );
+			$result = WP_User_Signup::create( $values );
+
+			// Bail if an error occurred
+			if ( is_wp_error( $result ) ) {
+				$messages[] = $result->get_error_message();
+				return $messages;
+			}
+
+			$processed[] = $result->signup_id;
+
+			break;
+
 		// Any other bingos
 		default:
 			check_admin_referer( "user_signups-bulk-{$site_id}" );
@@ -380,12 +398,12 @@ function wp_user_signups_output_edit_page() {
 
 	// URL
 	$action_url = wp_user_signups_admin_url( array(
-		'page'   => 'user_signups',
+		'page'   => 'network_user_signups',
 		'action' => $action
 	) );
 
 	// Add
-	if ( empty( $signup ) || ! empty( $_POST['_wpnonce'] ) ) {
+	if ( empty( $signup_id ) || ! empty( $_POST['_wpnonce'] ) ) {
 		$title = esc_html__( 'Add New Sign-up', 'wp-user-signups' );
 
 	// Edit
