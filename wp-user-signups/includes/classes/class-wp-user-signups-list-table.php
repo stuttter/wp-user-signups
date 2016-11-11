@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * List table for sign-ups
  */
-final class WP_User_Signups_List_Table extends WP_List_Table {
+final class WP_User_Signup_List_Table extends WP_List_Table {
 
 	/**
 	 * Prepare items for the list table
@@ -21,7 +21,7 @@ final class WP_User_Signups_List_Table extends WP_List_Table {
 	 */
 	public function prepare_items() {
 		$this->items = array();
-		$signups = WP_User_Signups::get_all();
+		$signups = WP_User_Signup::get_all();
 
 		if ( ! empty( $signups ) && ! is_wp_error( $signups ) ) {
 			$this->items = $signups;
@@ -177,12 +177,12 @@ final class WP_User_Signups_List_Table extends WP_List_Table {
 	 * @since 1.0.0
 	 * @access protected
 	 *
-	 * @param WP_User_Signups $signup Current sign-up item
+	 * @param WP_User_Signup $signup Current sign-up item
 	 * @return string HTML for the cell
 	 */
 	protected function column_cb( $signup ) {
-		$signup_id = $signup->data->signup_id;
-		$domain    = $signup->data->domain;
+		$signup_id = $signup->signup_id;
+		$domain    = $signup->domain;
 
 		return '<label class="screen-reader-text" for="cb-select-' . esc_attr( $signup_id ) . '">'
 			. sprintf( __( 'Select %s' ), esc_html( $domain ) ) . '</label>'
@@ -196,7 +196,7 @@ final class WP_User_Signups_List_Table extends WP_List_Table {
 	 * @since 1.0.0
 	 * @access protected
 	 *
-	 * @param WP_User_Signups $signup Current sign-up item
+	 * @param WP_User_Signup $signup Current sign-up item
 	 * @return string HTML for the cell
 	 */
 	protected function column_user( $signup ) {
@@ -206,16 +206,16 @@ final class WP_User_Signups_List_Table extends WP_List_Table {
 
 		// Get vars
 		$site_id   = wp_user_signups_get_site_id();
-		$login     =        $signup->data->user_login;
-		$email     =        $signup->data->user_email;
-		$signup_id = (int)  $signup->data->signup_id;
-		$active    = (bool) $signup->data->active;
+		$login     =        $signup->user_login;
+		$email     =        $signup->user_email;
+		$signup_id = (int)  $signup->signup_id;
+		$active    = (bool) $signup->active;
 
 		// Edit
 		$edit_link = wp_user_signups_admin_url( array(
 			'id'        => $site_id,
 			'signups'   => $signup_id,
-			'page'      => 'site_signup_edit',
+			'page'      => 'user_signup_edit',
 			'referrer'  => wp_user_signups_is_network_list()
 				? 'network'
 				: 'site'
@@ -277,11 +277,11 @@ final class WP_User_Signups_List_Table extends WP_List_Table {
 	 * @since 1.0.0
 	 * @access protected
 	 *
-	 * @param WP_User_Signups $signup Current sign-up item
+	 * @param WP_User_Signup $signup Current sign-up item
 	 * @return string HTML for the cell
 	 */
 	protected function column_user_email( $signup ) {
-		return $signup->data->user_email;
+		return $signup->user_email;
 	}
 
 	/**
@@ -290,12 +290,12 @@ final class WP_User_Signups_List_Table extends WP_List_Table {
 	 * @since 1.0.0
 	 * @access protected
 	 *
-	 * @param WP_User_Signups $signup Current sign-up item
+	 * @param WP_User_Signup $signup Current sign-up item
 	 * @return string HTML for the cell
 	 */
 	protected function column_site( $signup ) {
-		return ! empty( $signup->data->domain . $signup->data->path )
-			? $signup->data->domain . $signup->data->path
+		return ! empty( $signup->domain . $signup->path )
+			? $signup->domain . $signup->path
 			: '&mdash;';
 	}
 
@@ -305,11 +305,11 @@ final class WP_User_Signups_List_Table extends WP_List_Table {
 	 * @since 1.0.0
 	 * @access protected
 	 *
-	 * @param WP_User_Signups $signup Current sign-up item
+	 * @param WP_User_Signup $signup Current sign-up item
 	 * @return string HTML for the cell
 	 */
 	protected function column_activation_key( $signup ) {
-		return '<code>' . $signup->data->activation_key . '</code>';
+		return '<code>' . $signup->activation_key . '</code>';
 	}
 
 	/**
@@ -318,13 +318,13 @@ final class WP_User_Signups_List_Table extends WP_List_Table {
 	 * @since 1.0.0
 	 * @access protected
 	 *
-	 * @param WP_User_Signups $signup Current sign-up item
+	 * @param WP_User_Signup $signup Current sign-up item
 	 *
 	 * @return string HTML for the cell
 	 */
 	protected function column_registered( $signup ) {
-		return mysql2date( get_option( 'date_format' ), $signup->data->registered ) . '<br>' .
-			   mysql2date( get_option( 'time_format' ), $signup->data->registered );
+		return mysql2date( get_option( 'date_format' ), $signup->registered ) . '<br>' .
+			   mysql2date( get_option( 'time_format' ), $signup->registered );
 	}
 
 	/**
@@ -333,20 +333,20 @@ final class WP_User_Signups_List_Table extends WP_List_Table {
 	 * @since 1.0.0
 	 * @access protected
 	 *
-	 * @param WP_User_Signups $signup Current sign-up item
+	 * @param WP_User_Signup $signup Current sign-up item
 	 *
 	 * @return string HTML for the cell
 	 */
 	protected function column_activated( $signup ) {
 
 		// Not yet active
-		if (  '0000-00-00 00:00:00' === $signup->data->activated ) {
+		if (  '0000-00-00 00:00:00' === $signup->activated ) {
 			return esc_html__( '&mdash;', 'wp-user-signups' );
 
 		// Activated
 		} else {
-			return mysql2date( get_option( 'date_format' ), $signup->data->activated ) . '<br>' .
-				   mysql2date( get_option( 'time_format' ), $signup->data->activated );
+			return mysql2date( get_option( 'date_format' ), $signup->activated ) . '<br>' .
+				   mysql2date( get_option( 'time_format' ), $signup->activated );
 		}
 	}
 }

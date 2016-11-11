@@ -19,8 +19,10 @@ add_filter( 'map_meta_cap', 'wp_user_signups_map_meta_cap', 10, 4 );
 
 // Navigation
 add_filter( 'network_edit_site_nav_links', 'wp_user_signups_add_signups_tab'   );
-add_action( 'admin_menu',                  'wp_user_signups_add_menu_item', 30 );
 add_action( 'network_admin_menu',          'wp_user_signups_add_menu_item', 20 );
+
+// New Style
+//add_action( 'admin_menu',                  'wp_user_signups_add_menu_item', 30 );
 
 // Notices
 add_action( 'wp_user_signups_admin_notices', 'wp_user_signups_output_admin_notices' );

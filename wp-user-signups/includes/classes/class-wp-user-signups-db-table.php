@@ -13,7 +13,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @since 1.0.0
  */
-final class WP_User_Signups_DB {
+final class WP_User_Signup_DB {
 
 	/**
 	 * @var string Plugin version
@@ -198,6 +198,6 @@ final class WP_User_Signups_DB {
  * @since 1.0.0
  */
 function wp_user_signups_db() {
-	new WP_User_Signups_DB();
+	new WP_User_Signup_DB();
 }
 add_action( 'muplugins_loaded', 'wp_user_signups_db', -PHP_INT_MAX );

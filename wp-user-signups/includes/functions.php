@@ -55,7 +55,7 @@ function wp_user_signups_admin_url( $args = array() ) {
 
 	// File
 	$file = ( true === $network_signups )
-		? 'users.php'
+		? 'admin.php'
 		: 'sites.php';
 
 	// Override for network edit
