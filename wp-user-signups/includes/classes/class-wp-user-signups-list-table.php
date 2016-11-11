@@ -21,10 +21,12 @@ final class WP_User_Signup_List_Table extends WP_List_Table {
 	 */
 	public function prepare_items() {
 		$this->items = array();
-		$signups = WP_User_Signup::get_all();
+		$query = new WP_User_Signup_Query( array(
+			'active' => 0
+		) );
 
-		if ( ! empty( $signups ) && ! is_wp_error( $signups ) ) {
-			$this->items = $signups;
+		if ( ! empty( $query->signups ) && ! is_wp_error( $query->signups ) ) {
+			$this->items = $query->signups;
 		}
 	}
 

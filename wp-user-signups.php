@@ -40,15 +40,17 @@ function _wp_user_signups() {
 
 	// Classes
 	require_once $plugin_path . 'includes/classes/class-wp-user-signup.php';
+	require_once $plugin_path . 'includes/classes/class-wp-user-signup-query.php';
 	require_once $plugin_path . 'includes/classes/class-wp-user-signups-db-table.php';
 
 	// Required Files
-	require_once $plugin_path . 'includes/admin.php';
-	require_once $plugin_path . 'includes/assets.php';
-	require_once $plugin_path . 'includes/common.php';
-	require_once $plugin_path . 'includes/capabilities.php';
-	require_once $plugin_path . 'includes/functions.php';
-	require_once $plugin_path . 'includes/hooks.php';
+	require_once $plugin_path . 'includes/functions/admin.php';
+	require_once $plugin_path . 'includes/functions/assets.php';
+	require_once $plugin_path . 'includes/functions/cache.php';
+	require_once $plugin_path . 'includes/functions/common.php';
+	require_once $plugin_path . 'includes/functions/capabilities.php';
+	require_once $plugin_path . 'includes/functions/functions.php';
+	require_once $plugin_path . 'includes/functions/hooks.php';
 }
 
 /**

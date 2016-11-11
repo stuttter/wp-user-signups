@@ -41,13 +41,22 @@ class WP_User_Signup_Query {
 	);
 
 	/**
-	 * Date query container.
+	 * Registered query container.
 	 *
 	 * @since 1.0.0
 	 * @access public
 	 * @var object WP_Date_Query
 	 */
-	public $date_query = false;
+	public $registered_query = false;
+
+	/**
+	 * Activated query container.
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 * @var object WP_Date_Query
+	 */
+	public $activated_query = false;
 
 	/**
 	 * Meta query container.
@@ -121,38 +130,50 @@ class WP_User_Signup_Query {
 	 * @param string|array $query {
 	 *     Optional. Array or query string of site signup query parameters. Default empty.
 	 *
-	 *     @type int          $ID                An signup ID to only return that signup. Default empty.
-	 *     @type array        $signup__in        Array of signup IDs to include. Default empty.
-	 *     @type array        $signup__not_in    Array of signup IDs to exclude. Default empty.
-	 *     @type int          $site_id           A site ID to only return that site. Default empty.
-	 *     @type array        $site__in          Array of site IDs to include. Default empty.
-	 *     @type array        $site__not_in      Array of site IDs to exclude. Default empty.
-	 *     @type bool         $count             Whether to return a site signup count (true) or array of site signup objects.
-	 *                                           Default false.
-	 *     @type array        $date_query        Date query clauses to limit signups by. See WP_Date_Query.
-	 *                                           Default null.
-	 *     @type string       $fields            Site fields to return. Accepts 'ids' (returns an array of site signup IDs)
-	 *                                           or empty (returns an array of complete site signup objects). Default empty.
-	 *     @type int          $number            Maximum number of signups to retrieve. Default null (no limit).
-	 *     @type int          $offset            Number of signups to offset the query. Used to build LIMIT clause.
-	 *                                           Default 0.
-	 *     @type bool         $no_found_rows     Whether to disable the `SQL_CALC_FOUND_ROWS` query. Default true.
-	 *     @type string|array $orderby           Site status or array of statuses. Accepts 'id', 'domain', 'status',
-	 *                                           'created', 'domain_length', 'path_length', or 'site__in'. Also accepts false,
-	 *                                           an empty array, or 'none' to disable `ORDER BY` clause.
-	 *                                           Default 'id'.
-	 *     @type string       $order             How to order retrieved signups. Accepts 'ASC', 'DESC'. Default 'ASC'.
-	 *     @type string       $domain            Limit results to those affiliated with a given domain.
-	 *                                           Default empty.
-	 *     @type array        $domain__in        Array of domains to include affiliated signups for. Default empty.
-	 *     @type array        $domain__not_in    Array of domains to exclude affiliated signups for. Default empty.
-	 *     @type string       $status            Limit results to those affiliated with a given path.
-	 *                                           Default empty.
-	 *     @type array        $status__in        Array of paths to include affiliated signups for. Default empty.
-	 *     @type array        $status__not_in    Array of paths to exclude affiliated signups for. Default empty.
-	 *     @type string       $search            Search term(s) to retrieve matching signups for. Default empty.
-	 *     @type array        $search_columns    Array of column names to be searched. Accepts 'domain' and 'status'.
-	 *                                           Default empty array.
+	 *     @type int          $ID                 An signup ID to only return that signup. Default empty.
+	 *     @type array        $signup__in         Array of signup IDs to include. Default empty.
+	 *     @type array        $signup__not_in     Array of signup IDs to exclude. Default empty.
+	 *     @type string       $domain             Limit results to those affiliated with a given domain.
+	 *                                            Default empty.
+	 *     @type array        $domain__in         Array of domains to include affiliated signups for. Default empty.
+	 *     @type array        $domain__not_in     Array of domains to exclude affiliated signups for. Default empty.
+	 *     @type string       $path               Limit results to those affiliated with a given path.
+	 *                                            Default empty.
+	 *     @type array        $path__in           Array of paths to include affiliated signups for. Default empty.
+	 *     @type array        $path__not_in       Array of paths to exclude affiliated signups for. Default empty.
+	 *     @type string       $user_login         Limit results to those affiliated with a given login.
+	 *                                            Default empty.
+	 *     @type array        $user_login__in     Array of logins to include affiliated signups for. Default empty.
+	 *     @type array        $user_login__not_in Array of logins to exclude affiliated signups for. Default empty.
+	 *     @type string       $user_email         Limit results to those affiliated with a given email.
+	 *                                            Default empty.
+	 *     @type array        $user_email__in     Array of emails to include affiliated signups for. Default empty.
+	 *     @type array        $user_email__not_in Array of emails to exclude affiliated signups for. Default empty.
+	 *     @type array        $registered_query   Date query clauses to limit signups by. See WP_Date_Query.
+	 *                                            Default null.
+	 *     @type array        $activated_query    Date query clauses to limit signups by. See WP_Date_Query.
+	 *                                            Default null.
+	 *     @type int          $active             Limit results to those affiliated with a given path.
+	 *     @type string       $key                Limit results to those affiliated with a given key.
+	 *                                            Default empty.
+	 *     @type array        $key__in            Array of keys to include affiliated signups for. Default empty.
+	 *     @type array        $key__not_in        Array of keys to exclude affiliated signups for. Default empty.
+	 *     @type string       $fields             Site fields to return. Accepts 'ids' (returns an array of site signup IDs)
+	 *                                            or empty (returns an array of complete site signup objects). Default empty.
+	 *     @type bool         $count              Whether to return a site signup count (true) or array of site signup objects.
+	 *                                            Default false.
+	 *     @type int          $number             Maximum number of signups to retrieve. Default null (no limit).
+	 *     @type int          $offset             Number of signups to offset the query. Used to build LIMIT clause.
+	 *                                            Default 0.
+	 *     @type bool         $no_found_rows      Whether to disable the `SQL_CALC_FOUND_ROWS` query. Default true.
+	 *     @type string|array $orderby            Site status or array of statuses. Accepts 'id', 'registered', 'activated',
+	 *                                            'domain_length', 'path_length', 'login', or 'email. Also accepts false,
+	 *                                            an empty array, or 'none' to disable `ORDER BY` clause.
+	 *                                            Default 'id'.
+	 *     @type string       $order              How to order retrieved signups. Accepts 'ASC', 'DESC'. Default 'ASC'.
+	 *     @type string       $search             Search term(s) to retrieve matching signups for. Default empty.
+	 *     @type array        $search_columns     Array of column names to be searched. Accepts 'domain' and 'status'.
+	 *                                            Default empty array.
 	 *
 	 *     @type bool         $update_user_signup_cache Whether to prime the cache for found signups. Default false.
 	 * }
@@ -162,20 +183,23 @@ class WP_User_Signup_Query {
 		$this->query_var_defaults = array(
 			'fields'             => '',
 			'ID'                 => '',
+			'signup__in'         => '',
+			'signup__not_in'     => '',
+			'domain'             => '',
 			'domain__in'         => '',
 			'domain__not_in'     => '',
+			'path'               => '',
 			'path__in'           => '',
 			'path__not_in'       => '',
-			'user_email'         => '',
-			'user_email__in'     => '',
-			'user_email__not_in' => '',
+			'title'              => '',
 			'user_login'         => '',
 			'user_login__in'     => '',
 			'user_login__not_in' => '',
-			'status'             => 0,
-			'status__in'         => '',
-			'status__not_in'     => '',
-			'key'                => 0,
+			'user_email'         => '',
+			'user_email__in'     => '',
+			'user_email__not_in' => '',
+			'active'             => 0,
+			'key'                => '',
 			'key__in'            => '',
 			'key__not_in'        => '',
 			'number'             => 100,
@@ -269,7 +293,7 @@ class WP_User_Signup_Query {
 		}
 
 		$cache_key   = "get_user_signups:{$key}:{$last_changed}";
-		$cache_value = wp_cache_get( $cache_key, 'user_signups' );
+		$cache_value = false; //wp_cache_get( $cache_key, 'user_signups' );
 
 		if ( false === $cache_value ) {
 			$signup_ids = $this->get_signup_ids();
@@ -313,7 +337,7 @@ class WP_User_Signup_Query {
 		// Fetch full site signup objects from the primed cache.
 		$_signups = array();
 		foreach ( $signup_ids as $signup_id ) {
-			$_signup = get_user_signup( $signup_id );
+			$_signup = WP_User_Signup::get( $signup_id );
 			if ( ! empty( $_signup ) ) {
 				$_signups[] = $_signup;
 			}
@@ -330,7 +354,7 @@ class WP_User_Signup_Query {
 		$_signups = apply_filters_ref_array( 'the_user_signups', array( $_signups, &$this ) );
 
 		// Convert to WP_Site_Alias instances.
-		$this->signups = array_map( 'get_user_signup', $_signups );
+		$this->signups = array_map( array( 'WP_User_Signup', 'get' ), $_signups );
 
 		return $this->signups;
 	}
@@ -374,7 +398,7 @@ class WP_User_Signup_Query {
 					continue;
 				}
 
-				if ( 'signup__in' === $_orderby || 'site__in' === $_orderby ) {
+				if ( 'signup__in' === $_orderby ) {
 					$orderby_array[] = $parsed;
 					continue;
 				}
@@ -384,7 +408,7 @@ class WP_User_Signup_Query {
 
 			$orderby = implode( ', ', $orderby_array );
 		} else {
-			$orderby = "ba.id {$order}";
+			$orderby = "us.signup_id {$order}";
 		}
 
 		$number = absint( $this->query_vars['number'] );
@@ -401,66 +425,87 @@ class WP_User_Signup_Query {
 		if ( $this->query_vars['count'] ) {
 			$fields = 'COUNT(*)';
 		} else {
-			$fields = 'ba.id';
+			$fields = 'us.signup_id';
 		}
 
 		// Parse site signup IDs for an IN clause.
 		$signup_id = absint( $this->query_vars['ID'] );
 		if ( ! empty( $signup_id ) ) {
-			$this->sql_clauses['where']['ID'] = $this->db->prepare( 'ba.id = %d', $signup_id );
+			$this->sql_clauses['where']['ID'] = $this->db->prepare( 'us.signup_id = %d', $signup_id );
 		}
 
 		// Parse site signup IDs for an IN clause.
 		if ( ! empty( $this->query_vars['signup__in'] ) ) {
-			$this->sql_clauses['where']['signup__in'] = "ba.id IN ( " . implode( ',', wp_parse_id_list( $this->query_vars['site__in'] ) ) . ' )';
+			$this->sql_clauses['where']['signup__in'] = "us.signup_id IN ( " . implode( ',', wp_parse_id_list( $this->query_vars['site__in'] ) ) . ' )';
 		}
 
 		// Parse site signup IDs for a NOT IN clause.
 		if ( ! empty( $this->query_vars['signup__not_in'] ) ) {
-			$this->sql_clauses['where']['signup__not_in'] = "ba.id NOT IN ( " . implode( ',', wp_parse_id_list( $this->query_vars['site__not_in'] ) ) . ' )';
+			$this->sql_clauses['where']['signup__not_in'] = "us.signup_id NOT IN ( " . implode( ',', wp_parse_id_list( $this->query_vars['site__not_in'] ) ) . ' )';
 		}
 
-		$site_id = absint( $this->query_vars['site_id'] );
-		if ( ! empty( $site_id ) ) {
-			$this->sql_clauses['where']['site_id'] = $this->db->prepare( 'ba.blog_id = %d', $site_id );
-		}
-
-		// Parse site IDs for an IN clause.
-		if ( ! empty( $this->query_vars['site__in'] ) ) {
-			$this->sql_clauses['where']['site__in'] = "ba.blog_id IN ( " . implode( ',', wp_parse_id_list( $this->query_vars['site__in'] ) ) . ' )';
-		}
-
-		// Parse site IDs for a NOT IN clause.
-		if ( ! empty( $this->query_vars['site__not_in'] ) ) {
-			$this->sql_clauses['where']['site__not_in'] = "ba.blog_id NOT IN ( " . implode( ',', wp_parse_id_list( $this->query_vars['site__not_in'] ) ) . ' )';
-		}
-
+		// domain
 		if ( ! empty( $this->query_vars['domain'] ) ) {
-			$this->sql_clauses['where']['domain'] = $this->db->prepare( 'ba.domain = %s', $this->query_vars['domain'] );
+			$this->sql_clauses['where']['domain'] = $this->db->prepare( 'us.domain = %s', $this->query_vars['domain'] );
 		}
 
 		// Parse site signup domain for an IN clause.
 		if ( is_array( $this->query_vars['domain__in'] ) ) {
-			$this->sql_clauses['where']['domain__in'] = "ba.domain IN ( '" . implode( "', '", $this->db->_escape( $this->query_vars['domain__in'] ) ) . "' )";
+			$this->sql_clauses['where']['domain__in'] = "us.domain IN ( '" . implode( "', '", $this->db->_escape( $this->query_vars['domain__in'] ) ) . "' )";
 		}
 
 		// Parse site signup domain for a NOT IN clause.
 		if ( is_array( $this->query_vars['domain__not_in'] ) ) {
-			$this->sql_clauses['where']['domain__not_in'] = "ba.domain NOT IN ( '" . implode( "', '", $this->db->_escape( $this->query_vars['domain__not_in'] ) ) . "' )";
+			$this->sql_clauses['where']['domain__not_in'] = "us.domain NOT IN ( '" . implode( "', '", $this->db->_escape( $this->query_vars['domain__not_in'] ) ) . "' )";
 		}
 
-		if ( ! empty( $this->query_vars['status'] ) ) {
-			$this->sql_clauses['where']['status'] = $this->db->prepare( 'ba.path = %s', $this->query_vars['status'] );
+		// path
+		if ( ! empty( $this->query_vars['path'] ) ) {
+			$this->sql_clauses['where']['path'] = $this->db->prepare( 'us.path = %s', $this->query_vars['path'] );
 		}
 
-		// Parse site signup status for an IN clause.
-		if ( is_array( $this->query_vars['status__in'] ) ) {
-			$this->sql_clauses['where']['status__in'] = "ba.status IN ( '" . implode( "', '", $this->db->_escape( $this->query_vars['status__in'] ) ) . "' )";
+		// Parse site signup path for an IN clause.
+		if ( is_array( $this->query_vars['path__in'] ) ) {
+			$this->sql_clauses['where']['path__in'] = "us.path IN ( '" . implode( "', '", $this->db->_escape( $this->query_vars['path__in'] ) ) . "' )";
 		}
 
-		// Parse site signup status for a NOT IN clause.
-		if ( is_array( $this->query_vars['status__not_in'] ) ) {
-			$this->sql_clauses['where']['status__not_in'] = "ba.status NOT IN ( '" . implode( "', '", $this->db->_escape( $this->query_vars['status__not_in'] ) ) . "' )";
+		// Parse site signup path for a NOT IN clause.
+		if ( is_array( $this->query_vars['path__not_in'] ) ) {
+			$this->sql_clauses['where']['path__not_in'] = "us.path NOT IN ( '" . implode( "', '", $this->db->_escape( $this->query_vars['path__not_in'] ) ) . "' )";
+		}
+
+		// user_login
+		if ( ! empty( $this->query_vars['user_login'] ) ) {
+			$this->sql_clauses['where']['user_login'] = $this->db->prepare( 'us.user_login = %s', $this->query_vars['user_login'] );
+		}
+
+		// Parse site signup user_login for an IN clause.
+		if ( is_array( $this->query_vars['user_login__in'] ) ) {
+			$this->sql_clauses['where']['user_login__in'] = "us.user_login IN ( '" . implode( "', '", $this->db->_escape( $this->query_vars['user_login__in'] ) ) . "' )";
+		}
+
+		// Parse site signup user_login for a NOT IN clause.
+		if ( is_array( $this->query_vars['user_login__not_in'] ) ) {
+			$this->sql_clauses['where']['user_login__not_in'] = "us.user_login NOT IN ( '" . implode( "', '", $this->db->_escape( $this->query_vars['user_login__not_in'] ) ) . "' )";
+		}
+
+		// user_email
+		if ( ! empty( $this->query_vars['user_email'] ) ) {
+			$this->sql_clauses['where']['user_email'] = $this->db->prepare( 'us.user_email = %s', $this->query_vars['user_email'] );
+		}
+
+		// Parse site signup user_email for an IN clause.
+		if ( is_array( $this->query_vars['user_email__in'] ) ) {
+			$this->sql_clauses['where']['user_email__in'] = "us.user_email IN ( '" . implode( "', '", $this->db->_escape( $this->query_vars['user_email__in'] ) ) . "' )";
+		}
+
+		// Parse site signup user_email for a NOT IN clause.
+		if ( is_array( $this->query_vars['user_email__not_in'] ) ) {
+			$this->sql_clauses['where']['user_email__not_in'] = "us.user_email NOT IN ( '" . implode( "', '", $this->db->_escape( $this->query_vars['user_email__not_in'] ) ) . "' )";
+		}
+
+		if ( ! empty( $this->query_vars['active'] ) ) {
+			$this->sql_clauses['where']['active'] = $this->db->prepare( 'us.active = %d', $this->query_vars['active'] );
 		}
 
 		// Falsey search strings are ignored.
@@ -468,11 +513,11 @@ class WP_User_Signup_Query {
 			$search_columns = array();
 
 			if ( $this->query_vars['search_columns'] ) {
-				$search_columns = array_intersect( $this->query_vars['search_columns'], array( 'domain', 'status' ) );
+				$search_columns = array_intersect( $this->query_vars['search_columns'], array( 'domain', 'path', 'title', 'user_login', 'user_email', 'activation_key' ) );
 			}
 
-			if ( ! $search_columns ) {
-				$search_columns = array( 'domain', 'status' );
+			if ( empty( $search_columns ) ) {
+				$search_columns = array( 'domain', 'path', 'title', 'user_login', 'user_email', 'activation_key' );
 			}
 
 			/**
@@ -491,16 +536,22 @@ class WP_User_Signup_Query {
 			$this->sql_clauses['where']['search'] = $this->get_search_sql( $this->query_vars['search'], $search_columns );
 		}
 
-		$date_query = $this->query_vars['date_query'];
-		if ( ! empty( $date_query ) && is_array( $date_query ) ) {
-			$this->date_query = new WP_Date_Query( $date_query, 'ba.created' );
-			$this->sql_clauses['where']['date_query'] = preg_replace( '/^\s*AND\s*/', '', $this->date_query->get_sql() );
+		$registered_query = $this->query_vars['registered_query'];
+		if ( ! empty( $registered_query ) && is_array( $registered_query ) ) {
+			$this->registered_query = new WP_Date_Query( $registered_query, 'us.registered' );
+			$this->sql_clauses['where']['registered_query'] = preg_replace( '/^\s*AND\s*/', '', $this->registered_query->get_sql() );
+		}
+
+		$activated_query = $this->query_vars['activated_query'];
+		if ( ! empty( $activated_query) && is_array( $activated_query) ) {
+			$this->activated_query = new WP_Date_Query( $activated_query, 'us.activated' );
+			$this->sql_clauses['where']['activated_query'] = preg_replace( '/^\s*AND\s*/', '', $this->activated_query->get_sql() );
 		}
 
 		$meta_query = $this->query_vars['meta_query'];
 		if ( ! empty( $meta_query ) && is_array( $meta_query ) ) {
 			$this->meta_query                         = new WP_Meta_Query( $meta_query );
-			$clauses                                  = $this->meta_query->get_sql( 'blog_signup', 'ba', 'id', $this );
+			$clauses                                  = $this->meta_query->get_sql( 'blog_signup', 'us', 'id', $this );
 			$join                                     = $clauses['join'];
 			$this->sql_clauses['where']['meta_query'] = preg_replace( '/^\s*AND\s*/', '', $clauses['where'] );
 		} else {
@@ -546,7 +597,7 @@ class WP_User_Signup_Query {
 		}
 
 		$this->sql_clauses['select']  = "SELECT {$found_rows} {$fields}";
-		$this->sql_clauses['from']    = "FROM {$this->db->user_signups} ba {$join}";
+		$this->sql_clauses['from']    = "FROM {$this->db->signups} us {$join}";
 		$this->sql_clauses['groupby'] = $groupby;
 		$this->sql_clauses['orderby'] = $orderby;
 		$this->sql_clauses['limits']  = $limits;
@@ -631,22 +682,18 @@ class WP_User_Signup_Query {
 
 		switch ( $orderby ) {
 			case 'id':
-				$parsed = 'ba.id';
-				break;
-			case 'site_id':
-				$parsed = 'ba.blog_id';
+				$parsed = 'us.signup_id';
 				break;
 			case 'signup__in':
 				$signup__in = implode( ',', array_map( 'absint', $this->query_vars['signup__in'] ) );
-				$parsed = "FIELD( ba.id, $signup__in )";
-				break;
-			case 'site__in':
-				$site__in = implode( ',', array_map( 'absint', $this->query_vars['site__in'] ) );
-				$parsed = "FIELD( ba.blog_id, $site__in )";
+				$parsed = "FIELD( us.signup_id, $signup__in )";
 				break;
 			case 'domain':
-			case 'created':
-			case 'status':
+			case 'path':
+			case 'registered':
+			case 'activated':
+			case 'user_login':
+			case 'user_email':
 				$parsed = $orderby;
 				break;
 			case 'domain_length':
