@@ -315,20 +315,6 @@ function wp_user_signups_handle_actions() {
 		case 'edit' :
 			check_admin_referer( "user_signup_edit-{$site_id}" );
 
-			// Check that the parameters are correct first
-			$params = wp_user_signups_validate_signup_parameters( wp_unslash( $_POST ) );
-
-			// Error messages
-			if ( is_wp_error( $params ) ) {
-				$messages[] = $params->get_error_message();
-
-				if ( $params->get_error_code() === 'wp_user_signups_domain_invalid_chars' ) {
-					$messages[] = esc_html__( 'Internationalized domain names must use the ASCII version (e.g, <code>xn--bcher-kva.example</code>)', 'wp-user-signups' );
-				}
-
-				return $messages;
-			}
-
 			$signup_id = $signups[0];
 			$signup    = WP_User_Signup::get( $signup_id );
 
@@ -338,7 +324,8 @@ function wp_user_signups_handle_actions() {
 			}
 
 			// Update
-			$result = $signup->update( $params );
+			$values = wp_unslash( $_POST );
+			$result = $signup->update( $values );
 
 			// Bail if an error occurred
 			if ( is_wp_error( $result ) ) {
@@ -403,7 +390,7 @@ function wp_user_signups_output_edit_page() {
 
 	// Edit
 	} else {
-		$title = esc_html__( 'Edit New Sign-up', 'wp-user-signups' );
+		$title = esc_html__( 'Edit Sign-up', 'wp-user-signups' );
 	}
 
 	// Output the header, maybe with network site tabs
@@ -414,6 +401,37 @@ function wp_user_signups_output_edit_page() {
 	<div class="wrap">
 		<h1 id="edit-signup"><?php echo esc_html( $title ); ?></h1>
 		<form method="post" action="<?php echo esc_url( $action_url ); ?>" novalidate="novalidate">
+			<h3><?php esc_html_e( 'Site', 'wp-user-signups' ); ?></h3>
+			<p><?php esc_html_e( 'These details are for registering a new site at the same time as a user. Leave empty if there is no new site associated with this sign-up.', 'wp-user-signups' ); ?></p>
+			<table class="form-table">
+				<tbody>
+					<tr>
+						<th scope="row">
+							<label for="domain"><?php echo esc_html_x( 'Domain', 'User signup', 'wp-user-signups' ); ?></label>
+						</th>
+						<td>
+							<input type="text" class="regular-text" name="domain" id="domain" value="<?php echo esc_attr( $signup->domain ); ?>">
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">
+							<label for="path"><?php echo esc_html_x( 'Path', 'User signup', 'wp-user-signups' ); ?></label>
+						</th>
+						<td>
+							<input type="text" class="regular-text" name="path" id="path" value="<?php echo esc_attr( $signup->path ); ?>">
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">
+							<label for="title"><?php echo esc_html_x( 'Title', 'User signup', 'wp-user-signups' ); ?></label>
+						</th>
+						<td>
+							<input type="text" class="regular-text" name="title" id="title" value="<?php echo esc_attr( $signup->title ); ?>">
+						</td>
+					</tr>
+				</tbody>
+			</table>
+
 			<h3><?php esc_html_e( 'User', 'wp-user-signups' ); ?></h3>
 			<p><?php esc_html_e( 'These details are for registering a new user.', 'wp-user-signups' ); ?></p>
 			<table class="form-table">
@@ -472,40 +490,10 @@ function wp_user_signups_output_edit_page() {
 				</tbody>
 			</table>
 
-			<h3><?php esc_html_e( 'Site', 'wp-user-signups' ); ?></h3>
-			<p><?php esc_html_e( 'These details are for registering a new site at the same time as a user.', 'wp-user-signups' ); ?></p>
-			<table class="form-table">
-				<tbody>
-					<tr>
-						<th scope="row">
-							<label for="domain"><?php echo esc_html_x( 'Domain', 'User signup', 'wp-user-signups' ); ?></label>
-						</th>
-						<td>
-							<input type="text" class="regular-text" name="domain" id="domain" value="<?php echo esc_attr( $signup->domain ); ?>">
-						</td>
-					</tr>
-					<tr>
-						<th scope="row">
-							<label for="path"><?php echo esc_html_x( 'Path', 'User signup', 'wp-user-signups' ); ?></label>
-						</th>
-						<td>
-							<input type="text" class="regular-text" name="path" id="path" value="<?php echo esc_attr( $signup->path ); ?>">
-						</td>
-					</tr>
-					<tr>
-						<th scope="row">
-							<label for="title"><?php echo esc_html_x( 'Title', 'User signup', 'wp-user-signups' ); ?></label>
-						</th>
-						<td>
-							<input type="text" class="regular-text" name="title" id="title" value="<?php echo esc_attr( $signup->title ); ?>">
-						</td>
-					</tr>
-				</tbody>
-			</table>
-
-			<input type="hidden" name="action"  value="<?php echo esc_attr( $action   ); ?>">
-			<input type="hidden" name="id"      value="<?php echo esc_attr( $site_id  ); ?>">
-			<input type="hidden" name="signups" value="<?php echo esc_attr( $signup_id ); ?>"><?php
+			<input type="textarea" name="meta"      value="<?php echo maybe_unserialize( $signup->meta ); ?>">
+			<input type="hidden"   name="action"    value="<?php echo esc_attr( $action   ); ?>">
+			<input type="hidden"   name="signup_id" value="<?php echo esc_attr( $signup_id  ); ?>">
+			<input type="hidden"   name="signups"   value="<?php echo esc_attr( $signup_id ); ?>"><?php
 
 			// Add
 			if ( 'add' === $action ) {
