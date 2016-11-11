@@ -61,6 +61,67 @@ class WP_User_Signup {
 	}
 
 	/**
+	 * Validate array of data used for editing or creating a sign-up
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param type $params
+	 */
+	public function validate( $params = array() ) {
+
+		// Whitelist keys
+		$params = array_intersect_key( $params, array(
+			'domain'         => '',
+			'path'           => '/',
+			'title'          => '',
+			'user_login'     => '',
+			'user_email'     => '',
+			'registered'     => '',
+			'activated'      => '',
+			'active'         => '',
+			'activation_key' => '',
+			'meta'           => array()
+		) );
+
+		// User login
+		if ( isset( $params['user_login'] ) ) {
+			$params['user_login'] = preg_replace( '/\s+/', '', sanitize_user( $params['user_login'], true ) );
+		}
+
+		// Sanitize email
+		if ( isset( $params['user_email'] ) ) {
+			$params['user_email'] = sanitize_email( $params['user_email'] );
+		}
+
+		// Registered date
+		if ( isset( $params['registered'] ) ) {
+			$params['registered'] = date( 'Y-m-d H:i:s', strtotime( $params['registered'] ) );
+		}
+
+		// Activated date
+		if ( isset( $params['activated'] ) ) {
+			$params['activated'] = date( 'Y-m-d H:i:s', strtotime( $params['activated'] ) );
+		}
+
+		// Activated
+		if ( isset( $params['active'] ) ) {
+			$params['active'] = (int) $params['active'];
+		}
+
+		// Activation key
+		if ( empty( $params['activation_key'] ) && isset( $params['user_email'] ) ) {
+			$params['activation_key'] = substr( md5( time() . rand() . $params['user_email'] ), 0, 16 );
+		}
+
+		// Meta array (this is wack)
+		if ( isset( $params['meta'] ) ) {
+			$params['meta'] = maybe_serialize( $params['meta'] );
+		}
+
+		return $params;
+	}
+
+	/**
 	 * Update the signup
 	 *
 	 * See also, {@see set_domain} and {@see set_status} as convenience methods.
@@ -75,27 +136,11 @@ class WP_User_Signup {
 	public function update( $data = array() ) {
 		global $wpdb;
 
-		$data    = (array) $data;
-		$formats = array( '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%s' );
-		$fields  = wp_parse_args( $data, array(
-			'domain'         => $this->domain,
-			'path'           => $this->path,
-			'title'          => $this->title,
-			'user_login'     => $this->user_login,
-			'user_email'     => $this->user_email,
-			'registered'     => $this->registered,
-			'activated'      => $this->activated,
-			'active'         => $this->active,
-			'activation_key' => $this->activation_key,
-			'meta'           => $this->meta
-		) );
-
-		// Maybe serialize meta
-		$fields['meta'] = maybe_serialize( $fields['meta'] );
-
 		// Query
 		$where        = array( 'signup_id' => (int) $this->signup_id );
 		$where_format = array( '%d' );
+		$formats      = array( '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%s', '%s' );
+		$fields       = $this->validate( (array) $data );
 		$result       = $wpdb->update( $wpdb->signups, $fields, $where, $formats, $where_format );
 
 		// Check for errors
