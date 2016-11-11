@@ -21,8 +21,10 @@ defined( 'ABSPATH' ) || exit;
 function wp_user_signups_map_meta_cap( $caps = array(), $cap = '', $user_id = 0, $args = array() ) {
 
 	// Map to 'create_users' for now
-	if ( 'manage_user_signups' === $cap ) {
-		$caps = array( 'create_users' );
+	switch ( $cap ) {
+		case 'manage_user_signups' :
+		case 'edit_user_signups' :
+			$caps = array( $cap );
 	}
 
 	// Filter and return
