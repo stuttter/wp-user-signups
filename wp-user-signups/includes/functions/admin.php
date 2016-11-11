@@ -29,7 +29,10 @@ function wp_user_signups_add_menu_item() {
 		$hooks[] = add_menu_page( esc_html__( 'Sign ups', 'wp-user-signups' ), esc_html__( 'Sign ups', 'wp-user-signups' ), 'manage_network_signups', 'network_user_signups', 'wp_user_signups_output_network_list_page', 'dashicons-flag', 11 );
 		$hooks[] = add_submenu_page( 'network_user_signups', esc_html__( 'Add New', 'wp-user-signups' ), esc_html__( 'Add New', 'wp-user-signups' ), 'edit_user_signups',      'user_signup_edit',     'wp_user_signups_output_edit_page'                                   );
 
-		//remove_submenu_page( 'users.php', 'user_signup_edit' );
+		// Remove if user cannot create
+		if ( ! current_user_can( 'create_user_signups' ) ) {
+			remove_submenu_page( 'users.php', 'user_signup_edit' );
+		}
 
 		// Load the list table
 		foreach ( $hooks as $hook ) {
@@ -573,8 +576,22 @@ function wp_user_signups_output_network_list_page() {
 	// Action URLs
 	$form_url = wp_user_signups_admin_url( array( 'page' => 'user_signups' ) );
 
+	// With "Add new" link
+	if ( current_user_can( 'create_user_signups' ) ) {
+		$link_url = wp_user_signups_admin_url( array(
+			'page' => 'user_signup_edit'
+		) );
+		$title_link = '<a href="' . esc_url( $link_url ) . '" class="page-title-action">' . esc_html__( 'Add New', 'wp-user-signups' ) . '</a>';
+		$list_title =  sprintf( esc_html__( 'Sign ups %s', 'wp-user-signups' ), $title_link );
+
+	// Without "Add new" link
+	} else {
+		$list_title = esc_html__( 'Sign ups', 'wp-user-signups' );
+	}
+
+	// Output
 	?><div class="wrap">
-		<h1 id="edit-signup"><?php esc_html_e( 'Sign-ups', 'wp-user-signups' ); ?></h1>
+		<h1 id="edit-signup"><?php echo $list_title; // already escaped ?></h1>
 
 		<div class="form-wrap">
 			<?php $wp_list_table->views(); ?>

@@ -24,6 +24,7 @@ function wp_user_signups_map_meta_cap( $caps = array(), $cap = '', $user_id = 0,
 	switch ( $cap ) {
 		case 'manage_user_signups' :
 		case 'edit_user_signups' :
+		case 'create_user_signups' :
 			$caps = array( $cap );
 	}
 

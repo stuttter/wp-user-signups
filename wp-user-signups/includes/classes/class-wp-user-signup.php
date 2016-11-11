@@ -61,79 +61,6 @@ class WP_User_Signup {
 	}
 
 	/**
-	 * Validate array of data used for editing or creating a sign-up
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param type $params
-	 */
-	public static function validate( $params = array() ) {
-
-		// Whitelist keys
-		$r = array_intersect_key( $params, array(
-			'domain'         => '',
-			'path'           => '/',
-			'title'          => '',
-			'user_login'     => '',
-			'user_email'     => '',
-			'registered'     => '',
-			'activated'      => '',
-			'active'         => '',
-			'activation_key' => '',
-			'meta'           => ''
-		) );
-
-		// Get current date for use in `registered` and `activated` values
-		$now = date( 'Y-m-d H:i:s' );
-
-		// User login
-		if ( isset( $r['user_login'] ) ) {
-			$r['user_login'] = preg_replace( '/\s+/', '', sanitize_user( $r['user_login'], true ) );
-		}
-
-		// Sanitize email
-		if ( isset( $r['user_email'] ) ) {
-			$r['user_email'] = sanitize_email( $r['user_email'] );
-		}
-
-		// Registered date
-		if ( ! empty( $r['registered'] ) ) {
-			$r['registered'] = date( 'Y-m-d H:i:s', strtotime( $r['registered'] ) );
-		} else {
-			$r['registered'] = $now;
-		}
-
-		// Activated date
-		if ( ! empty( $r['activated'] ) && ( '0000-00-00 00:00:00' !== $r['activated'] ) ) {
-			$r['activated'] = date( 'Y-m-d H:i:s', strtotime( $r['activated'] ) );
-		} else {
-			$r['activated'] = '0000-00-00 00:00:00';
-		}
-
-		// Activated
-		if ( isset( $r['active'] ) ) {
-			$r['active'] = (int) $r['active'];
-
-			// Set activated to now if activating for the first time
-			if ( ! empty( $r['active'] ) && ( '0000-00-00 00:00:00' === $r['activated'] ) ) {
-				$r['activated'] = $now;
-			}
-		}
-
-		// Activation key
-		if ( empty( $r['activation_key'] ) && isset( $r['user_email'] ) ) {
-			$r['activation_key'] = substr( md5( time() . rand() . $r['user_email'] ), 0, 16 );
-		}
-
-		// Meta array (this is wack)
-		if ( isset( $r['meta'] ) ) {
-			$r['meta'] = maybe_serialize( $r['meta'] );
-		}
-
-		return $r;
-	}
-
-	/**
 	 * Update the signup
 	 *
 	 * See also, {@see set_domain} and {@see set_status} as convenience methods.
@@ -479,5 +406,78 @@ class WP_User_Signup {
 		}
 
 		return $retval;
+	}
+
+	/**
+	 * Validate array of data used for editing or creating a sign-up
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param type $params
+	 */
+	public static function validate( $params = array() ) {
+
+		// Whitelist keys
+		$r = array_intersect_key( $params, array(
+			'domain'         => '',
+			'path'           => '/',
+			'title'          => '',
+			'user_login'     => '',
+			'user_email'     => '',
+			'registered'     => '',
+			'activated'      => '',
+			'active'         => '',
+			'activation_key' => '',
+			'meta'           => ''
+		) );
+
+		// Get current date for use in `registered` and `activated` values
+		$now = date( 'Y-m-d H:i:s' );
+
+		// User login
+		if ( isset( $r['user_login'] ) ) {
+			$r['user_login'] = preg_replace( '/\s+/', '', sanitize_user( $r['user_login'], true ) );
+		}
+
+		// Sanitize email
+		if ( isset( $r['user_email'] ) ) {
+			$r['user_email'] = sanitize_email( $r['user_email'] );
+		}
+
+		// Registered date
+		if ( ! empty( $r['registered'] ) ) {
+			$r['registered'] = date( 'Y-m-d H:i:s', strtotime( $r['registered'] ) );
+		} else {
+			$r['registered'] = $now;
+		}
+
+		// Activated date
+		if ( ! empty( $r['activated'] ) && ( '0000-00-00 00:00:00' !== $r['activated'] ) ) {
+			$r['activated'] = date( 'Y-m-d H:i:s', strtotime( $r['activated'] ) );
+		} else {
+			$r['activated'] = '0000-00-00 00:00:00';
+		}
+
+		// Activated
+		if ( isset( $r['active'] ) ) {
+			$r['active'] = (int) $r['active'];
+
+			// Set activated to now if activating for the first time
+			if ( ! empty( $r['active'] ) && ( '0000-00-00 00:00:00' === $r['activated'] ) ) {
+				$r['activated'] = $now;
+			}
+		}
+
+		// Activation key
+		if ( empty( $r['activation_key'] ) && isset( $r['user_email'] ) ) {
+			$r['activation_key'] = substr( md5( time() . rand() . $r['user_email'] ), 0, 16 );
+		}
+
+		// Meta array (this is wack)
+		if ( isset( $r['meta'] ) ) {
+			$r['meta'] = maybe_serialize( $r['meta'] );
+		}
+
+		return $r;
 	}
 }
