@@ -16,31 +16,54 @@ defined( 'ABSPATH' ) || exit;
  */
 function wp_user_signups_add_menu_item() {
 
+	// Style switcher
+	$style = 'core';
+
 	// Define empty array
 	$hooks = array();
 
-	// Network admin page
-	if ( is_network_admin() ) {
-		$hooks[] = add_submenu_page( 'sites.php', esc_html__( 'Sign ups', 'wp-user-signups' ), esc_html__( 'Sign ups', 'wp-user-signups' ), 'manage_user_signups', 'user_signups',     'wp_user_signups_output_list_page' );
-		$hooks[] = add_submenu_page( 'users.php', esc_html__( 'Sign ups', 'wp-user-signups' ), esc_html__( 'Sign ups', 'wp-user-signups' ), 'edit_user_signups',   'user_signup_edit', 'wp_user_signups_output_edit_page' );
-		remove_submenu_page( 'sites.php', 'user_signups'     );
-		remove_submenu_page( 'users.php', 'user_signup_edit' );
+	// Core style
+	if ( ( 'core' === $style ) && is_network_admin() ) {
 
 		// Network management of all signups
-		$hooks[] = add_submenu_page( 'users.php', esc_html__( 'Sign ups', 'wp-user-signups' ), esc_html__( 'Sign ups', 'wp-user-signups' ), 'manage_network_signups', 'network_user_signups', 'wp_user_signups_output_network_list_page', 'dashicons-randomize', 6 );
+		$hooks[] = add_menu_page( esc_html__( 'Sign ups', 'wp-user-signups' ), esc_html__( 'Sign ups', 'wp-user-signups' ), 'manage_network_signups', 'network_user_signups', 'wp_user_signups_output_network_list_page', 'dashicons-flag', 11 );
+		$hooks[] = add_submenu_page( 'network_user_signups', esc_html__( 'Add New', 'wp-user-signups' ), esc_html__( 'Add New', 'wp-user-signups' ), 'edit_user_signups',      'user_signup_edit',     'wp_user_signups_output_edit_page'                                   );
 
-	// Blog admin page
-	} elseif ( is_blog_admin() ) {
-		$hooks[] = add_users_page( esc_html__( 'Sign ups', 'wp-user-signups' ), esc_html__( 'Sign ups', 'wp-user-signups' ), 'manage_signups', 'user_signups',     'wp_user_signups_output_list_page' );
-		$hooks[] = add_users_page( esc_html__( 'Sign ups', 'wp-user-signups' ), esc_html__( 'Sign ups', 'wp-user-signups' ), 'edit_signups',   'user_signup_edit', 'wp_user_signups_output_edit_page' );
-		remove_submenu_page( 'users.php', 'user_signup_edit' );
-	}
+		//remove_submenu_page( 'users.php', 'user_signup_edit' );
 
-	// Load the list table
-	foreach ( $hooks as $hook ) {
-		add_action( "load-{$hook}", 'wp_user_signups_handle_actions'            );
-		add_action( "load-{$hook}", 'wp_user_signups_load_list_table'           );
-		add_action( "load-{$hook}", 'wp_user_signups_fix_hidden_menu_highlight' );
+		// Load the list table
+		foreach ( $hooks as $hook ) {
+			add_action( "load-{$hook}", 'wp_user_signups_handle_actions'            );
+			add_action( "load-{$hook}", 'wp_user_signups_load_list_table'           );
+			//add_action( "load-{$hook}", 'wp_user_signups_fix_hidden_menu_highlight' );
+		}
+
+	// New style
+	} elseif ( 'new' === $style ) {
+
+		// Network admin page
+		if ( is_network_admin() ) {
+			$hooks[] = add_submenu_page( 'sites.php', esc_html__( 'Sign ups', 'wp-user-signups' ), esc_html__( 'Sign ups', 'wp-user-signups' ), 'manage_user_signups', 'user_signups',     'wp_user_signups_output_list_page' );
+			$hooks[] = add_submenu_page( 'users.php', esc_html__( 'Sign ups', 'wp-user-signups' ), esc_html__( 'Sign ups', 'wp-user-signups' ), 'edit_user_signups',   'user_signup_edit', 'wp_user_signups_output_edit_page' );
+			remove_submenu_page( 'sites.php', 'user_signups'     );
+			remove_submenu_page( 'users.php', 'user_signup_edit' );
+
+			// Network management of all signups
+			$hooks[] = add_submenu_page( 'users.php', esc_html__( 'Sign ups', 'wp-user-signups' ), esc_html__( 'Sign ups', 'wp-user-signups' ), 'manage_network_signups', 'network_user_signups', 'wp_user_signups_output_network_list_page', 'dashicons-randomize', 6 );
+
+		// Blog admin page
+		} elseif ( is_blog_admin() ) {
+			$hooks[] = add_users_page( esc_html__( 'Sign ups', 'wp-user-signups' ), esc_html__( 'Sign ups', 'wp-user-signups' ), 'manage_signups', 'user_signups',     'wp_user_signups_output_list_page' );
+			$hooks[] = add_users_page( esc_html__( 'Sign ups', 'wp-user-signups' ), esc_html__( 'Sign ups', 'wp-user-signups' ), 'edit_signups',   'user_signup_edit', 'wp_user_signups_output_edit_page' );
+			remove_submenu_page( 'users.php', 'user_signup_edit' );
+		}
+
+		// Load the list table
+		foreach ( $hooks as $hook ) {
+			add_action( "load-{$hook}", 'wp_user_signups_handle_actions'            );
+			add_action( "load-{$hook}", 'wp_user_signups_load_list_table'           );
+			add_action( "load-{$hook}", 'wp_user_signups_fix_hidden_menu_highlight' );
+		}
 	}
 }
 
@@ -59,7 +82,7 @@ function wp_user_signups_load_list_table() {
 	$site_id = wp_user_signups_get_site_id();
 
 	// Create a new list table object
-	$wp_list_table = new WP_User_Signups_List_Table( array(
+	$wp_list_table = new WP_User_Signup_List_Table( array(
 		'site_id' => $site_id
 	) );
 
@@ -148,7 +171,7 @@ function wp_user_signups_output_page_header( $site_id ) {
 	// Site
 	else :
 		?><div class="wrap">
-			<h1 id="edit-signup"><?php esc_html_e( 'User Sign-ups', 'wp-user-signups' ); ?></h1><?php
+			<h1 id="edit-signup"><?php esc_html_e( 'Sign-ups', 'wp-user-signups' ); ?></h1><?php
 
 		// Admin notices
 		do_action( 'wp_user_signups_admin_notices' );
@@ -224,7 +247,7 @@ function wp_user_signups_handle_actions() {
 		// Bulk activate
 		case 'activate' :
 			foreach ( $signups as $signup_id ) {
-				$signup = WP_User_Signups::get( $signup_id );
+				$signup = WP_User_Signup::get( $signup_id );
 
 				// Skip erroneous signups
 				if ( is_wp_error( $signup ) ) {
@@ -244,7 +267,7 @@ function wp_user_signups_handle_actions() {
 		// Bulk resend
 		case 'resend':
 			foreach ( $signups as $signup_id ) {
-				$signup = WP_User_Signups::get( $signup_id );
+				$signup = WP_User_Signup::get( $signup_id );
 
 				// Skip erroneous signups
 				if ( is_wp_error( $signup ) ) {
@@ -269,7 +292,7 @@ function wp_user_signups_handle_actions() {
 			$args['signups'] = array();
 
 			foreach ( $signups as $signup_id ) {
-				$signup = WP_User_Signups::get( $signup_id );
+				$signup = WP_User_Signup::get( $signup_id );
 
 				// Skip erroneous signups
 				if ( is_wp_error( $signup ) ) {
@@ -307,7 +330,7 @@ function wp_user_signups_handle_actions() {
 			}
 
 			$signup_id = $signups[0];
-			$signup    = WP_User_Signups::get( $signup_id );
+			$signup    = WP_User_Signup::get( $signup_id );
 
 			if ( is_wp_error( $signup ) ) {
 				$messages[] = $signup->get_error_message();
@@ -357,15 +380,16 @@ function wp_user_signups_output_edit_page() {
 	// Edit
 	if ( ! empty( $_REQUEST['signups'] ) ) {
 		$signup_id = absint( $_REQUEST['signups'] );
-		$signup    = WP_User_Signups::get( $signup_id );
 		$action   = 'edit';
 
 	// Add
 	} else {
 		$signup_id = 0;
-		$signup    = null;
-		$action   = 'add';
+		$action    = 'add';
 	}
+
+	// Try to get a signup
+	$signup = WP_User_Signup::get( $signup_id );
 
 	// URL
 	$action_url = wp_user_signups_admin_url( array(
@@ -375,63 +399,129 @@ function wp_user_signups_output_edit_page() {
 
 	// Add
 	if ( empty( $signup ) || ! empty( $_POST['_wpnonce'] ) ) {
-		$active = ! empty( $_POST['active'] );
-		$domain = ! empty( $_POST['domain'] )
-			? wp_unslash( $_POST['domain'] )
-			: '';
+		$title = esc_html__( 'Add New Sign-up', 'wp-user-signups' );
 
 	// Edit
 	} else {
-		$active = ( 'active' === $signup->get_status() );
-		$domain = $signup->get_domain();
+		$title = esc_html__( 'Edit New Sign-up', 'wp-user-signups' );
 	}
 
 	// Output the header, maybe with network site tabs
-	wp_user_signups_output_page_header( $site_id );
+	//wp_user_signups_output_page_header( $site_id );
 
-	?><form method="post" action="<?php echo esc_url( $action_url ); ?>">
-		<table class="form-table">
-			<tr>
-				<th scope="row">
-					<label for="blog_signup"><?php echo esc_html_x( 'Domain Name', 'field name', 'wp-user-signups' ); ?></label>
-				</th>
-				<td>
-					<input type="text" class="regular-text code" name="domain" id="blog_signup" value="<?php echo esc_attr( $domain ); ?>">
-				</td>
-			</tr>
-			<tr>
-				<th scope="row">
-					<?php echo esc_html_x( 'Status', 'field name', 'wp-user-signups' ); ?>
-				</th>
-				<td>
-					<label>
-						<input type="checkbox" name="status" <?php checked( $active ); ?>>
+	?>
 
-						<?php esc_html_e( 'Active', 'wp-user-signups' ); ?>
-					</label>
-				</td>
-			</tr>
-		</table>
+	<div class="wrap">
+		<h1 id="edit-signup"><?php echo esc_html( $title ); ?></h1>
+		<form method="post" action="<?php echo esc_url( $action_url ); ?>" novalidate="novalidate">
+			<h3><?php esc_html_e( 'User', 'wp-user-signups' ); ?></h3>
+			<p><?php esc_html_e( 'These details are for registering a new user.', 'wp-user-signups' ); ?></p>
+			<table class="form-table">
+				<tbody>
+					<tr>
+						<th scope="row">
+							<label for="user_login"><?php echo esc_html_x( 'User Login', 'User signup', 'wp-user-signups' ); ?></label>
+						</th>
+						<td>
+							<input type="text" class="regular-text" name="user_login" id="user_login" value="<?php echo esc_attr( $signup->user_login ); ?>">
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">
+							<label for="user_email"><?php echo esc_html_x( 'User Email', 'User signup', 'wp-user-signups' ); ?></label>
+						</th>
+						<td>
+							<input type="text" class="regular-text" name="user_email" id="user_email" value="<?php echo esc_attr( $signup->user_email ); ?>">
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">
+							<label for="registered"><?php echo esc_html_x( 'Registered', 'User signup', 'wp-user-signups' ); ?></label>
+						</th>
+						<td>
+							<input type="text" class="regular-text code" name="registered" id="registered" value="<?php echo esc_attr( $signup->registered ); ?>">
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">
+							<label for="activated"><?php echo esc_html_x( 'Activated', 'User signup', 'wp-user-signups' ); ?></label>
+						</th>
+						<td>
+							<input type="text" class="regular-text code" name="activated" id="activated" value="<?php echo esc_attr( $signup->activated ); ?>">
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">
+							<label for="active"><?php echo esc_html_x( 'Status', 'User signup', 'wp-user-signups' ); ?></label>
+						</th>
+						<td>
+							<select name="active" id="active">
+								<option value="0" <?php selected( false, (bool) $signup->active ); ?>><?php esc_html_e( 'Pending',   'wp-user-signups' ); ?></option>
+								<option value="1" <?php selected( true,  (bool) $signup->active ); ?>><?php esc_html_e( 'Activated', 'wp-user-signups' ); ?></option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">
+							<label for="activation_key"><?php echo esc_html_x( 'Activation Key', 'User signup', 'wp-user-signups' ); ?></label>
+						</th>
+						<td>
+							<input type="text" class="regular-text code" name="activation_key" id="activation_key" value="<?php echo esc_attr( $signup->activation_key ); ?>">
+						</td>
+					</tr>
+				</tbody>
+			</table>
 
-		<input type="hidden" name="action"  value="<?php echo esc_attr( $action   ); ?>">
-		<input type="hidden" name="id"      value="<?php echo esc_attr( $site_id  ); ?>">
-		<input type="hidden" name="signups" value="<?php echo esc_attr( $signup_id ); ?>"><?php
+			<h3><?php esc_html_e( 'Site', 'wp-user-signups' ); ?></h3>
+			<p><?php esc_html_e( 'These details are for registering a new site at the same time as a user.', 'wp-user-signups' ); ?></p>
+			<table class="form-table">
+				<tbody>
+					<tr>
+						<th scope="row">
+							<label for="domain"><?php echo esc_html_x( 'Domain', 'User signup', 'wp-user-signups' ); ?></label>
+						</th>
+						<td>
+							<input type="text" class="regular-text" name="domain" id="domain" value="<?php echo esc_attr( $signup->domain ); ?>">
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">
+							<label for="path"><?php echo esc_html_x( 'Path', 'User signup', 'wp-user-signups' ); ?></label>
+						</th>
+						<td>
+							<input type="text" class="regular-text" name="path" id="path" value="<?php echo esc_attr( $signup->path ); ?>">
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">
+							<label for="title"><?php echo esc_html_x( 'Title', 'User signup', 'wp-user-signups' ); ?></label>
+						</th>
+						<td>
+							<input type="text" class="regular-text" name="title" id="title" value="<?php echo esc_attr( $signup->title ); ?>">
+						</td>
+					</tr>
+				</tbody>
+			</table>
 
-		// Add
-		if ( 'add' === $action ) {
-			wp_nonce_field( "user_signup_add-{$site_id}" );
-			$submit_text = esc_html__( 'Add Signup', 'wp-user-signups' );
+			<input type="hidden" name="action"  value="<?php echo esc_attr( $action   ); ?>">
+			<input type="hidden" name="id"      value="<?php echo esc_attr( $site_id  ); ?>">
+			<input type="hidden" name="signups" value="<?php echo esc_attr( $signup_id ); ?>"><?php
 
-		// Edit
-		} else {
-			wp_nonce_field( "user_signup_edit-{$site_id}" );
-			$submit_text = esc_html__( 'Save Signup', 'wp-user-signups' );
-		}
+			// Add
+			if ( 'add' === $action ) {
+				wp_nonce_field( "user_signup_add-{$site_id}" );
+				$submit_text = esc_html__( 'Add Signup', 'wp-user-signups' );
 
-		// Submit button
-		submit_button( $submit_text );
+			// Edit
+			} else {
+				wp_nonce_field( "user_signup_edit-{$site_id}" );
+				$submit_text = esc_html__( 'Save Signup', 'wp-user-signups' );
+			}
 
-	?></form><?php
+			// Submit button
+			submit_button( $submit_text );
+
+		?></form><?php
 
 	// Footer
 	wp_user_signups_output_page_footer();
@@ -478,7 +568,7 @@ function wp_user_signups_output_network_list_page() {
 	$form_url = wp_user_signups_admin_url( array( 'page' => 'user_signups' ) );
 
 	?><div class="wrap">
-		<h1 id="edit-signup"><?php esc_html_e( 'User Sign-ups', 'wp-user-signups' ); ?></h1>
+		<h1 id="edit-signup"><?php esc_html_e( 'Sign-ups', 'wp-user-signups' ); ?></h1>
 
 		<div class="form-wrap">
 			<?php $wp_list_table->views(); ?>
@@ -508,17 +598,17 @@ function wp_user_signups_output_admin_notices() {
 	}
 
 	$did_action = sanitize_key( $_REQUEST['did_action'] );
-	$processed  = ! empty( $_REQUEST['processed'] ) ? wp_parse_id_list( (array) $_REQUEST['processed'] ) : array();
-	$processed  = array_map( 'absint', $processed );
+	$processed  = ! empty( $_REQUEST['processed'] )
+		? wp_parse_id_list( (array) $_REQUEST['processed'] )
+		: array();
 
 	// Special case for single, as it's not really a "bulk" action
 	if ( $processed === 1 ) {
 		$bulk_messages = array(
-			'activate'   => esc_html__( 'Activated %s',   'wp-user-signups' ),
-			'deactivate' => esc_html__( 'Deactivated %s', 'wp-user-signups' ),
-			'delete'     => esc_html__( 'Deleted %s',     'wp-user-signups' ),
-			'add'        => esc_html__( 'Added %s',       'wp-user-signups' ),
-			'edit'       => esc_html__( 'Updated %s',     'wp-user-signups' ),
+			'activate' => esc_html__( 'Activated %s', 'wp-user-signups' ),
+			'delete'   => esc_html__( 'Deleted %s',   'wp-user-signups' ),
+			'add'      => esc_html__( 'Added %s',     'wp-user-signups' ),
+			'edit'     => esc_html__( 'Updated %s',   'wp-user-signups' )
 		);
 
 		if ( 'delete' === $did_action ) {
@@ -526,7 +616,7 @@ function wp_user_signups_output_admin_notices() {
 				? $_REQUEST['domains'][0]
 				: array();
 		} else {
-			$signup  = WP_User_Signups::get( $processed[0] );
+			$signup  = WP_User_Signup::get( $processed[0] );
 			$domain = $signup->get_domain();
 		}
 
@@ -538,11 +628,10 @@ function wp_user_signups_output_admin_notices() {
 		$count         = count( $processed );
 		$placeholder   = number_format_i18n( $count );
 		$bulk_messages = array(
-			'activate'   => _n( '%s signup activated.',   '%s signups activated.',   $count, 'wp-user-signups' ),
-			'deactivate' => _n( '%s signup deactivated.', '%s signups deactivated.', $count, 'wp-user-signups' ),
-			'delete'     => _n( '%s signup deleted.',     '%s signups deleted.',     $count, 'wp-user-signups' ),
-			'add'        => _n( '%s signup added.',       '%s signups added.',       $count, 'wp-user-signups' ),
-			'edit'       => _n( '%s signup updated.',     '%s signups updated.',     $count, 'wp-user-signups' )
+			'activate' => _n( '%s signup activated.', '%s signups activated.', $count, 'wp-user-signups' ),
+			'delete'   => _n( '%s signup deleted.',   '%s signups deleted.',   $count, 'wp-user-signups' ),
+			'add'      => _n( '%s signup added.',     '%s signups added.',     $count, 'wp-user-signups' ),
+			'edit'     => _n( '%s signup updated.',   '%s signups updated.',   $count, 'wp-user-signups' )
 		);
 	}
 
