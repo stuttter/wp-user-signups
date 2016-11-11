@@ -70,7 +70,7 @@ class WP_User_Signup {
 	public static function validate( $params = array() ) {
 
 		// Whitelist keys
-		$params = array_intersect_key( $params, array(
+		$r = array_intersect_key( $params, array(
 			'domain'         => '',
 			'path'           => '/',
 			'title'          => '',
@@ -80,45 +80,57 @@ class WP_User_Signup {
 			'activated'      => '',
 			'active'         => '',
 			'activation_key' => '',
-			'meta'           => array()
+			'meta'           => ''
 		) );
 
+		// Get current date for use in `registered` and `activated` values
+		$now = date( 'Y-m-d H:i:s' );
+
 		// User login
-		if ( isset( $params['user_login'] ) ) {
-			$params['user_login'] = preg_replace( '/\s+/', '', sanitize_user( $params['user_login'], true ) );
+		if ( isset( $r['user_login'] ) ) {
+			$r['user_login'] = preg_replace( '/\s+/', '', sanitize_user( $r['user_login'], true ) );
 		}
 
 		// Sanitize email
-		if ( isset( $params['user_email'] ) ) {
-			$params['user_email'] = sanitize_email( $params['user_email'] );
+		if ( isset( $r['user_email'] ) ) {
+			$r['user_email'] = sanitize_email( $r['user_email'] );
 		}
 
 		// Registered date
-		if ( isset( $params['registered'] ) ) {
-			$params['registered'] = date( 'Y-m-d H:i:s', strtotime( $params['registered'] ) );
+		if ( ! empty( $r['registered'] ) ) {
+			$r['registered'] = date( 'Y-m-d H:i:s', strtotime( $r['registered'] ) );
+		} else {
+			$r['registered'] = $now;
 		}
 
 		// Activated date
-		if ( isset( $params['activated'] ) ) {
-			$params['activated'] = date( 'Y-m-d H:i:s', strtotime( $params['activated'] ) );
+		if ( ! empty( $r['activated'] ) && ( '0000-00-00 00:00:00' !== $r['activated'] ) ) {
+			$r['activated'] = date( 'Y-m-d H:i:s', strtotime( $r['activated'] ) );
+		} else {
+			$r['activated'] = '0000-00-00 00:00:00';
 		}
 
 		// Activated
-		if ( isset( $params['active'] ) ) {
-			$params['active'] = (int) $params['active'];
+		if ( isset( $r['active'] ) ) {
+			$r['active'] = (int) $r['active'];
+
+			// Set activated to now if activating for the first time
+			if ( ! empty( $r['active'] ) && ( '0000-00-00 00:00:00' === $r['activated'] ) ) {
+				$r['activated'] = $now;
+			}
 		}
 
 		// Activation key
-		if ( empty( $params['activation_key'] ) && isset( $params['user_email'] ) ) {
-			$params['activation_key'] = substr( md5( time() . rand() . $params['user_email'] ), 0, 16 );
+		if ( empty( $r['activation_key'] ) && isset( $r['user_email'] ) ) {
+			$r['activation_key'] = substr( md5( time() . rand() . $r['user_email'] ), 0, 16 );
 		}
 
 		// Meta array (this is wack)
-		if ( isset( $params['meta'] ) ) {
-			$params['meta'] = maybe_serialize( $params['meta'] );
+		if ( isset( $r['meta'] ) ) {
+			$r['meta'] = maybe_serialize( $r['meta'] );
 		}
 
-		return $params;
+		return $r;
 	}
 
 	/**
@@ -249,18 +261,17 @@ class WP_User_Signup {
 			return new WP_Error( 'wp_user_signups_invalid_id' );
 		}
 
-		$signup = absint( $signup );
-
 		// Suppress errors in case the table doesn't exist
 		$suppress = $wpdb->suppress_errors();
-		$signup   = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->signups} WHERE signup_id = %d", $signup ) );
-
+		$signup   = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->signups} WHERE signup_id = %d", absint( $signup ) ) );
 		$wpdb->suppress_errors( $suppress );
 
+		// No signup
 		if ( empty( $signup ) ) {
 			return new static();
 		}
 
+		// Signup exists
 		return new static( $signup );
 	}
 
