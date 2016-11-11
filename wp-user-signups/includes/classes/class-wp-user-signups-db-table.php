@@ -86,8 +86,6 @@ final class WP_User_Signup_DB {
 	 * Install this plugin on a specific site
 	 *
 	 * @since 1.0.0
-	 *
-	 * @param int $site_id
 	 */
 	public function install() {
 		$this->upgrade_database();
