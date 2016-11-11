@@ -1,9 +1,9 @@
 <?php
 
 /**
- * User Signups Cache
+ * User Sign-ups Cache
  *
- * @package Plugins/Site/Aliases/Cache
+ * @package Plugins/User/Signups/Cache
  */
 
 // Exit if accessed directly

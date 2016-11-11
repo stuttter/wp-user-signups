@@ -15,16 +15,40 @@ defined( 'ABSPATH' ) || exit;
 final class WP_User_Signup_List_Table extends WP_List_Table {
 
 	/**
+	 * Which status is selected
+	 *
+	 * @since 1.0.0
+	 *
+	 * @var int
+	 */
+	public $active = 0;
+
+	/**
+	 * Set some variables on construct
+	 *
+	 * @since 1.0.0
+	 */
+	public function __construct() {
+		$this->active = (int) ! empty( $_GET['active'] );
+
+		parent::__construct();
+
+		$this->_args['site_id'] = wp_user_signups_get_site_id();
+	}
+
+	/**
 	 * Prepare items for the list table
 	 *
 	 * @since 1.0.0
 	 */
 	public function prepare_items() {
-		$this->items = array();
+
+		// Query for signups
 		$query = new WP_User_Signup_Query( array(
-			'active' => 0
+			'active' => (int) $this->active
 		) );
 
+		// Set items if any are found
 		if ( ! empty( $query->signups ) && ! is_wp_error( $query->signups ) ) {
 			$this->items = $query->signups;
 		}
@@ -159,17 +183,31 @@ final class WP_User_Signup_List_Table extends WP_List_Table {
 	 */
 	protected function get_views() {
 
+		// Get statuses
 		$view_links = array();
 		$statuses   = wp_user_signups_get_statuses();
 
 		// Loop through statuses
 		foreach ( $statuses as $status ) {
-			$url = wp_user_signups_admin_url( array(
-				'status' => $status->id
-			) );
-			$view_links[ $status->id ] = "<a href='" . esc_url( $url ) . "'>" . sprintf( _nx( $status->name . ' <span class="count">(%s)</span>', $status->name . ' <span class="count">(%s)</span>', 0, 'users' ), number_format_i18n( 0 ) ) . '</a>';
+
+			// Current class
+			$class = ( $status->value === $this->active )
+				? 'current'
+				: '';
+
+			// Status args
+			$args = ( 'activated' === $status->id )
+				? array( 'active' => (int) $status->value )
+				: array();
+
+			// Build the URL for the status
+			$url = wp_user_signups_admin_url( $args );
+
+			// Add link to array
+			$view_links[ $status->id ] = "<a href='" . esc_url( $url ) . "' class='" . esc_attr( $class ) . "'>" . sprintf( _nx( $status->name . ' <span class="count">(%s)</span>', $status->name . ' <span class="count">(%s)</span>', $status->count, 'users' ), number_format_i18n( $status->count ) ) . '</a>';
 		}
 
+		// Return links
 		return $view_links;
 	}
 

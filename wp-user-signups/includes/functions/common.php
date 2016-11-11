@@ -39,16 +39,35 @@ function wp_user_signups_is_network_edit() {
  * @return array
  */
 function wp_user_signups_get_statuses() {
+
+	// Pending count
+	$query = new WP_User_Signup_Query();
+
+	// Pending
+	$pending = $query->query( array(
+		'count'  => true,
+		'active' => 0
+	) );
+
+	// Activated count
+	$activated = $query->query( array(
+		'count'  => true,
+		'active' => 1
+	) );
+
+	// Filter and return
 	return apply_filters( 'wp_user_signups_get_statuses', array(
 		(object) array(
 			'id'    => 'pending',
 			'value' => 0,
-			'name'  => _x( 'Pending', 'User sign-ups', 'wp-user-signups' )
+			'name'  => _x( 'Pending', 'User sign-ups', 'wp-user-signups' ),
+			'count' => $pending
 		),
 		(object) array(
 			'id'    => 'activated',
 			'value' => 1,
-			'name'  => _x( 'Activated', 'User sign-ups', 'wp-user-signups' )
+			'name'  => _x( 'Activated', 'User sign-ups', 'wp-user-signups' ),
+			'count' => $activated
 		),
 	) );
 }

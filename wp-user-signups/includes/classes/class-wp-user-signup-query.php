@@ -293,7 +293,7 @@ class WP_User_Signup_Query {
 		}
 
 		$cache_key   = "get_user_signups:{$key}:{$last_changed}";
-		$cache_value = wp_cache_get( $cache_key, 'user_signups' );
+		$cache_value = false; //wp_cache_get( $cache_key, 'user_signups' );
 
 		if ( false === $cache_value ) {
 			$signup_ids = $this->get_signup_ids();
@@ -504,8 +504,8 @@ class WP_User_Signup_Query {
 			$this->sql_clauses['where']['user_email__not_in'] = "us.user_email NOT IN ( '" . implode( "', '", $this->db->_escape( $this->query_vars['user_email__not_in'] ) ) . "' )";
 		}
 
-		if ( ! empty( $this->query_vars['active'] ) ) {
-			$this->sql_clauses['where']['active'] = $this->db->prepare( 'us.active = %d', $this->query_vars['active'] );
+		if ( isset( $this->query_vars['active'] ) ) {
+			$this->sql_clauses['where']['active'] = $this->db->prepare( 'us.active = %d', (int) $this->query_vars['active'] );
 		}
 
 		// Falsey search strings are ignored.
