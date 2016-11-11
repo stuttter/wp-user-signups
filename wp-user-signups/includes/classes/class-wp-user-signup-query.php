@@ -293,7 +293,7 @@ class WP_User_Signup_Query {
 		}
 
 		$cache_key   = "get_user_signups:{$key}:{$last_changed}";
-		$cache_value = false; //wp_cache_get( $cache_key, 'user_signups' );
+		$cache_value = wp_cache_get( $cache_key, 'user_signups' );
 
 		if ( false === $cache_value ) {
 			$signup_ids = $this->get_signup_ids();
