@@ -92,7 +92,7 @@ class WP_User_Signup {
 
 		// Update internal state
 		foreach ( $fields as $key => $val ) {
-			$this->{$key} = $val;
+			$this->data->{$key} = $val;
 		}
 
 		// Update the sign-up cache

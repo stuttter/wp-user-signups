@@ -634,25 +634,23 @@ function wp_user_signups_output_admin_notices() {
 		: array();
 
 	// Special case for single, as it's not really a "bulk" action
-	if ( $processed === 1 ) {
+	if ( count( $processed ) === 1 ) {
 		$bulk_messages = array(
-			'activated' => esc_html__( 'Activated %s', 'wp-user-signups' ),
-			'resend'    => esc_html__( 'Resent %s',    'wp-user-signups' ),
-			'deleted'   => esc_html__( 'Deleted %s',   'wp-user-signups' ),
-			'add'       => esc_html__( 'Added %s',     'wp-user-signups' ),
-			'edit'      => esc_html__( 'Updated %s',   'wp-user-signups' )
+			'activate' => esc_html__( 'Activated %s', 'wp-user-signups' ),
+			'resend'   => esc_html__( 'Resent to %s', 'wp-user-signups' ),
+			'deleted'  => esc_html__( 'Deleted %s',   'wp-user-signups' ),
+			'add'      => esc_html__( 'Added %s',     'wp-user-signups' ),
+			'edit'     => esc_html__( 'Updated %s',   'wp-user-signups' )
 		);
 
-		if ( 'delete' === $did_action ) {
-			$domain = ! empty( $_REQUEST['domains'] )
-				? $_REQUEST['domains'][0]
-				: array();
+		if ( 'deleted' === $did_action ) {
+			$email = '';
 		} else {
-			$signup  = WP_User_Signup::get( $processed[0] );
-			$domain = $signup->get_domain();
+			$signup = WP_User_Signup::get( $processed[0] );
+			$email  = $signup->user_email;
 		}
 
-		$placeholder = '<code>' . esc_html( $domain ) . '</code>';
+		$placeholder = '<code>' . esc_html( $email ) . '</code>';
 
 	// Note: we still use _n for languages which have special cases on
 	// e.g. 3, 5, 10, etc
@@ -660,11 +658,11 @@ function wp_user_signups_output_admin_notices() {
 		$count         = count( $processed );
 		$placeholder   = number_format_i18n( $count );
 		$bulk_messages = array(
-			'activated' => _n( '%s signup activated.', '%s signups activated.', $count, 'wp-user-signups' ),
-			'resend'    => _n( '%s signup resent.',    '%s signups resent.',    $count, 'wp-user-signups' ),
-			'deleted'   => _n( '%s signup deleted.',   '%s signups deleted.',   $count, 'wp-user-signups' ),
-			'add'       => _n( '%s signup added.',     '%s signups added.',     $count, 'wp-user-signups' ),
-			'edit'      => _n( '%s signup updated.',   '%s signups updated.',   $count, 'wp-user-signups' )
+			'activate' => _n( '%s signup activated.', '%s signups activated.', $count, 'wp-user-signups' ),
+			'resend'   => _n( '%s signup resent.',    '%s signups resent.',    $count, 'wp-user-signups' ),
+			'deleted'  => _n( '%s signup deleted.',   '%s signups deleted.',   $count, 'wp-user-signups' ),
+			'add'      => _n( '%s signup added.',     '%s signups added.',     $count, 'wp-user-signups' ),
+			'edit'     => _n( '%s signup updated.',   '%s signups updated.',   $count, 'wp-user-signups' )
 		);
 	}
 
