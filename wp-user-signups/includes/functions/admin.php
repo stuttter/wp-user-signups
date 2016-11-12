@@ -27,7 +27,7 @@ function wp_user_signups_add_menu_item() {
 
 		// Network management of all signups
 		$hooks[] = add_menu_page( esc_html__( 'Sign ups', 'wp-user-signups' ), esc_html__( 'Sign ups', 'wp-user-signups' ), 'manage_network_signups', 'network_user_signups', 'wp_user_signups_output_network_list_page', 'dashicons-flag', 11 );
-		$hooks[] = add_submenu_page( 'network_user_signups', esc_html__( 'Add New', 'wp-user-signups' ), esc_html__( 'Add New', 'wp-user-signups' ), 'edit_user_signups',      'user_signup_edit',     'wp_user_signups_output_edit_page'                                   );
+		$hooks[] = add_submenu_page( 'network_user_signups', esc_html__( 'Add New Signup', 'wp-user-signups' ), esc_html__( 'Add New', 'wp-user-signups' ), 'edit_user_signups',      'user_signup_edit',     'wp_user_signups_output_edit_page'                                   );
 
 		// Remove if user cannot create
 		if ( ! current_user_can( 'create_user_signups' ) ) {
