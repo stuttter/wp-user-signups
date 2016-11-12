@@ -287,17 +287,8 @@ class WP_User_Signup {
 		 */
 		do_action( 'wp_user_signups_created', $signup );
 
-		/**
-		 * Fires after a user's signup information has been written to the database.
-		 *
-		 * @since 4.4.0
-		 *
-		 * @param string $user       The user's requested login name.
-		 * @param string $user_email The user's email address.
-		 * @param string $key        The user's activation key
-		 * @param array  $meta       Additional signup meta. By default, this is an empty array.
-		 */
-		do_action( 'after_signup_user', $signup->user_login, $signup->user_email, $signup->key, $signup->meta );
+		// Sent notifications
+		$signup->notify();
 
 		return $signup;
 	}
@@ -345,11 +336,14 @@ class WP_User_Signup {
 		// Get the current time, we'll use it in a few places
 		$now = current_time( 'mysql', true );
 
-		// Update the signup
-		$this->update( array(
+		// Parse args
+		$args = wp_parse_args( array(
 			'active'    => 1,
-			'activated' => $now
-		) );
+			'activated' => $now,			
+		), (array) $this->data );
+
+		// Update the signup
+		$this->update( $args );
 
 		// Default return value
 		$retval = array(
@@ -406,6 +400,49 @@ class WP_User_Signup {
 		}
 
 		return $retval;
+	}
+
+	/**
+	 * Execute actions responsible for triggering notification emails to users
+	 * who have signed up for accounts, maybe with a new site too.
+	 *
+	 * @since 1.0.0
+	 */
+	public function notify() {
+
+		// Site action
+		if ( ! empty( $this->domain ) && ! empty( $this->path ) ) {
+
+			/**
+			 * Fires after site signup information has been written to the database.
+			 *
+			 * @since 4.4.0
+			 *
+			 * @param string $domain     The requested domain.
+			 * @param string $path       The requested path.
+			 * @param string $title      The requested site title.
+			 * @param string $user       The user's requested login name.
+			 * @param string $user_email The user's email address.
+			 * @param string $key        The user's activation key
+			 * @param array  $meta       By default, contains the requested privacy setting and lang_id.
+			 */
+			do_action( 'after_signup_site', $this->domain, $this->path, $this->title, $this->user_login, $this->user_email, $this->key, $this->meta );
+
+		// User action
+		} else {
+
+			/**
+			 * Fires after a user's signup information has been written to the database.
+			 *
+			 * @since 4.4.0
+			 *
+			 * @param string $user       The user's requested login name.
+			 * @param string $user_email The user's email address.
+			 * @param string $key        The user's activation key
+			 * @param array  $meta       Additional signup meta. By default, this is an empty array.
+			 */
+			do_action( 'after_signup_user', $this->user_login, $this->user_email, $this->key, $this->meta );
+		}
 	}
 
 	/**
@@ -469,8 +506,20 @@ class WP_User_Signup {
 		}
 
 		// Activation key
-		if ( empty( $r['activation_key'] ) && isset( $r['user_email'] ) ) {
-			$r['activation_key'] = substr( md5( time() . rand() . $r['user_email'] ), 0, 16 );
+		if ( empty( $r['activation_key'] ) ) {
+
+			$base = false;
+
+			// Site & User keys are based on different things
+			if ( ! empty( $r['domain'] ) && ! empty( $r['path'] ) ) {
+				$base = $r['domain'];
+			} elseif ( ! empty( $r['user_email'] ) ) {
+				$base = $r['user_email'];
+			}
+
+			if ( ! empty( $base ) ) {
+				$r['activation_key'] = substr( md5( time() . rand() . $base ), 0, 16 );
+			}
 		}
 
 		// Meta array (this is wack)

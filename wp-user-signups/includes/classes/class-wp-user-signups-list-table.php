@@ -278,7 +278,7 @@ final class WP_User_Signup_List_Table extends WP_List_Table {
 		// Resend
 		$resend_args           = $args;
 		$resend_args['action'] = 'resend';
-		$resend_link           = wp_user_signups_admin_url( $args );
+		$resend_link           = wp_user_signups_admin_url( $resend_args );
 
 		// Delete
 		$delete_args           = $args;

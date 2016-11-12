@@ -203,12 +203,18 @@ function wp_user_signups_output_page_footer() {
 function wp_user_signups_handle_actions() {
 
 	// Bail if no action
-	if ( empty( $_REQUEST['action'] ) ) {
+	if ( ! empty( $_REQUEST['action'] ) && empty(  $_REQUEST['bulk_action2'] ) ) {
+		$request_action = $_REQUEST['action'];
+	} elseif ( ! empty( $_REQUEST['bulk_action'] ) ) {
+		$request_action = $_REQUEST['bulk_action'];
+	} elseif ( ! empty( $_REQUEST['bulk_action2'] ) ) {
+		$request_action = $_REQUEST['bulk_action2'];
+	} else {
 		return;
 	}
 
 	// Get action
-	$action      = sanitize_key( $_REQUEST['action'] );
+	$action      = sanitize_key( $request_action );
 	$site_id     = wp_user_signups_get_site_id();
 	$redirect_to = remove_query_arg( array( 'did_action', 'processed', 'signups', '_wpnonce' ), wp_get_referer() );
 
@@ -225,21 +231,21 @@ function wp_user_signups_handle_actions() {
 
 	// Redirect args
 	if ( is_network_admin() ) {
-		if ( ! empty( $site_id ) ) {
+		if ( wp_user_signups_is_network_list() ) {
+			$args = array(
+				'page'       => 'network_user_signups',
+				'did_action' => $action
+			);
+		} else {
 			$args = array(
 				'page'       => 'user_signups',
 				'id'         => $site_id,
 				'did_action' => $action
 			);
-		} else {
-			$args = array(
-				'page'       => 'network_user_signups',
-				'did_action' => $action
-			);
 		}
 	} else {
 		$args = array(
-			'page'       => 'user_signups',
+			'page'       => 'network_user_signups',
 			'did_action' => $action
 		);
 	}
@@ -278,15 +284,8 @@ function wp_user_signups_handle_actions() {
 				}
 
 				// Resend activation emails
-				$resent = $signup->update( array(
-					'active'    => 1,
-					'activated' => date( 'Y-m-d H:i:s' )
-				) );
-
-				// Process switch
-				if ( $signup->set_status( 'inactive' ) ) {
-					$processed[] = $signup_id;
-				}
+				$signup->notify();
+				$processed[] = $signup_id;
 			}
 			break;
 
@@ -574,7 +573,7 @@ function wp_user_signups_output_network_list_page() {
 	global $wp_list_table;
 
 	// Action URLs
-	$form_url = wp_user_signups_admin_url( array( 'page' => 'user_signups' ) );
+	$form_url = wp_user_signups_admin_url( array( 'page' => 'network_user_signups' ) );
 
 	// With "Add new" link
 	if ( current_user_can( 'create_user_signups' ) ) {
