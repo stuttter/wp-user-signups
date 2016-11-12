@@ -36,9 +36,9 @@ function wp_user_signups_add_menu_item() {
 
 		// Load the list table
 		foreach ( $hooks as $hook ) {
-			add_action( "load-{$hook}", 'wp_user_signups_handle_actions'            );
-			add_action( "load-{$hook}", 'wp_user_signups_load_list_table'           );
-			//add_action( "load-{$hook}", 'wp_user_signups_fix_hidden_menu_highlight' );
+			add_action( "load-{$hook}", 'wp_user_signups_handle_actions'     );
+			add_action( "load-{$hook}", 'wp_user_signups_load_list_table'    );
+			add_action( "load-{$hook}", 'wp_user_signups_add_screen_options' );
 		}
 
 	// New style
@@ -68,6 +68,22 @@ function wp_user_signups_add_menu_item() {
 			add_action( "load-{$hook}", 'wp_user_signups_fix_hidden_menu_highlight' );
 		}
 	}
+}
+
+/**
+ * Add screen options, mostly for pagination
+ *
+ * @since 1.0.0
+ */
+function wp_user_signups_add_screen_options() {
+	add_screen_option( 
+		'per_page',
+		array(
+			'default' => 20,
+			'option' => 'edit_user_signups_per_page',
+			'label'   => _x( 'Sign ups', 'Signups per page (screen options)' )
+		)
+	);
 }
 
 /**
