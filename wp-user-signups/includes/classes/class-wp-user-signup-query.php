@@ -204,7 +204,7 @@ class WP_User_Signup_Query {
 			'key__not_in'        => '',
 			'number'             => 100,
 			'offset'             => '',
-			'orderby'            => 'id',
+			'orderby'            => 'signup_id',
 			'order'              => 'ASC',
 			'search'             => '',
 			'search_columns'     => array(),
@@ -682,6 +682,7 @@ class WP_User_Signup_Query {
 
 		switch ( $orderby ) {
 			case 'id':
+			case 'signup_id':
 				$parsed = 'us.signup_id';
 				break;
 			case 'signup__in':

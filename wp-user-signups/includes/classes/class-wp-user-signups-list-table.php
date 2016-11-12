@@ -43,15 +43,33 @@ final class WP_User_Signup_List_Table extends WP_List_Table {
 	 */
 	public function prepare_items() {
 
+		// Orderby
+		$orderby = isset( $_GET['orderby'] )
+			? sanitize_key( $_GET['orderby'] )
+			: '';
+
+		// Orderby
+		$order = isset( $_GET['order'] )
+			? sanitize_key( $_GET['order'] )
+			: 'asc';
+
 		// Query for signups
 		$query = new WP_User_Signup_Query( array(
-			'active' => (int) $this->active
+			'active'  => (int) $this->active,
+			'orderby' => $orderby,
+			'order'   => $order
 		) );
 
 		// Set items if any are found
 		if ( ! empty( $query->signups ) && ! is_wp_error( $query->signups ) ) {
 			$this->items = $query->signups;
 		}
+
+		// Pagination
+		$this->set_pagination_args( array(
+			'total_items' => $query->found_user_signups,
+			'per_page'    => $this->get_items_per_page( 'edit_user_signups_per_page' )
+		) );
 	}
 
 	/**
@@ -69,6 +87,21 @@ final class WP_User_Signup_List_Table extends WP_List_Table {
 			'activation_key' => _x( 'Key',        'wp-user-signups' ),
 			'registered'     => _x( 'Registered', 'wp-user-signups' ),
 			'activated'      => _x( 'Activated',  'wp-user-signups' )
+		);
+	}
+
+	/**
+	 * Return sortable columns
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return array
+	 */
+	public function get_sortable_columns() {
+		return array(
+			'user'       => 'user_login',
+			'registered' => 'registered',
+			'activated'  => 'activated'
 		);
 	}
 
