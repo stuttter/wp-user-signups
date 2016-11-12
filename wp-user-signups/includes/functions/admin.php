@@ -508,9 +508,37 @@ function wp_user_signups_output_edit_page() {
 						</td>
 					</tr>
 				</tbody>
-			</table>
+			</table><?php
 
-			<input type="textarea" name="meta"      value="<?php echo maybe_unserialize( $signup->meta ); ?>">
+			// Meta unserialize
+			$metas = (array) maybe_unserialize( $signup->meta );
+
+			// Meta
+			if ( ! empty( $metas ) ) : ?>
+
+				<h3><?php esc_html_e( 'Meta', 'wp-user-signups' ); ?></h3>
+				<p><?php esc_html_e( 'These details are extras, usually set to help with activation.', 'wp-user-signups' ); ?></p>
+				<table class="form-table">
+					<tbody>
+
+						<?php foreach ( $metas as $key => $value ) : ?>
+
+							<tr>
+								<th scope="row">
+									<label for="meta[<?php echo esc_attr( $key ); ?>]"><?php echo esc_html( $key ); ?></label>
+								</th>
+								<td>
+									<input type="text" class="regular-text" name="meta[<?php echo esc_attr( $key ); ?>]" id="<?php echo esc_attr( $key ); ?>" value="<?php echo esc_attr( $value ); ?>">
+								</td>
+							</tr>
+
+						<?php endforeach; ?>
+
+					</tbody>
+				</table>
+
+			<?php endif; ?>
+
 			<input type="hidden"   name="action"    value="<?php echo esc_attr( $action   ); ?>">
 			<input type="hidden"   name="signup_id" value="<?php echo esc_attr( $signup_id  ); ?>">
 			<input type="hidden"   name="signups"   value="<?php echo esc_attr( $signup_id ); ?>"><?php

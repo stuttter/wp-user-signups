@@ -59,7 +59,7 @@ function wp_user_signups_admin_url( $args = array() ) {
 		: 'sites.php';
 
 	// Override for network edit
-	if ( wp_user_signups_is_network_edit() ) {
+	if ( wp_user_signups_is_network_edit() && empty( $args['page'] ) ) {
 		$file = 'admin.php';
 		$r['page'] = 'network_user_signups';
 	}

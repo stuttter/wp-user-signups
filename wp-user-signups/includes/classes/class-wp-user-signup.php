@@ -525,6 +525,15 @@ class WP_User_Signup {
 
 		// Meta array (this is wack)
 		if ( isset( $r['meta'] ) ) {
+
+			// Sanitize meta
+			if ( is_array( $r['meta'] ) ) {
+				array_walk( $r['meta'], 'sanitize_text_field' );
+			} else {
+				$r['meta'] = sanitize_text_field( $r['meta'] );
+			}
+
+			// Serialize for saving
 			$r['meta'] = maybe_serialize( $r['meta'] );
 		}
 
