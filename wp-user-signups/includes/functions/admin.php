@@ -87,6 +87,26 @@ function wp_user_signups_add_screen_options() {
 }
 
 /**
+ * Help save the per_page screen option
+ *
+ * @since 1.0.0
+ *
+ * @param string $status
+ * @param string $option
+ * @param int $value
+ *
+ * @return string
+ */
+function wp_user_signups_set_screen_option( $status, $option, $value ) {
+ 
+    if ( 'edit_user_signups_per_page' === $option ) {
+		return $value;
+	}
+ 
+    return $status;
+ 
+}
+/**
  * Load the list table and populate some essentials
  *
  * @since 1.0.0

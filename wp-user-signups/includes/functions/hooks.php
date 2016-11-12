@@ -21,6 +21,9 @@ add_filter( 'map_meta_cap', 'wp_user_signups_map_meta_cap', 10, 4 );
 add_filter( 'network_edit_site_nav_links', 'wp_user_signups_add_signups_tab'   );
 add_action( 'network_admin_menu',          'wp_user_signups_add_menu_item', 20 );
 
+// Screen Options
+add_filter( 'set-screen-option', 'wp_user_signups_set_screen_option', 10, 3 );
+
 // New Style
 //add_action( 'admin_menu',                  'wp_user_signups_add_menu_item', 30 );
 
