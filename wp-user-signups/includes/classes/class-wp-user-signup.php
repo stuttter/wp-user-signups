@@ -517,6 +517,7 @@ class WP_User_Signup {
 				$base = $r['user_email'];
 			}
 
+			// Maybe set key if base is good
 			if ( ! empty( $base ) ) {
 				$r['activation_key'] = substr( md5( time() . rand() . $base ), 0, 16 );
 			}
