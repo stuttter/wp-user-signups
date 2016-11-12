@@ -343,7 +343,12 @@ class WP_User_Signup {
 		), (array) $this->data );
 
 		// Update the signup
-		$this->update( $args );
+		$updated = $this->update( $args );
+
+		// Bail if update failed
+		if ( is_wp_error( $updated ) ) {
+			return new WP_Error( 'activation_failed', __( 'Sign up activation failed.' ), $this );
+		}
 
 		// Default return value
 		$retval = array(
