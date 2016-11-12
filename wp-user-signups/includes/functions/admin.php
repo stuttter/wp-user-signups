@@ -636,10 +636,11 @@ function wp_user_signups_output_admin_notices() {
 	// Special case for single, as it's not really a "bulk" action
 	if ( $processed === 1 ) {
 		$bulk_messages = array(
-			'activate' => esc_html__( 'Activated %s', 'wp-user-signups' ),
-			'delete'   => esc_html__( 'Deleted %s',   'wp-user-signups' ),
-			'add'      => esc_html__( 'Added %s',     'wp-user-signups' ),
-			'edit'     => esc_html__( 'Updated %s',   'wp-user-signups' )
+			'activated' => esc_html__( 'Activated %s', 'wp-user-signups' ),
+			'resend'    => esc_html__( 'Resent %s',    'wp-user-signups' ),
+			'deleted'   => esc_html__( 'Deleted %s',   'wp-user-signups' ),
+			'add'       => esc_html__( 'Added %s',     'wp-user-signups' ),
+			'edit'      => esc_html__( 'Updated %s',   'wp-user-signups' )
 		);
 
 		if ( 'delete' === $did_action ) {
@@ -659,10 +660,11 @@ function wp_user_signups_output_admin_notices() {
 		$count         = count( $processed );
 		$placeholder   = number_format_i18n( $count );
 		$bulk_messages = array(
-			'activate' => _n( '%s signup activated.', '%s signups activated.', $count, 'wp-user-signups' ),
-			'delete'   => _n( '%s signup deleted.',   '%s signups deleted.',   $count, 'wp-user-signups' ),
-			'add'      => _n( '%s signup added.',     '%s signups added.',     $count, 'wp-user-signups' ),
-			'edit'     => _n( '%s signup updated.',   '%s signups updated.',   $count, 'wp-user-signups' )
+			'activated' => _n( '%s signup activated.', '%s signups activated.', $count, 'wp-user-signups' ),
+			'resend'    => _n( '%s signup resent.',    '%s signups resent.',    $count, 'wp-user-signups' ),
+			'deleted'   => _n( '%s signup deleted.',   '%s signups deleted.',   $count, 'wp-user-signups' ),
+			'add'       => _n( '%s signup added.',     '%s signups added.',     $count, 'wp-user-signups' ),
+			'edit'      => _n( '%s signup updated.',   '%s signups updated.',   $count, 'wp-user-signups' )
 		);
 	}
 
