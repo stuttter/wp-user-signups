@@ -65,9 +65,8 @@ final class WP_User_Signup_List_Table extends WP_List_Table {
 
 		// Limit
 		$per_page = $this->get_items_per_page( 'edit_user_signups_per_page' );
-		$paged    = isset( $_GET['paged'] ) && ( (int) $_GET['paged'] > 1 )
-			? (int) $_GET['paged']
-			: 0;
+		$page_num = isset( $_GET['paged'] ) ? absint( $_GET['paged'] ) : 0;
+		$paged    = max( 1, $page_num );
 
 		// Total
 		$type  = wp_filter_object_list( $this->statuses, array( 'value' => $this->active ), 'and', 'count' );
@@ -78,7 +77,7 @@ final class WP_User_Signup_List_Table extends WP_List_Table {
 			'active'  => $this->active,
 			'orderby' => $orderby,
 			'order'   => $order,
-			'offset'  => $paged,
+			'offset'  => ( $paged * $per_page ) - $per_page,
 			'number'  => $per_page
 		) );
 
