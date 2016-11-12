@@ -24,12 +24,22 @@ final class WP_User_Signup_List_Table extends WP_List_Table {
 	public $active = 0;
 
 	/**
+	 * Array of statuses
+	 *
+	 * @since 1.0.0
+	 *
+	 * @var int
+	 */
+	public $statuses = array();
+
+	/**
 	 * Set some variables on construct
 	 *
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		$this->active = (int) ! empty( $_GET['active'] );
+		$this->statuses = wp_user_signups_get_statuses();
+		$this->active   = (int) ! empty( $_GET['active'] );
 
 		parent::__construct();
 
@@ -53,11 +63,23 @@ final class WP_User_Signup_List_Table extends WP_List_Table {
 			? sanitize_key( $_GET['order'] )
 			: 'asc';
 
+		// Limit
+		$per_page = 2;//$this->get_items_per_page( 'edit_user_signups_per_page' );
+		$paged    = isset( $_GET['paged'] ) && ( (int) $_GET['paged'] > 1 )
+			? (int) $_GET['paged']
+			: 0;
+
+		// Total
+		$type  = wp_filter_object_list( $this->statuses, array( 'value' => $this->active ) );
+		$total = $type[0]->count;
+
 		// Query for signups
 		$query = new WP_User_Signup_Query( array(
 			'active'  => (int) $this->active,
 			'orderby' => $orderby,
-			'order'   => $order
+			'order'   => $order,
+			'offset'  => $paged,
+			'number'  => $per_page
 		) );
 
 		// Set items if any are found
@@ -67,8 +89,8 @@ final class WP_User_Signup_List_Table extends WP_List_Table {
 
 		// Pagination
 		$this->set_pagination_args( array(
-			'total_items' => $query->found_user_signups,
-			'per_page'    => $this->get_items_per_page( 'edit_user_signups_per_page' )
+			'total_items' => $total,
+			'per_page'    => $per_page
 		) );
 	}
 
@@ -218,10 +240,9 @@ final class WP_User_Signup_List_Table extends WP_List_Table {
 
 		// Get statuses
 		$view_links = array();
-		$statuses   = wp_user_signups_get_statuses();
 
 		// Loop through statuses
-		foreach ( $statuses as $status ) {
+		foreach ( $this->statuses as $status ) {
 
 			// Current class
 			$class = ( $status->value === $this->active )
