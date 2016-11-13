@@ -143,11 +143,20 @@ final class WP_User_Signup_List_Table extends WP_List_Table {
 	 * @return array
 	 */
 	protected function get_bulk_actions() {
-		return apply_filters( 'wp_user_signups_bulk_actions', array(
+
+		// Default actions
+		$actions = array(
 			'activate' => esc_html__( 'Activate', 'wp-user-signups' ),
 			'resend'   => esc_html__( 'Resend',   'wp-user-signups' ),
 			'delete'   => esc_html__( 'Delete',   'wp-user-signups' )
-		) );
+		);
+
+		// Remove activate action of already viewing active sign-ups
+		if ( 1 === $this->active ) {
+			unset( $actions['activate'] );
+		}
+
+		return apply_filters( 'wp_user_signups_bulk_actions', $actions );
 	}
 
 	/**
