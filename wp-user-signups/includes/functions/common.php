@@ -17,7 +17,7 @@ defined( 'ABSPATH' ) || exit;
  * @return bool
  */
 function wp_user_signups_is_network_list() {
-	return isset( $_GET['page'] ) && ( 'network_user_signups' === $_GET['page'] );
+	return isset( $_GET['page'] ) && ( 'user_signups' === $_GET['page'] );
 }
 
 /**

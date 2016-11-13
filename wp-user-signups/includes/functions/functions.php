@@ -10,29 +10,6 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Return the site ID being modified
- *
- * @since 1.0.0
- *
- * @return int
- */
-function wp_user_signups_get_site_id() {
-
-	// Set the default
-	$default_id = is_blog_admin()
-		? get_current_blog_id()
-		: 0;
-
-	// Get site ID being requested
-	$site_id = isset( $_REQUEST['id'] )
-		? intval( $_REQUEST['id'] )
-		: $default_id;
-
-	// Return the blog ID
-	return (int) $site_id;
-}
-
-/**
  * Wrapper for admin URLs
  *
  * @since 1.0.0
@@ -47,9 +24,8 @@ function wp_user_signups_admin_url( $args = array() ) {
 
 	// Parse args
 	$r = wp_parse_args( $args, array(
-		'id'   => wp_user_signups_get_site_id(),
 		'page' => ( true === $network_signups )
-			? 'network_user_signups'
+			? 'user_signups'
 			: 'user_signups',
 	) );
 
@@ -61,18 +37,13 @@ function wp_user_signups_admin_url( $args = array() ) {
 	// Override for network edit
 	if ( wp_user_signups_is_network_edit() && empty( $args['page'] ) ) {
 		$file = 'admin.php';
-		$r['page'] = 'network_user_signups';
+		$r['page'] = 'user_signups';
 	}
 
 	// Location
 	$admin_url = is_network_admin()
 		? network_admin_url( $file )
 		: admin_url( 'index.php' );
-
-	// Unset ID if viewing network admin
-	if ( true === $network_signups ) {
-		unset( $r['id'] );
-	}
 
 	// Add query args
 	$url = add_query_arg( $r, $admin_url );

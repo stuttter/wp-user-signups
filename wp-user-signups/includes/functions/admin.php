@@ -16,18 +16,20 @@ defined( 'ABSPATH' ) || exit;
  */
 function wp_user_signups_add_menu_item() {
 
-	// Style switcher
-	$style = 'core';
-
 	// Define empty array
 	$hooks = array();
 
 	// Core style
-	if ( ( 'core' === $style ) && is_network_admin() ) {
+	if ( ( is_multisite() && is_network_admin() ) || ( ! is_multisite() && is_admin() ) ) {
+
+		// Reposition based on install type
+		$position = is_multisite()
+			? 11
+			: 70;
 
 		// Network management of all signups
-		$hooks[] = add_menu_page( esc_html__( 'Sign ups', 'wp-user-signups' ), esc_html__( 'Sign ups', 'wp-user-signups' ), 'manage_network_signups', 'network_user_signups', 'wp_user_signups_output_network_list_page', 'dashicons-flag', 11 );
-		$hooks[] = add_submenu_page( 'network_user_signups', esc_html__( 'Add New Signup', 'wp-user-signups' ), esc_html__( 'Add New', 'wp-user-signups' ), 'edit_user_signups',      'user_signup_edit',     'wp_user_signups_output_edit_page'                                   );
+		$hooks[] = add_menu_page( esc_html__( 'Sign ups', 'wp-user-signups' ), esc_html__( 'Sign ups', 'wp-user-signups' ), 'manage_user_signups', 'user_signups', 'wp_user_signups_output_list_page', 'dashicons-flag', $position );
+		$hooks[] = add_submenu_page( 'user_signups', esc_html__( 'Add New Signup', 'wp-user-signups' ), esc_html__( 'Add New', 'wp-user-signups' ), 'edit_user_signups', 'user_signup_edit', 'wp_user_signups_output_edit_page' );
 
 		// Remove if user cannot create
 		if ( ! current_user_can( 'create_user_signups' ) ) {
@@ -39,33 +41,6 @@ function wp_user_signups_add_menu_item() {
 			add_action( "load-{$hook}", 'wp_user_signups_handle_actions'     );
 			add_action( "load-{$hook}", 'wp_user_signups_load_list_table'    );
 			add_action( "load-{$hook}", 'wp_user_signups_add_screen_options' );
-		}
-
-	// New style
-	} elseif ( 'new' === $style ) {
-
-		// Network admin page
-		if ( is_network_admin() ) {
-			$hooks[] = add_submenu_page( 'sites.php', esc_html__( 'Sign ups', 'wp-user-signups' ), esc_html__( 'Sign ups', 'wp-user-signups' ), 'manage_user_signups', 'user_signups',     'wp_user_signups_output_list_page' );
-			$hooks[] = add_submenu_page( 'users.php', esc_html__( 'Sign ups', 'wp-user-signups' ), esc_html__( 'Sign ups', 'wp-user-signups' ), 'edit_user_signups',   'user_signup_edit', 'wp_user_signups_output_edit_page' );
-			remove_submenu_page( 'sites.php', 'user_signups'     );
-			remove_submenu_page( 'users.php', 'user_signup_edit' );
-
-			// Network management of all signups
-			$hooks[] = add_submenu_page( 'users.php', esc_html__( 'Sign ups', 'wp-user-signups' ), esc_html__( 'Sign ups', 'wp-user-signups' ), 'manage_network_signups', 'network_user_signups', 'wp_user_signups_output_network_list_page', 'dashicons-randomize', 6 );
-
-		// Blog admin page
-		} elseif ( is_blog_admin() ) {
-			$hooks[] = add_users_page( esc_html__( 'Sign ups', 'wp-user-signups' ), esc_html__( 'Sign ups', 'wp-user-signups' ), 'manage_signups', 'user_signups',     'wp_user_signups_output_list_page' );
-			$hooks[] = add_users_page( esc_html__( 'Sign ups', 'wp-user-signups' ), esc_html__( 'Sign ups', 'wp-user-signups' ), 'edit_signups',   'user_signup_edit', 'wp_user_signups_output_edit_page' );
-			remove_submenu_page( 'users.php', 'user_signup_edit' );
-		}
-
-		// Load the list table
-		foreach ( $hooks as $hook ) {
-			add_action( "load-{$hook}", 'wp_user_signups_handle_actions'            );
-			add_action( "load-{$hook}", 'wp_user_signups_load_list_table'           );
-			add_action( "load-{$hook}", 'wp_user_signups_fix_hidden_menu_highlight' );
 		}
 	}
 }
@@ -117,15 +92,10 @@ function wp_user_signups_load_list_table() {
 	// Include the list table class
 	require_once wp_user_signups_get_plugin_path() . 'includes/classes/class-wp-user-signups-list-table.php';
 
-	// Get site ID being requested
-	$site_id = wp_user_signups_get_site_id();
-
 	// Create a new list table object
-	$wp_list_table = new WP_User_Signup_List_Table( array(
-		'site_id' => $site_id
-	) );
+	$wp_list_table = new WP_User_Signup_List_Table();
 
-	$wp_list_table->prepare_items( $site_id );
+	$wp_list_table->prepare_items();
 }
 
 /**
@@ -142,7 +112,7 @@ function wp_user_signups_fix_hidden_menu_highlight() {
 	// Network admin
 	if ( is_network_admin() ) {
 		if ( wp_user_signups_is_network_edit() ) {
-			$parent_file  = 'network_user_signups';
+			$parent_file  = 'user_signups';
 			$submenu_file = null;
 		} elseif ( ! wp_user_signups_is_network_list() ) {
 			$parent_file  = 'sites.php';
@@ -258,7 +228,6 @@ function wp_user_signups_handle_actions() {
 
 	// Get action
 	$action      = sanitize_key( $request_action );
-	$site_id     = wp_user_signups_get_site_id();
 	$redirect_to = remove_query_arg( array( 'did_action', 'processed', 'signups', '_wpnonce' ), wp_get_referer() );
 
 	// Maybe fallback redirect
@@ -276,19 +245,18 @@ function wp_user_signups_handle_actions() {
 	if ( is_network_admin() ) {
 		if ( wp_user_signups_is_network_list() ) {
 			$args = array(
-				'page'       => 'network_user_signups',
+				'page'       => 'user_signups',
 				'did_action' => $action
 			);
 		} else {
 			$args = array(
 				'page'       => 'user_signups',
-				'id'         => $site_id,
 				'did_action' => $action
 			);
 		}
 	} else {
 		$args = array(
-			'page'       => 'network_user_signups',
+			'page'       => 'user_signups',
 			'did_action' => $action
 		);
 	}
@@ -362,7 +330,7 @@ function wp_user_signups_handle_actions() {
 
 		// Single Edit
 		case 'edit' :
-			check_admin_referer( "user_signup_edit-{$site_id}" );
+			check_admin_referer( "user_signup_edit" );
 
 			$signup_id = $signups[0];
 			$signup    = WP_User_Signup::get( $signup_id );
@@ -388,7 +356,7 @@ function wp_user_signups_handle_actions() {
 
 		// Single Add
 		case 'add' :
-			check_admin_referer( "user_signup_add-{$site_id}" );
+			check_admin_referer( "user_signup_add" );
 
 			// Update
 			$values = wp_unslash( $_POST );
@@ -406,7 +374,7 @@ function wp_user_signups_handle_actions() {
 
 		// Any other bingos
 		default:
-			check_admin_referer( "user_signups-bulk-{$site_id}" );
+			check_admin_referer( "user_signups-bulk" );
 			do_action_ref_array( "signups_bulk_action-{$action}", array( $signups, &$processed, $action ) );
 
 			break;
@@ -428,9 +396,6 @@ function wp_user_signups_handle_actions() {
  */
 function wp_user_signups_output_edit_page() {
 
-	// Get site ID
-	$site_id = wp_user_signups_get_site_id();
-
 	// Edit
 	if ( ! empty( $_REQUEST['signups'] ) ) {
 		$signup_id = absint( $_REQUEST['signups'] );
@@ -447,7 +412,7 @@ function wp_user_signups_output_edit_page() {
 
 	// URL
 	$action_url = wp_user_signups_admin_url( array(
-		'page'   => 'network_user_signups',
+		'page'   => 'user_signups',
 		'action' => $action
 	) );
 
@@ -579,12 +544,12 @@ function wp_user_signups_output_edit_page() {
 
 		// Add
 		if ( 'add' === $action ) {
-			wp_nonce_field( "user_signup_add-{$site_id}" );
+			wp_nonce_field( "user_signup_add" );
 			$submit_text = esc_html__( 'Add Signup', 'wp-user-signups' );
 
 		// Edit
 		} else {
-			wp_nonce_field( "user_signup_edit-{$site_id}" );
+			wp_nonce_field( "user_signup_edit" );
 			$submit_text = esc_html__( 'Save Signup', 'wp-user-signups' );
 		}
 
@@ -618,34 +583,6 @@ function wp_user_signups_output_list_page() {
 			<?php $wp_list_table->display(); ?>
 		</form>
 	</div><?php
-
-	// Footer
-	wp_user_signups_output_page_footer();
-}
-
-/**
- * Output signup editing page
- *
- * @since 1.0.0
- */
-function wp_user_signups_output_network_list_page() {
-	global $wp_list_table;
-
-	// Action URLs
-	$form_url = wp_user_signups_admin_url( array( 'page' => 'network_user_signups' ) );
-
-	// Header
-	wp_user_signups_output_page_header(); ?>
-
-	<div class="form-wrap">
-		<?php $wp_list_table->views(); ?>
-
-		<form method="post" action="<?php echo esc_url( $form_url ); ?>">
-			<?php $wp_list_table->display(); ?>
-		</form>
-	</div>
-
-	<?php
 
 	// Footer
 	wp_user_signups_output_page_footer();

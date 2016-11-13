@@ -22,10 +22,20 @@ function wp_user_signups_map_meta_cap( $caps = array(), $cap = '', $user_id = 0,
 
 	// Map to 'create_users' for now
 	switch ( $cap ) {
-		case 'manage_user_signups' :
-		case 'edit_user_signups' :
+
+		// All
 		case 'create_user_signups' :
-			$caps = array( $cap );
+		case 'edit_user_signups' :
+		case 'manage_user_signups' :
+
+		// Single
+		case 'activate_signup' :
+		case 'delete_signup' :
+		case 'edit_signup' :
+		case 'resend_signup' :
+			$caps = is_multisite()
+				? array( $cap )
+				: 'manage_options';
 	}
 
 	// Filter and return
