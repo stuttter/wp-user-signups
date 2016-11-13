@@ -279,6 +279,9 @@ class WP_User_Signup {
 		$meta     = maybe_unserialize( $this->meta );
 		$password = wp_generate_password( 12, false );
 		$user_id  = username_exists( $this->user_login );
+		if ( empty( $user_id ) ) {
+			$user_id = email_exists( $this->user_email );
+		}
 
 		// Does the user already exist?
 		$user_already_exists = ( false !== $user_id );
@@ -292,7 +295,7 @@ class WP_User_Signup {
 
 		// Bail if no user was created
 		if ( empty( $user_id ) ) {
-			return new WP_Error( 'create_user', __( 'Could not create user', 'wp-user-signups' ), $this );
+			return new WP_Error( 'already_active', __( 'The user is already active.', 'wp-user-signups' ), $this );
 		}
 
 		// Get the current time, we'll use it in a few places
@@ -321,11 +324,6 @@ class WP_User_Signup {
 
 		// Try to create a site
 		if ( empty( $this->domain ) ) {
-
-			// Bail if user already exists
-			if ( true === $user_already_exists ) {
-				return new WP_Error( 'user_already_exists', __( 'That username is already activated.' ), $this );
-			}
 
 			/**
 			 * Fires immediately after a new user is activated.
