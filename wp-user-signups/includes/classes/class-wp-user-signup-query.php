@@ -337,7 +337,7 @@ class WP_User_Signup_Query {
 		// Fetch full site signup objects from the primed cache.
 		$_signups = array();
 		foreach ( $signup_ids as $signup_id ) {
-			$_signup = WP_User_Signup::get( $signup_id );
+			$_signup = WP_User_Signup::get_instance( $signup_id );
 			if ( ! empty( $_signup ) ) {
 				$_signups[] = $_signup;
 			}
@@ -354,7 +354,7 @@ class WP_User_Signup_Query {
 		$_signups = apply_filters_ref_array( 'the_user_signups', array( $_signups, &$this ) );
 
 		// Convert to WP_User_Signup instances.
-		$this->signups = array_map( array( 'WP_User_Signup', 'get' ), $_signups );
+		$this->signups = array_map( array( 'WP_User_Signup', 'get_instance' ), $_signups );
 
 		return $this->signups;
 	}

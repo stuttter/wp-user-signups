@@ -143,32 +143,6 @@ class WP_User_Signup {
 	}
 
 	/**
-	 * Convert data to Signup instance
-	 *
-	 * Allows use as a callback, such as in `array_map`
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param stdClass $data Raw signup data
-	 * @return Signup
-	 */
-	protected static function to_instance( $data ) {
-		return new static( $data );
-	}
-
-	/**
-	 * Convert list of data to Signup instances
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param stdClass[] $data Raw signup rows
-	 * @return Signup[]
-	 */
-	protected static function to_instances( $data ) {
-		return array_map( array( get_called_class(), 'to_instance' ), $data );
-	}
-
-	/**
 	 * Get signup by signup ID
 	 *
 	 * @since 1.0.0
@@ -176,7 +150,7 @@ class WP_User_Signup {
 	 * @param int|WP_User_Signup $signup Signup ID or instance
 	 * @return WP_User_Signup|WP_Error|null Signup on success, WP_Error if error occurred, or null if no signup found
 	 */
-	public static function get( $signup ) {
+	public static function get_instance( $signup ) {
 		global $wpdb;
 
 		// Allow passing a site object in
@@ -209,7 +183,7 @@ class WP_User_Signup {
 		}
 
 		// Signup exists
-		return new WP_Site_Alias( $_signup );
+		return new WP_User_Signup( $_signup );
 	}
 
 	/**
@@ -262,7 +236,7 @@ class WP_User_Signup {
 		wp_cache_delete( $result, 'user_signups' );
 
 		// Prime the cache
-		$signup = static::get( $wpdb->insert_id );
+		$signup = static::get_instance( $wpdb->insert_id );
 
 		/**
 		 * Fires after a signup has been created.

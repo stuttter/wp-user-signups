@@ -203,7 +203,7 @@ function wp_user_signups_handle_actions() {
 		// Bulk activate
 		case 'activate' :
 			foreach ( $signups as $signup_id ) {
-				$signup = WP_User_Signup::get( $signup_id );
+				$signup = WP_User_Signup::get_instance( $signup_id );
 
 				// Skip erroneous signups
 				if ( is_wp_error( $signup ) ) {
@@ -227,7 +227,7 @@ function wp_user_signups_handle_actions() {
 		// Bulk resend
 		case 'resend':
 			foreach ( $signups as $signup_id ) {
-				$signup = WP_User_Signup::get( $signup_id );
+				$signup = WP_User_Signup::get_instance( $signup_id );
 
 				// Skip erroneous signups
 				if ( is_wp_error( $signup ) ) {
@@ -245,7 +245,7 @@ function wp_user_signups_handle_actions() {
 			$args['signup_ids'] = array();
 
 			foreach ( $signups as $signup_id ) {
-				$signup = WP_User_Signup::get( $signup_id );
+				$signup = WP_User_Signup::get_instance( $signup_id );
 
 				// Skip erroneous signups
 				if ( is_wp_error( $signup ) ) {
@@ -269,7 +269,7 @@ function wp_user_signups_handle_actions() {
 			check_admin_referer( "user_signup_edit" );
 
 			$signup_id = $signups[0];
-			$signup    = WP_User_Signup::get( $signup_id );
+			$signup    = WP_User_Signup::get_instance( $signup_id );
 
 			if ( is_wp_error( $signup ) ) {
 				$messages[] = $signup->get_error_message();
@@ -344,7 +344,7 @@ function wp_user_signups_output_edit_page() {
 	}
 
 	// Try to get a signup
-	$signup = WP_User_Signup::get( $signup_id );
+	$signup = WP_User_Signup::get_instance( $signup_id );
 
 	// URL
 	$action_url = wp_user_signups_admin_url( array(
@@ -559,7 +559,7 @@ function wp_user_signups_output_admin_notices() {
 		if ( 'deleted' === $did_action ) {
 			$email = '';
 		} else {
-			$signup = WP_User_Signup::get( $processed[0] );
+			$signup = WP_User_Signup::get_instance( $processed[0] );
 			$email  = $signup->user_email;
 		}
 
