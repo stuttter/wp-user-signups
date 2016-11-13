@@ -206,7 +206,7 @@ class WP_User_Signup {
 		// Check for previous signup
 		$query    = new WP_User_Signup_Query();
 		$existing = $query->query( array(
-			'user_email' => $r['user_login'],
+			'user_email' => $r['user_email'],
 			'number'     => 1
 		) );
 

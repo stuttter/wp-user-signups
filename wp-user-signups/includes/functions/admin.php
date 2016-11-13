@@ -549,21 +549,19 @@ function wp_user_signups_output_admin_notices() {
 	// Special case for single, as it's not really a "bulk" action
 	if ( count( $processed ) === 1 ) {
 		$bulk_messages = array(
-			'activate' => esc_html__( 'Activated %s', 'wp-user-signups' ),
-			'resend'   => esc_html__( 'Resent to %s', 'wp-user-signups' ),
-			'deleted'  => esc_html__( 'Deleted %s',   'wp-user-signups' ),
-			'add'      => esc_html__( 'Added %s',     'wp-user-signups' ),
-			'edit'     => esc_html__( 'Updated %s',   'wp-user-signups' )
+			'activate' => esc_html__( 'Activated %s.', 'wp-user-signups' ),
+			'resend'   => esc_html__( 'Resent to %s.', 'wp-user-signups' ),
+			'delete'   => esc_html__( 'Deleted %s.',   'wp-user-signups' ),
+			'add'      => esc_html__( 'Added %s.',     'wp-user-signups' ),
+			'edit'     => esc_html__( 'Updated %s.',   'wp-user-signups' )
 		);
 
-		if ( 'deleted' === $did_action ) {
-			$email = '';
+		if ( 'delete' === $did_action ) {
+			$placeholder = esc_html__( 'signup', 'wp-user-signups' );
 		} else {
-			$signup = WP_User_Signup::get_instance( $processed[0] );
-			$email  = $signup->user_email;
+			$signup      = WP_User_Signup::get_instance( $processed[0] );
+			$placeholder = '<code>' . esc_html( $signup->user_email ) . '</code>';
 		}
-
-		$placeholder = '<code>' . esc_html( $email ) . '</code>';
 
 	// Note: we still use _n for languages which have special cases on
 	// e.g. 3, 5, 10, etc
@@ -573,7 +571,7 @@ function wp_user_signups_output_admin_notices() {
 		$bulk_messages = array(
 			'activate' => _n( '%s signup activated.', '%s signups activated.', $count, 'wp-user-signups' ),
 			'resend'   => _n( '%s signup resent.',    '%s signups resent.',    $count, 'wp-user-signups' ),
-			'deleted'  => _n( '%s signup deleted.',   '%s signups deleted.',   $count, 'wp-user-signups' ),
+			'delete'   => _n( '%s signup deleted.',   '%s signups deleted.',   $count, 'wp-user-signups' ),
 			'add'      => _n( '%s signup added.',     '%s signups added.',     $count, 'wp-user-signups' ),
 			'edit'     => _n( '%s signup updated.',   '%s signups updated.',   $count, 'wp-user-signups' )
 		);
