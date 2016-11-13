@@ -541,6 +541,7 @@ function wp_user_signups_output_admin_notices() {
 		return;
 	}
 
+	$class      = 'notice-success';
 	$did_action = sanitize_key( $_REQUEST['did_action'] );
 	$processed  = ! empty( $_REQUEST['processed'] )
 		? wp_parse_id_list( (array) $_REQUEST['processed'] )
@@ -575,6 +576,11 @@ function wp_user_signups_output_admin_notices() {
 			'add'      => _n( '%s signup added.',     '%s signups added.',     $count, 'wp-user-signups' ),
 			'edit'     => _n( '%s signup updated.',   '%s signups updated.',   $count, 'wp-user-signups' )
 		);
+
+		// Warn if empty
+		if ( empty( $count ) ) {
+			$class = 'notice-warning';
+		}
 	}
 
 	// Filter bulk messages, allowing for custom ones
@@ -591,5 +597,5 @@ function wp_user_signups_output_admin_notices() {
 	}
 
 	// Output notices
-	?><div id="message" class="notice notice-success"><p><?php echo implode( '</p><p>', $messages ); ?></p></div><?php
+	?><div id="message" class="notice <?php echo $class; ?>"><p><?php echo implode( '</p><p>', $messages ); ?></p></div><?php
 }
