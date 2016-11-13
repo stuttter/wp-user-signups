@@ -112,7 +112,7 @@ function wp_user_signups_sanitize_signup_ids( $single = false ) {
 	// Default value
 	$retval = array();
 
-	//
+	// Map to int
 	if ( isset( $_REQUEST['signup_ids'] ) ) {
 		$retval = array_map( 'absint', (array) $_REQUEST['signup_ids'] );
 	}
