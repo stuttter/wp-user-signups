@@ -123,5 +123,5 @@ function wp_user_signups_sanitize_signup_ids( $single = false ) {
 	}
 
 	// Filter & return
-	return apply_filters( 'wp_user_signups_sanitize_signup_ids', $retval );
+	return (array) apply_filters( 'wp_user_signups_sanitize_signup_ids', $retval );
 }

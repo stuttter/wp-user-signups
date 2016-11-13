@@ -120,7 +120,7 @@ class WP_User_Signup {
 		global $wpdb;
 
 		// Delete
-		$where        = array( 'signup_id' => $this->signup_id );
+		$where        = array( 'signup_id' => (int) $this->signup_id );
 		$where_format = array( '%d' );
 		$result       = $wpdb->delete( $wpdb->signups, $where, $where_format );
 

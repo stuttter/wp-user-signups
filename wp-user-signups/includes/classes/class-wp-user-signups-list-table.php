@@ -291,7 +291,7 @@ final class WP_User_Signup_List_Table extends WP_List_Table {
 
 		return '<label class="screen-reader-text" for="cb-select-' . esc_attr( $signup_id ) . '">'
 			. sprintf( __( 'Select %s', 'wp-user-signups' ), esc_html( $domain ) ) . '</label>'
-			. '<input type="checkbox" name="signups[]" value="' . esc_attr( $signup_id )
+			. '<input type="checkbox" name="signup_ids[]" value="' . esc_attr( $signup_id )
 			. '" id="cb-select-' . esc_attr( $signup_id ) . '" />';
 	}
 
@@ -317,9 +317,9 @@ final class WP_User_Signup_List_Table extends WP_List_Table {
 
 		// Edit
 		$edit_link = wp_user_signups_admin_url( array(
-			'signups'   => $signup_id,
-			'page'      => 'user_signup_edit',
-			'referrer'  => wp_user_signups_is_list_page()
+			'signup_ids' => $signup_id,
+			'page'       => 'user_signup_edit',
+			'referrer'   => wp_user_signups_is_list_page()
 				? 'network'
 				: 'site'
 		) );
@@ -330,9 +330,9 @@ final class WP_User_Signup_List_Table extends WP_List_Table {
 
 		// Default args
 		$args = array(
-			'action'   => $action,
-			'signups'  => $signup_id,
-			'_wpnonce' => wp_create_nonce( 'user_signups-bulk' )
+			'action'     => $action,
+			'signup_ids' => $signup_id,
+			'_wpnonce'   => wp_create_nonce( 'user_signups-bulk' )
 		);
 
 		$status_link = wp_user_signups_admin_url( $args );

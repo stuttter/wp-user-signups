@@ -687,7 +687,7 @@ class WP_User_Signup_Query {
 				break;
 			case 'signup__in':
 				$signup__in = implode( ',', array_map( 'absint', $this->query_vars['signup__in'] ) );
-				$parsed = "FIELD( us.signup_id, $signup__in )";
+				$parsed     = "FIELD( us.signup_id, {$signup__in} )";
 				break;
 			case 'domain':
 			case 'path':

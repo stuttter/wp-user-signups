@@ -180,7 +180,7 @@ function wp_user_signups_handle_actions() {
 
 	// Get action
 	$action      = sanitize_key( $request_action );
-	$redirect_to = remove_query_arg( array( 'did_action', 'processed', 'signups', '_wpnonce' ), wp_get_referer() );
+	$redirect_to = remove_query_arg( array( 'did_action', 'processed', 'signup_ids', '_wpnonce' ), wp_get_referer() );
 
 	// Maybe fallback redirect
 	if ( empty( $redirect_to ) ) {
@@ -189,9 +189,7 @@ function wp_user_signups_handle_actions() {
 
 	// Get signups being bulk actioned
 	$processed = array();
-	$signups   = ! empty( $_REQUEST['signups'] )
-		? array_map( 'absint', (array) $_REQUEST['signups'] )
-		: array();
+	$signups   = wp_user_signups_sanitize_signup_ids();
 
 	// Redirect args
 	$args = array(
@@ -244,7 +242,7 @@ function wp_user_signups_handle_actions() {
 
 		// Single/Bulk Delete
 		case 'delete':
-			$args['signups'] = array();
+			$args['signup_ids'] = array();
 
 			foreach ( $signups as $signup_id ) {
 				$signup = WP_User_Signup::get( $signup_id );
@@ -259,8 +257,8 @@ function wp_user_signups_handle_actions() {
 
 				// Signups don't exist after we delete them
 				if ( true === $deleted ) {
-					$args['signups'][] = $signup->signup_id;
-					$processed[]       = $signup_id;
+					$args['signup_ids'][] = $signup->signup_id;
+					$processed[]          = $signup_id;
 				}
 			}
 
@@ -335,8 +333,8 @@ function wp_user_signups_handle_actions() {
 function wp_user_signups_output_edit_page() {
 
 	// Edit
-	if ( ! empty( $_REQUEST['signups'] ) ) {
-		$signup_id = absint( $_REQUEST['signups'] );
+	if ( ! empty( $_REQUEST['signup_ids'] ) ) {
+		$signup_id = absint( $_REQUEST['signup_ids'] );
 		$action   = 'edit';
 
 	// Add
@@ -476,9 +474,9 @@ function wp_user_signups_output_edit_page() {
 
 		<?php endif; ?>
 
-		<input type="hidden" name="action"    value="<?php echo esc_attr( $action    ); ?>">
-		<input type="hidden" name="signup_id" value="<?php echo esc_attr( $signup_id ); ?>">
-		<input type="hidden" name="signups"   value="<?php echo esc_attr( $signup_id ); ?>"><?php
+		<input type="hidden" name="action"     value="<?php echo esc_attr( $action    ); ?>">
+		<input type="hidden" name="signup_id"  value="<?php echo esc_attr( $signup_id ); ?>">
+		<input type="hidden" name="signup_ids" value="<?php echo esc_attr( $signup_id ); ?>"><?php
 
 		// Add
 		if ( 'add' === $action ) {
