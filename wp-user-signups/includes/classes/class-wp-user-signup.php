@@ -294,7 +294,7 @@ class WP_User_Signup {
 		}
 
 		// Bail if no user was created
-		if ( empty( $user_id ) ) {
+		if ( empty( $user_id ) || ( true === $user_already_exists ) ) {
 			return new WP_Error( 'already_active', __( 'The user is already active.', 'wp-user-signups' ), $this );
 		}
 
