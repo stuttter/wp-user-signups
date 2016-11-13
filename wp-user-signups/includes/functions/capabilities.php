@@ -35,7 +35,7 @@ function wp_user_signups_map_meta_cap( $caps = array(), $cap = '', $user_id = 0,
 		case 'resend_signup' :
 			$caps = is_multisite()
 				? array( $cap )
-				: 'manage_options';
+				: array( 'manage_options' );
 	}
 
 	// Filter and return
