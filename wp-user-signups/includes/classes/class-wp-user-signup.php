@@ -167,19 +167,19 @@ class WP_User_Signup {
 
 		// No cached alias
 		if ( false === $_signup ) {
+
 			// Suppress errors in case the table doesn't exist
 			$suppress = $wpdb->suppress_errors();
 			$_signup  = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->signups} WHERE signup_id = %d", absint( $signup ) ) );
 			$wpdb->suppress_errors( $suppress );
 
-			// Bail if no signup found
-			if ( empty( $_signup ) || is_wp_error( $_signup ) ) {
-				return false;
-			}
-
 			// Add alias to cache
-			wp_cache_add( $signup, $_signup, 'user_signups' );
-			wp_cache_set( 'last_changed', microtime(), 'user_signups' );
+			if ( ! empty( $_signup ) && ! is_wp_error( $_signup ) ) {
+				wp_cache_add( $signup, $_signup, 'user_signups' );
+				wp_cache_set( 'last_changed', microtime(), 'user_signups' );
+			} else {
+				$_signup = array();
+			}
 		}
 
 		// Signup exists
