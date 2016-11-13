@@ -129,11 +129,13 @@ class WP_User_Signup {
 			return new WP_Error( 'wp_user_signups_delete_failed' );
 		}
 
+		clean_user_signup_cache( $this );
+
 		// Delete cache
-		wp_cache_delete( $this->signup_id, 'user_signups' );
+		//wp_cache_delete( $this->signup_id, 'user_signups' );
 
 		/**
-		 * Fires after a signup has been delete.
+		 * Fires after a signup has been deleted.
 		 *
 		 * @param  WP_User_Signup  $signup The signup object.
 		 */

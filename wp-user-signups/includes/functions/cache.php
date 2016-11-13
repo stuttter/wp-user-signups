@@ -62,7 +62,7 @@ function update_user_signup_cache( $signups = array() ) {
 function clean_user_signup_cache( WP_User_Signup $signup ) {
 
 	// Delete signup from cache group
-	wp_cache_delete( $signup->id , 'user_signups' );
+	wp_cache_delete( $signup->signup_id , 'user_signups' );
 
 	/**
 	 * Fires immediately after a user signup has been removed from the object cache.
@@ -72,7 +72,7 @@ function clean_user_signup_cache( WP_User_Signup $signup ) {
 	 * @param int     $signup_id Alias ID.
 	 * @param WP_Site $signup    Alias object.
 	 */
-	do_action( 'clean_user_signup_cache', $signup->id, $signup );
+	do_action( 'clean_user_signup_cache', $signup->signup_id, $signup );
 
 	wp_cache_set( 'last_changed', microtime(), 'user_signups' );
 }

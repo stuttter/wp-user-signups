@@ -10,13 +10,40 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
+ * Wrapper for admin URLs
+ *
+ * @since 1.0.0
+ *
+ * @param array $args
+ * @return array
+ */
+function wp_user_signups_admin_url( $args = array() ) {
+
+	// Parse args
+	$r = wp_parse_args( $args, array(
+		'page' => 'user_signups'
+	) );
+
+	// Location
+	$admin_url = is_multisite()
+		? network_admin_url( 'admin.php' )
+		: admin_url( 'index.php' );
+
+	// Add query args
+	$url = add_query_arg( $r, $admin_url );
+
+	// Add args and return
+	return apply_filters( 'wp_user_signups_admin_url', $url, $admin_url, $r, $args );
+}
+
+/**
  * Is this the all signups screen?
  *
  * @since 1.0.0
  *
  * @return bool
  */
-function wp_user_signups_is_network_list() {
+function wp_user_signups_is_list_page() {
 	return isset( $_GET['page'] ) && ( 'user_signups' === $_GET['page'] );
 }
 

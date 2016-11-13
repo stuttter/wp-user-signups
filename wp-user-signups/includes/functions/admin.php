@@ -19,29 +19,30 @@ function wp_user_signups_add_menu_item() {
 	// Define empty array
 	$hooks = array();
 
-	// Core style
-	if ( ( is_multisite() && is_network_admin() ) || ( ! is_multisite() && is_admin() ) ) {
+	// Bail if not the correct admin for the installation type
+	if ( ( is_multisite() && ! is_network_admin() ) || ( ! is_multisite() && ! is_admin() ) ) {
+		return;
+	}
 
-		// Reposition based on install type
-		$position = is_multisite()
-			? 11
-			: 70;
+	// Reposition based on install type
+	$position = is_multisite()
+		? 11
+		: 70;
 
-		// Network management of all signups
-		$hooks[] = add_menu_page( esc_html__( 'Sign ups', 'wp-user-signups' ), esc_html__( 'Sign ups', 'wp-user-signups' ), 'manage_user_signups', 'user_signups', 'wp_user_signups_output_list_page', 'dashicons-flag', $position );
-		$hooks[] = add_submenu_page( 'user_signups', esc_html__( 'Add New Signup', 'wp-user-signups' ), esc_html__( 'Add New', 'wp-user-signups' ), 'edit_user_signups', 'user_signup_edit', 'wp_user_signups_output_edit_page' );
+	// Network management of all signups
+	$hooks[] = add_menu_page( esc_html__( 'Sign ups', 'wp-user-signups' ), esc_html__( 'Sign ups', 'wp-user-signups' ), 'manage_user_signups', 'user_signups', 'wp_user_signups_output_list_page', 'dashicons-flag', $position );
+	$hooks[] = add_submenu_page( 'user_signups', esc_html__( 'Add New Signup', 'wp-user-signups' ), esc_html__( 'Add New', 'wp-user-signups' ), 'edit_user_signups', 'user_signup_edit', 'wp_user_signups_output_edit_page' );
 
-		// Remove if user cannot create
-		if ( ! current_user_can( 'create_user_signups' ) ) {
-			remove_submenu_page( 'users.php', 'user_signup_edit' );
-		}
+	// Remove if user cannot create
+	if ( ! current_user_can( 'create_user_signups' ) ) {
+		remove_submenu_page( 'user_signups', 'user_signup_edit' );
+	}
 
-		// Load the list table
-		foreach ( $hooks as $hook ) {
-			add_action( "load-{$hook}", 'wp_user_signups_handle_actions'     );
-			add_action( "load-{$hook}", 'wp_user_signups_load_list_table'    );
-			add_action( "load-{$hook}", 'wp_user_signups_add_screen_options' );
-		}
+	// Load the list table
+	foreach ( $hooks as $hook ) {
+		add_action( "load-{$hook}", 'wp_user_signups_handle_actions'     );
+		add_action( "load-{$hook}", 'wp_user_signups_load_list_table'    );
+		add_action( "load-{$hook}", 'wp_user_signups_add_screen_options' );
 	}
 }
 
@@ -51,12 +52,12 @@ function wp_user_signups_add_menu_item() {
  * @since 1.0.0
  */
 function wp_user_signups_add_screen_options() {
-	add_screen_option( 
+	add_screen_option(
 		'per_page',
 		array(
 			'default' => 20,
 			'option' => 'edit_user_signups_per_page',
-			'label'   => _x( 'Sign ups', 'Signups per page (screen options)' )
+			'label'   => _x( 'Sign ups', 'Signups per page (screen options)', 'wp-user-signups' )
 		)
 	);
 }
@@ -72,15 +73,15 @@ function wp_user_signups_add_screen_options() {
  *
  * @return string
  */
-function wp_user_signups_set_screen_option( $status, $option, $value ) {
- 
+function wp_user_signups_set_screen_option( $status = '', $option = '', $value = 20 ) {
+
     if ( 'edit_user_signups_per_page' === $option ) {
 		return $value;
 	}
- 
+
     return $status;
- 
 }
+
 /**
  * Load the list table and populate some essentials
  *
@@ -99,55 +100,6 @@ function wp_user_signups_load_list_table() {
 }
 
 /**
- * Override network files, to correct main submenu navigation highlighting
- *
- * @since 1.0.0
- *
- * @global string $parent_file
- * @global string $submenu_file
- */
-function wp_user_signups_fix_hidden_menu_highlight() {
-	global $parent_file, $submenu_file;
-
-	// Network admin
-	if ( is_network_admin() ) {
-		if ( wp_user_signups_is_network_edit() ) {
-			$parent_file  = 'user_signups';
-			$submenu_file = null;
-		} elseif ( ! wp_user_signups_is_network_list() ) {
-			$parent_file  = 'sites.php';
-			$submenu_file = 'sites.php';
-		}
-
-	// Blog admin
-	} elseif ( is_blog_admin() ) {
-		$parent_file  = 'index.php';
-		$submenu_file = 'user_signups';
-	}
-}
-
-/**
- * Add tab to end of tabs array
- *
- * @since 1.0.0
- *
- * @param array $tabs
- * @return array
- */
-function wp_user_signups_add_signups_tab( $tabs = array() ) {
-
-	// "Sign ups" tab
-	$tabs['user-signups'] = array(
-		'label' => esc_html__( 'Sign ups', 'wp-user-signups' ),
-		'url'   => add_query_arg( array( 'page' => 'user_signups' ), 'sites.php' ),
-		'cap'   => 'manage_user_signups'
-	);
-
-	// Return tabs
-	return $tabs;
-}
-
-/**
  * Output the admin page header
  *
  * @since 1.0.0
@@ -158,7 +110,7 @@ function wp_user_signups_output_page_header( $signup_id = 0 ) {
 	global $title;
 
 	// List
-	if ( wp_user_signups_is_network_list() ) {
+	if ( wp_user_signups_is_list_page() ) {
 
 		// With "Add new" link
 		if ( current_user_can( 'create_user_signups' ) ) {
@@ -242,24 +194,10 @@ function wp_user_signups_handle_actions() {
 		: array();
 
 	// Redirect args
-	if ( is_network_admin() ) {
-		if ( wp_user_signups_is_network_list() ) {
-			$args = array(
-				'page'       => 'user_signups',
-				'did_action' => $action
-			);
-		} else {
-			$args = array(
-				'page'       => 'user_signups',
-				'did_action' => $action
-			);
-		}
-	} else {
-		$args = array(
-			'page'       => 'user_signups',
-			'did_action' => $action
-		);
-	}
+	$args = array(
+		'page'       => 'user_signups',
+		'did_action' => $action
+	);
 
 	// What's the action?
 	switch ( $action ) {
@@ -538,18 +476,18 @@ function wp_user_signups_output_edit_page() {
 
 		<?php endif; ?>
 
-		<input type="hidden"   name="action"    value="<?php echo esc_attr( $action   ); ?>">
-		<input type="hidden"   name="signup_id" value="<?php echo esc_attr( $signup_id  ); ?>">
-		<input type="hidden"   name="signups"   value="<?php echo esc_attr( $signup_id ); ?>"><?php
+		<input type="hidden" name="action"    value="<?php echo esc_attr( $action    ); ?>">
+		<input type="hidden" name="signup_id" value="<?php echo esc_attr( $signup_id ); ?>">
+		<input type="hidden" name="signups"   value="<?php echo esc_attr( $signup_id ); ?>"><?php
 
 		// Add
 		if ( 'add' === $action ) {
-			wp_nonce_field( "user_signup_add" );
+			wp_nonce_field( 'user_signup_add' );
 			$submit_text = esc_html__( 'Add Signup', 'wp-user-signups' );
 
 		// Edit
 		} else {
-			wp_nonce_field( "user_signup_edit" );
+			wp_nonce_field( 'user_signup_edit' );
 			$submit_text = esc_html__( 'Save Signup', 'wp-user-signups' );
 		}
 
@@ -656,11 +594,6 @@ function wp_user_signups_output_admin_notices() {
 		return;
 	}
 
-	// Start a buffer
-	ob_start();
-
+	// Output notices
 	?><div id="message" class="notice notice-success"><p><?php echo implode( '</p><p>', $messages ); ?></p></div><?php
-
-	// Output the buffer
-	ob_end_flush();
 }

@@ -99,7 +99,9 @@ final class WP_User_Signup_List_Table extends WP_List_Table {
 	 * @return array Map of column ID => title
 	 */
 	public function get_columns() {
-		return array(
+
+		// All columns
+		$columns = array(
 			'cb'             => '<input type="checkbox" />',
 			'user'           => _x( 'User',       'wp-user-signups' ),
 			'site'           => _x( 'Site',       'wp-user-signups' ),
@@ -107,6 +109,13 @@ final class WP_User_Signup_List_Table extends WP_List_Table {
 			'registered'     => _x( 'Registered', 'wp-user-signups' ),
 			'activated'      => _x( 'Activated',  'wp-user-signups' )
 		);
+
+		// Remove site column if single-site
+		if ( ! is_multisite() ) {
+			unset( $columns['site'] );
+		}
+
+		return $columns;
 	}
 
 	/**
@@ -222,7 +231,13 @@ final class WP_User_Signup_List_Table extends WP_List_Table {
 	 * @access public
 	 */
 	public function no_items() {
-		esc_html_e( 'No sign-ups found.', 'wp-user-signups' );
+		if ( 1 === $this->active ) {
+			esc_html_e( 'No active sign-ups.', 'wp-user-signups' );
+		} elseif ( 0 === $this->active ) {
+			esc_html_e( 'No pending sign-ups.', 'wp-user-signups' );
+		} else {
+			esc_html_e( 'No sign-ups found.', 'wp-user-signups' );
+		}
 	}
 
 	/**
@@ -304,7 +319,7 @@ final class WP_User_Signup_List_Table extends WP_List_Table {
 		$edit_link = wp_user_signups_admin_url( array(
 			'signups'   => $signup_id,
 			'page'      => 'user_signup_edit',
-			'referrer'  => wp_user_signups_is_network_list()
+			'referrer'  => wp_user_signups_is_list_page()
 				? 'network'
 				: 'site'
 		) );

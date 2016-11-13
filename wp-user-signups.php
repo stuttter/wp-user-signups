@@ -54,7 +54,6 @@ function _wp_user_signups() {
 	require_once $plugin_path . 'includes/functions/cache.php';
 	require_once $plugin_path . 'includes/functions/common.php';
 	require_once $plugin_path . 'includes/functions/capabilities.php';
-	require_once $plugin_path . 'includes/functions/functions.php';
 	require_once $plugin_path . 'includes/functions/hooks.php';
 }
 
@@ -99,5 +98,5 @@ function wp_user_signups_get_plugin_url() {
  * @return int
  */
 function wp_user_signups_get_asset_version() {
-	return 201610270001;
+	return 201611120001;
 }

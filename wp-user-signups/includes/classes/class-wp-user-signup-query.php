@@ -284,8 +284,8 @@ class WP_User_Signup_Query {
 		do_action_ref_array( 'pre_get_user_signups', array( &$this ) );
 
 		// $args can include anything. Only use the args defined in the query_var_defaults to compute the key.
-		$key = md5( serialize( wp_array_slice_assoc( $this->query_vars, array_keys( $this->query_var_defaults ) ) ) );
-		$last_changed = wp_cache_get( 'last_changed', 'user_signups' );
+		$key          = md5( serialize( wp_array_slice_assoc( $this->query_vars, array_keys( $this->query_var_defaults ) ) ) );
+		$last_changed = wp_cache_get_last_changed( 'user_signups' );
 
 		if ( false === $last_changed ) {
 			$last_changed = microtime();
@@ -293,7 +293,7 @@ class WP_User_Signup_Query {
 		}
 
 		$cache_key   = "get_user_signups:{$key}:{$last_changed}";
-		$cache_value = false; //wp_cache_get( $cache_key, 'user_signups' );
+		$cache_value = wp_cache_get( $cache_key, 'user_signups' );
 
 		if ( false === $cache_value ) {
 			$signup_ids = $this->get_signup_ids();
@@ -348,12 +348,12 @@ class WP_User_Signup_Query {
 		 *
 		 * @since 1.0.0
 		 *
-		 * @param array                $results An array of signups.
+		 * @param array                $results An array of sign-ups.
 		 * @param WP_User_Signup_Query &$this   Current instance of WP_User_Signup_Query, passed by reference.
 		 */
 		$_signups = apply_filters_ref_array( 'the_user_signups', array( $_signups, &$this ) );
 
-		// Convert to WP_Site_Alias instances.
+		// Convert to WP_User_Signup instances.
 		$this->signups = array_map( array( 'WP_User_Signup', 'get' ), $_signups );
 
 		return $this->signups;
