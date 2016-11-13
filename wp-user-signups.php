@@ -16,6 +16,11 @@
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
 
+// Bail if core already supports this
+if ( class_exists( 'WP_User_Signup' ) ) {
+	return;
+}
+
 // Define the table variables
 if ( empty( $GLOBALS['wpdb']->signups ) ) {
 	$GLOBALS['wpdb']->signups            = $GLOBALS['wpdb']->base_prefix . 'signups';
