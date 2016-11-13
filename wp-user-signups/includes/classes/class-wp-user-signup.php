@@ -129,9 +129,8 @@ class WP_User_Signup {
 			return new WP_Error( 'wp_user_signups_delete_failed' );
 		}
 
-		clean_user_signup_cache( $this );
-
 		// Delete cache
+		clean_user_signup_cache( $this );
 		//wp_cache_delete( $this->signup_id, 'user_signups' );
 
 		/**
@@ -202,32 +201,6 @@ class WP_User_Signup {
 
 		// Signup exists
 		return new static( $signup );
-	}
-
-	/**
-	 * Get signup by signup ID
-	 *
-	 * @todo use WP_User_Signup_Query
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param int|WP_User_Signup $signup Signup ID or instance
-	 * @return WP_User_Signup|WP_Error|null Signup on success, WP_Error if error occurred, or null if no signup found
-	 */
-	public static function get_all() {
-		global $wpdb;
-
-		// Suppress errors in case the table doesn't exist
-		$suppress = $wpdb->suppress_errors();
-		$signups  = $wpdb->get_results( "SELECT * FROM {$wpdb->signups}" );
-
-		$wpdb->suppress_errors( $suppress );
-
-		if ( empty( $signups ) ) {
-			return null;
-		}
-
-		return static::to_instances( $signups );
 	}
 
 	/**
