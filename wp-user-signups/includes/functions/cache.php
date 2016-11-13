@@ -48,7 +48,7 @@ function update_user_signup_cache( $signups = array() ) {
 
 	// Loop through signups & add them to cache group
 	foreach ( $signups as $signup ) {
-		wp_cache_add( $signup->signup_id, $signup, 'user_signups' );
+		wp_cache_set( $signup->signup_id, $signup, 'user_signups' );
 	}
 }
 
