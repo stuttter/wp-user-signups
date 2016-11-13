@@ -33,7 +33,7 @@ function _prime_user_signup_caches( $ids = array() ) {
 }
 
 /**
- * Updates user signups in cache.
+ * Updates user sign-ups in cache.
  *
  * @since 1.0.0
  *
@@ -57,9 +57,9 @@ function update_user_signup_cache( $signups = array() ) {
  *
  * @since 1.0.0
  *
- * @param WP_Site_Alias $signup The signup details as returned from get_user_signup()
+ * @param WP_User_Signup $signup The signup details as returned from get_user_signup()
  */
-function clean_user_signup_cache( WP_Site_Alias $signup ) {
+function clean_user_signup_cache( WP_User_Signup $signup ) {
 
 	// Delete signup from cache group
 	wp_cache_delete( $signup->id , 'user_signups' );
