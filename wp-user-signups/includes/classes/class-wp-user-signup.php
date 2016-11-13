@@ -131,7 +131,6 @@ class WP_User_Signup {
 
 		// Delete cache
 		clean_user_signup_cache( $this );
-		//wp_cache_delete( $this->signup_id, 'user_signups' );
 
 		/**
 		 * Fires after a signup has been deleted.
@@ -189,18 +188,28 @@ class WP_User_Signup {
 			return new WP_Error( 'wp_user_signups_invalid_id' );
 		}
 
-		// Suppress errors in case the table doesn't exist
-		$suppress = $wpdb->suppress_errors();
-		$signup   = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->signups} WHERE signup_id = %d", absint( $signup ) ) );
-		$wpdb->suppress_errors( $suppress );
+		// Check cache first
+		$_signup = wp_cache_get( $signup, 'user_signups' );
 
-		// No signup
-		if ( empty( $signup ) ) {
-			return new static();
+		// No cached alias
+		if ( false === $_signup ) {
+			// Suppress errors in case the table doesn't exist
+			$suppress = $wpdb->suppress_errors();
+			$_signup  = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->signups} WHERE signup_id = %d", absint( $signup ) ) );
+			$wpdb->suppress_errors( $suppress );
+
+			// Bail if no signup found
+			if ( empty( $_signup ) || is_wp_error( $_signup ) ) {
+				return false;
+			}
+
+			// Add alias to cache
+			wp_cache_add( $signup, $_signup, 'user_signups' );
+			wp_cache_set( 'last_changed', microtime(), 'user_signups' );
 		}
 
 		// Signup exists
-		return new static( $signup );
+		return new WP_Site_Alias( $_signup );
 	}
 
 	/**
