@@ -148,7 +148,7 @@ class WP_User_Signup {
 	 * @since 1.0.0
 	 *
 	 * @param int|WP_User_Signup $signup Signup ID or instance
-	 * @return WP_User_Signup|WP_Error|null Signup on success, WP_Error if error occurred, or null if no signup found
+	 * @return WP_User_Signup Signup always, even if empty
 	 */
 	public static function get_instance( $signup ) {
 		global $wpdb;
