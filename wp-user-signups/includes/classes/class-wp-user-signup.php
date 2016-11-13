@@ -95,8 +95,8 @@ class WP_User_Signup {
 			$this->data->{$key} = $val;
 		}
 
-		// Update the sign-up cache
-		wp_cache_set( $result, $this->data, 'user_signups' );
+		// Clean item cache
+		clean_user_signup_cache( $this );
 
 		/**
 		 * Fires after a signup has been updated.
