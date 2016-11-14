@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Plugin Name: WP User Sign-ups
+ * Plugin Name: WP User Signups
  * Plugin URI:  http://wordpress.org/plugins/wp-user-signups/
  * Author:      John James Jacoby
  * Author URI:  https://profiles.wordpress.org/johnjamesjacoby/
