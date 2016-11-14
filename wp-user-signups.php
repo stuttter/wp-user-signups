@@ -10,7 +10,7 @@
  * Description: User signup management for WordPress
  * Version:     1.0.0
  * Text Domain: wp-user-signups
- * Domain Path: /assets/lang/
+ * Domain Path: /wp-user-signups/assets/languages/
  */
 
 // Exit if accessed directly
