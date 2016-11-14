@@ -1,0 +1,310 @@
+# Copyright (C) 2016 WP User Signups
+# This file is distributed under the same license as the WP User Signups package.
+msgid ""
+msgstr ""
+"Project-Id-Version: WP User Signups 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wp-user-signups\n"
+"POT-Creation-Date: 2016-11-14 03:29:31+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2016-11-14 03:29:31+00:00\n"
+"Last-Translator: John James Jacoby <jjj@buddypress.org>\n"
+"Language-Team: ENGLISH <LL@li.org>\n"
+
+#: wp-user-signups/includes/classes/class-wp-user-signup.php:215
+msgid "That signup already exists."
+msgstr ""
+
+#: wp-user-signups/includes/classes/class-wp-user-signup.php:274
+#: wp-user-signups/includes/classes/class-wp-user-signup.php:298
+msgid "The user is already active."
+msgstr ""
+
+#: wp-user-signups/includes/classes/class-wp-user-signup.php:275
+msgid "The site is already active."
+msgstr ""
+
+#: wp-user-signups/includes/classes/class-wp-user-signup.php:315
+msgid "Sign up activation failed."
+msgstr ""
+
+#: wp-user-signups/includes/classes/class-wp-user-signups-list-table.php:106
+msgctxt "wp-user-signups"
+msgid "User"
+msgstr ""
+
+#: wp-user-signups/includes/classes/class-wp-user-signups-list-table.php:107
+msgctxt "wp-user-signups"
+msgid "Site"
+msgstr ""
+
+#: wp-user-signups/includes/classes/class-wp-user-signups-list-table.php:108
+msgctxt "wp-user-signups"
+msgid "Key"
+msgstr ""
+
+#: wp-user-signups/includes/classes/class-wp-user-signups-list-table.php:109
+msgctxt "wp-user-signups"
+msgid "Registered"
+msgstr ""
+
+#: wp-user-signups/includes/classes/class-wp-user-signups-list-table.php:110
+msgctxt "wp-user-signups"
+msgid "Activated"
+msgstr ""
+
+#: wp-user-signups/includes/classes/class-wp-user-signups-list-table.php:149
+#: wp-user-signups/includes/classes/class-wp-user-signups-list-table.php:337
+msgid "Activate"
+msgstr ""
+
+#: wp-user-signups/includes/classes/class-wp-user-signups-list-table.php:150
+#: wp-user-signups/includes/classes/class-wp-user-signups-list-table.php:366
+msgid "Resend"
+msgstr ""
+
+#: wp-user-signups/includes/classes/class-wp-user-signups-list-table.php:151
+#: wp-user-signups/includes/classes/class-wp-user-signups-list-table.php:376
+msgid "Delete"
+msgstr ""
+
+#: wp-user-signups/includes/classes/class-wp-user-signups-list-table.php:198
+msgid "Select bulk action"
+msgstr ""
+
+#: wp-user-signups/includes/classes/class-wp-user-signups-list-table.php:200
+msgid "Bulk Actions"
+msgstr ""
+
+#: wp-user-signups/includes/classes/class-wp-user-signups-list-table.php:211
+msgid "Apply"
+msgstr ""
+
+#: wp-user-signups/includes/classes/class-wp-user-signups-list-table.php:244
+msgid "No active sign-ups."
+msgstr ""
+
+#: wp-user-signups/includes/classes/class-wp-user-signups-list-table.php:246
+msgid "No pending sign-ups."
+msgstr ""
+
+#: wp-user-signups/includes/classes/class-wp-user-signups-list-table.php:248
+msgid "No sign-ups found."
+msgstr ""
+
+#: wp-user-signups/includes/classes/class-wp-user-signups-list-table.php:302
+msgid "Select %s"
+msgstr ""
+
+#: wp-user-signups/includes/classes/class-wp-user-signups-list-table.php:361
+msgid "Edit"
+msgstr ""
+
+#: wp-user-signups/includes/classes/class-wp-user-signups-list-table.php:455
+msgid "&mdash;"
+msgstr ""
+
+#: wp-user-signups/includes/functions/admin.php:33
+#: wp-user-signups/includes/functions/admin.php:125
+msgid "Sign ups"
+msgstr ""
+
+#: wp-user-signups/includes/functions/admin.php:34
+msgid "Add New Signup"
+msgstr ""
+
+#: wp-user-signups/includes/functions/admin.php:34
+#: wp-user-signups/includes/functions/admin.php:120
+msgid "Add New"
+msgstr ""
+
+#: wp-user-signups/includes/functions/admin.php:60
+msgctxt "Signups per page (screen options)"
+msgid "Sign ups"
+msgstr ""
+
+#: wp-user-signups/includes/functions/admin.php:121
+msgid "Sign ups %s"
+msgstr ""
+
+#: wp-user-signups/includes/functions/admin.php:133
+msgid "Add New Sign up"
+msgstr ""
+
+#: wp-user-signups/includes/functions/admin.php:137
+msgid "Edit Sign up"
+msgstr ""
+
+#: wp-user-signups/includes/functions/admin.php:359
+msgid "Site"
+msgstr ""
+
+#: wp-user-signups/includes/functions/admin.php:360
+msgid ""
+"These details are for a new site at the same time as a user. (Empty if there "
+"is no site.)"
+msgstr ""
+
+#: wp-user-signups/includes/functions/admin.php:365
+msgctxt "User signup"
+msgid "Domain"
+msgstr ""
+
+#: wp-user-signups/includes/functions/admin.php:373
+msgctxt "User signup"
+msgid "Path"
+msgstr ""
+
+#: wp-user-signups/includes/functions/admin.php:381
+msgctxt "User signup"
+msgid "Title"
+msgstr ""
+
+#: wp-user-signups/includes/functions/admin.php:390
+msgid "User"
+msgstr ""
+
+#: wp-user-signups/includes/functions/admin.php:391
+msgid "These details are for a new user account. (These fields are required.)"
+msgstr ""
+
+#: wp-user-signups/includes/functions/admin.php:396
+msgctxt "User signup"
+msgid "User Login"
+msgstr ""
+
+#: wp-user-signups/includes/functions/admin.php:404
+msgctxt "User signup"
+msgid "User Email"
+msgstr ""
+
+#: wp-user-signups/includes/functions/admin.php:412
+msgctxt "User signup"
+msgid "Registered"
+msgstr ""
+
+#: wp-user-signups/includes/functions/admin.php:420
+msgctxt "User signup"
+msgid "Activated"
+msgstr ""
+
+#: wp-user-signups/includes/functions/admin.php:428
+msgctxt "User signup"
+msgid "Status"
+msgstr ""
+
+#: wp-user-signups/includes/functions/admin.php:432
+msgid "Pending"
+msgstr ""
+
+#: wp-user-signups/includes/functions/admin.php:433
+msgid "Activated"
+msgstr ""
+
+#: wp-user-signups/includes/functions/admin.php:439
+msgctxt "User signup"
+msgid "Activation Key"
+msgstr ""
+
+#: wp-user-signups/includes/functions/admin.php:454
+msgid "Meta"
+msgstr ""
+
+#: wp-user-signups/includes/functions/admin.php:455
+msgid ""
+"These extra details help with activation. (Use caution when changing these "
+"values.)"
+msgstr ""
+
+#: wp-user-signups/includes/functions/admin.php:484
+msgid "Add Signup"
+msgstr ""
+
+#: wp-user-signups/includes/functions/admin.php:489
+msgid "Save Signup"
+msgstr ""
+
+#: wp-user-signups/includes/functions/admin.php:553
+msgid "Activated %s."
+msgstr ""
+
+#: wp-user-signups/includes/functions/admin.php:554
+msgid "Resent to %s."
+msgstr ""
+
+#: wp-user-signups/includes/functions/admin.php:555
+msgid "Deleted %s."
+msgstr ""
+
+#: wp-user-signups/includes/functions/admin.php:556
+msgid "Added %s."
+msgstr ""
+
+#: wp-user-signups/includes/functions/admin.php:557
+msgid "Updated %s."
+msgstr ""
+
+#: wp-user-signups/includes/functions/admin.php:561
+msgid "signup"
+msgstr ""
+
+#: wp-user-signups/includes/functions/admin.php:573
+msgid "%s signup activated."
+msgid_plural "%s signups activated."
+msgstr[0] ""
+msgstr[1] ""
+
+#: wp-user-signups/includes/functions/admin.php:574
+msgid "%s signup resent."
+msgid_plural "%s signups resent."
+msgstr[0] ""
+msgstr[1] ""
+
+#: wp-user-signups/includes/functions/admin.php:575
+msgid "%s signup deleted."
+msgid_plural "%s signups deleted."
+msgstr[0] ""
+msgstr[1] ""
+
+#: wp-user-signups/includes/functions/admin.php:576
+msgid "%s signup added."
+msgid_plural "%s signups added."
+msgstr[0] ""
+msgstr[1] ""
+
+#: wp-user-signups/includes/functions/admin.php:577
+msgid "%s signup updated."
+msgid_plural "%s signups updated."
+msgstr[0] ""
+msgstr[1] ""
+
+#: wp-user-signups/includes/functions/common.php:90
+msgctxt "User sign-ups"
+msgid "Pending"
+msgstr ""
+
+#: wp-user-signups/includes/functions/common.php:96
+msgctxt "User sign-ups"
+msgid "Activated"
+msgstr ""`
+
+#. Plugin Name of the plugin/theme
+msgid "WP User Signups"
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "http://wordpress.org/plugins/wp-user-signups/"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid "User signup management for WordPress"
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "John James Jacoby"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "https://profiles.wordpress.org/johnjamesjacoby/"
+msgstr ""
