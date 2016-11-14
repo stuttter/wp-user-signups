@@ -312,7 +312,7 @@ class WP_User_Signup {
 
 		// Bail if update failed
 		if ( is_wp_error( $updated ) ) {
-			return new WP_Error( 'activation_failed', __( 'Sign up activation failed.' ), $this );
+			return new WP_Error( 'activation_failed', __( 'Sign up activation failed.', 'wp-user-signups' ), $this );
 		}
 
 		// Default return value
