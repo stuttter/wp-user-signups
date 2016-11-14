@@ -337,7 +337,7 @@ class WP_User_Signup {
 			do_action( 'wpmu_activate_user', $user_id, $password, $meta );
 
 		// Try to create a site
-		} else {
+		} elseif ( is_multisite() ) {
 			$blog_id = wpmu_create_blog( $this->domain, $this->path, $this->title, $user_id, $meta, $wpdb->siteid );
 
 			// Created a user but cannot create a site
