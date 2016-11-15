@@ -176,7 +176,6 @@ class WP_User_Signup {
 			// Add alias to cache
 			if ( ! empty( $_signup ) && ! is_wp_error( $_signup ) ) {
 				wp_cache_add( $signup, $_signup, 'user_signups' );
-				wp_cache_set( 'last_changed', microtime(), 'user_signups' );
 			} else {
 				$_signup = array();
 			}
@@ -237,7 +236,7 @@ class WP_User_Signup {
 		}
 
 		// Ensure the cache is flushed
-		wp_cache_delete( $result, 'user_signups' );
+		clean_user_signup_cache( $result );
 
 		// Prime the cache
 		$signup = static::get_instance( $wpdb->insert_id );

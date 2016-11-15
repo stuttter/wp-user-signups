@@ -57,9 +57,15 @@ function update_user_signup_cache( $signups = array() ) {
  *
  * @since 1.0.0
  *
- * @param WP_User_Signup $signup The signup details as returned from get_user_signup()
+ * @param int|WP_User_Signup $ignup Signup ID or signup object to remove from the cache
  */
-function clean_user_signup_cache( WP_User_Signup $signup ) {
+function clean_user_signup_cache( $signup ) {
+
+	// Get signup, and bail if not found
+	$signup = WP_User_Signup::get_instance( $signup );
+	if ( empty( $signup ) || is_wp_error( $signup ) ) {
+		return;
+	}
 
 	// Delete signup from cache group
 	wp_cache_delete( $signup->signup_id , 'user_signups' );
