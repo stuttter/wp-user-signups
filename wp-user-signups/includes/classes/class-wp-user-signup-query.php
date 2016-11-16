@@ -285,7 +285,7 @@ class WP_User_Signup_Query {
 
 		// $args can include anything. Only use the args defined in the query_var_defaults to compute the key.
 		$key          = md5( serialize( wp_array_slice_assoc( $this->query_vars, array_keys( $this->query_var_defaults ) ) ) );
-		$last_changed = wp_cache_get_last_changed( 'user_signups' );
+		$last_changed = wp_cache_get( 'last_changed', 'user_signups' );
 
 		if ( false === $last_changed ) {
 			$last_changed = microtime();
