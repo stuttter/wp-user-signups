@@ -236,7 +236,7 @@ class WP_User_Signup {
 		}
 
 		// Ensure the cache is flushed
-		clean_user_signup_cache( $result );
+		clean_user_signup_cache( $wpdb->insert_id );
 
 		// Prime the cache
 		$signup = static::get_instance( $wpdb->insert_id );
