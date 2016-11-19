@@ -8,7 +8,7 @@
  * License:     GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Description: User signup management for WordPress
- * Version:     1.0.0
+ * Version:     1.1.0
  * Text Domain: wp-user-signups
  * Domain Path: /wp-user-signups/assets/languages/
  */
@@ -98,5 +98,5 @@ function wp_user_signups_get_plugin_url() {
  * @return int
  */
 function wp_user_signups_get_asset_version() {
-	return 201611120001;
+	return 201611180001;
 }
