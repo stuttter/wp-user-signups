@@ -60,6 +60,12 @@ function update_user_signup_cache( $signups = array() ) {
  * @param int|WP_User_Signup $ignup Signup ID or signup object to remove from the cache
  */
 function clean_user_signup_cache( $signup ) {
+	global $_wp_suspend_cache_invalidation;
+
+	// Bail if cache invalidation is suspended
+	if ( ! empty( $_wp_suspend_cache_invalidation ) ) {
+		return;
+	}
 
 	// Get signup, and bail if not found
 	$signup = WP_User_Signup::get_instance( $signup );
