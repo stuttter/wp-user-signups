@@ -198,4 +198,4 @@ final class WP_User_Signup_DB {
 function wp_user_signups_db() {
 	new WP_User_Signup_DB();
 }
-add_action( 'muplugins_loaded', 'wp_user_signups_db', -PHP_INT_MAX );
+add_action( 'plugins_loaded', 'wp_user_signups_db', -PHP_INT_MAX );
