@@ -266,7 +266,7 @@ function wp_user_signups_handle_actions() {
 
 		// Single Edit
 		case 'edit' :
-			check_admin_referer( "user_signup_edit" );
+			check_admin_referer( 'user_signup_edit' );
 
 			$signup_id = $signups[0];
 			$signup    = WP_User_Signup::get_instance( $signup_id );
@@ -292,7 +292,7 @@ function wp_user_signups_handle_actions() {
 
 		// Single Add
 		case 'add' :
-			check_admin_referer( "user_signup_add" );
+			check_admin_referer( 'user_signup_add' );
 
 			// Update
 			$values = wp_unslash( $_POST );
@@ -310,7 +310,7 @@ function wp_user_signups_handle_actions() {
 
 		// Any other bingos
 		default:
-			check_admin_referer( "user_signups-bulk" );
+			check_admin_referer( 'user_signups-bulk' );
 			do_action_ref_array( "signups_bulk_action-{$action}", array( $signups, &$processed, $action ) );
 
 			break;
@@ -413,6 +413,7 @@ function wp_user_signups_output_edit_page() {
 					</th>
 					<td>
 						<input type="text" class="regular-text code" name="registered" id="registered" value="<?php echo esc_attr( $signup->registered ); ?>">
+						<p class="description"><?php esc_html_e( 'Leave blank to automatically generate to now.', 'wp-user-signups' ); ?></p>
 					</td>
 				</tr>
 				<tr>
@@ -421,6 +422,7 @@ function wp_user_signups_output_edit_page() {
 					</th>
 					<td>
 						<input type="text" class="regular-text code" name="activated" id="activated" value="<?php echo esc_attr( $signup->activated ); ?>">
+						<p class="description"><?php esc_html_e( 'Leave blank to automatically format.', 'wp-user-signups' ); ?></p>
 					</td>
 				</tr>
 				<tr>
@@ -440,6 +442,7 @@ function wp_user_signups_output_edit_page() {
 					</th>
 					<td>
 						<input type="text" class="regular-text code" name="activation_key" id="activation_key" value="<?php echo esc_attr( $signup->activation_key ); ?>">
+						<p class="description"><?php esc_html_e( 'Leave blank to automatically generate.', 'wp-user-signups' ); ?></p>
 					</td>
 				</tr>
 			</tbody>
