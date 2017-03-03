@@ -2,8 +2,8 @@
 Contributors: johnjamesjacoby, stuttter
 Tags: users, signups, admin, multisite
 Requires at least: 4.7
-Tested up to: 4.7
-Stable tag: 1.1.0
+Tested up to: 4.8
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9Q4F4EL5YJ62J
@@ -82,7 +82,12 @@ http://github.com/stuttter/wp-user-signups
 
 == Changelog ==
 
-= [1.0.0] - 2016-11-18 =
+= [1.2.0] - 2017-03-03 =
+* Fix bug with site column output
+* Single-site implementation improvements
+* Add descriptions to a few form fields
+
+= [1.1.0] - 2016-11-18 =
 * Caching improvements
 
 = [1.0.0] - 2016-11-13 =
