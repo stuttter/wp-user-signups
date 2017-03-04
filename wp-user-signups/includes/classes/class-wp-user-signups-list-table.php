@@ -111,7 +111,7 @@ final class WP_User_Signup_List_Table extends WP_List_Table {
 		);
 
 		// Remove site column if single-site
-		if ( ! is_multisite() ) {
+		if ( ! wp_user_signups_is_multisite() ) {
 			unset( $columns['site'] );
 		}
 

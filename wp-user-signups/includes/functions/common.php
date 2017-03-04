@@ -125,3 +125,16 @@ function wp_user_signups_sanitize_signup_ids( $single = false ) {
 	// Filter & return
 	return (array) apply_filters( 'wp_user_signups_sanitize_signup_ids', $retval );
 }
+
+/**
+ * A wrapper for is_multisite() to expose multisite specific interface elements.
+ *
+ * This is useful for multi-installation environments that might be connected to
+ * other multi-site environments, where global user-tables might be shared
+ * between them.
+ *
+ * @since 1.3.0
+ */
+function wp_user_signups_is_multisite() {
+	return (bool) apply_filters( 'wp_user_signups_is_multisite', is_multisite() );
+}

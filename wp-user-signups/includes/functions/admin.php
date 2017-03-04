@@ -301,6 +301,7 @@ function wp_user_signups_handle_actions() {
 			// Bail if an error occurred
 			if ( is_wp_error( $result ) ) {
 				$messages[] = $result->get_error_message();
+				var_dump( $result ); die;
 				return $messages;
 			}
 
@@ -356,38 +357,41 @@ function wp_user_signups_output_edit_page() {
 	wp_user_signups_output_page_header( $signup_id ); ?>
 
 	<form method="post" action="<?php echo esc_url( $action_url ); ?>" novalidate="novalidate">
-		<h3><?php esc_html_e( 'Site', 'wp-user-signups' ); ?></h3>
-		<p><?php esc_html_e( 'These details are for a new site at the same time as a user. (Empty if there is no site.)', 'wp-user-signups' ); ?></p>
-		<table class="form-table">
-			<tbody>
-				<tr>
-					<th scope="row">
-						<label for="domain"><?php echo esc_html_x( 'Domain', 'User signup', 'wp-user-signups' ); ?></label>
-					</th>
-					<td>
-						<input type="text" class="regular-text" name="domain" id="domain" value="<?php echo esc_attr( $signup->domain ); ?>">
-					</td>
-				</tr>
-				<tr>
-					<th scope="row">
-						<label for="path"><?php echo esc_html_x( 'Path', 'User signup', 'wp-user-signups' ); ?></label>
-					</th>
-					<td>
-						<input type="text" class="regular-text" name="path" id="path" value="<?php echo esc_attr( $signup->path ); ?>">
-					</td>
-				</tr>
-				<tr>
-					<th scope="row">
-						<label for="title"><?php echo esc_html_x( 'Title', 'User signup', 'wp-user-signups' ); ?></label>
-					</th>
-					<td>
-						<input type="text" class="regular-text" name="title" id="title" value="<?php echo esc_attr( $signup->title ); ?>">
-					</td>
-				</tr>
-			</tbody>
-		</table>
+		<?php if ( wp_user_signups_is_multisite() ) : ?>
+			<h3><?php esc_html_e( 'Site', 'wp-user-signups' ); ?></h3>
+			<p><?php esc_html_e( 'These details are for a new site at the same time as a user. (Empty if there is no site.)', 'wp-user-signups' ); ?></p>
+			<table class="form-table">
+				<tbody>
+					<tr>
+						<th scope="row">
+							<label for="domain"><?php echo esc_html_x( 'Domain', 'User signup', 'wp-user-signups' ); ?></label>
+						</th>
+						<td>
+							<input type="text" class="regular-text" name="domain" id="domain" value="<?php echo esc_attr( $signup->domain ); ?>">
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">
+							<label for="path"><?php echo esc_html_x( 'Path', 'User signup', 'wp-user-signups' ); ?></label>
+						</th>
+						<td>
+							<input type="text" class="regular-text" name="path" id="path" value="<?php echo esc_attr( $signup->path ); ?>">
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">
+							<label for="title"><?php echo esc_html_x( 'Title', 'User signup', 'wp-user-signups' ); ?></label>
+						</th>
+						<td>
+							<input type="text" class="regular-text" name="title" id="title" value="<?php echo esc_attr( $signup->title ); ?>">
+						</td>
+					</tr>
+				</tbody>
+			</table>
 
-		<h3><?php esc_html_e( 'User', 'wp-user-signups' ); ?></h3>
+			<h3><?php esc_html_e( 'User', 'wp-user-signups' ); ?></h3>
+		<?php endif; ?>
+
 		<p><?php esc_html_e( 'These details are for a new user account. (These fields are required.)', 'wp-user-signups' ); ?></p>
 		<table class="form-table">
 			<tbody>
