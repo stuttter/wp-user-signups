@@ -301,7 +301,6 @@ function wp_user_signups_handle_actions() {
 			// Bail if an error occurred
 			if ( is_wp_error( $result ) ) {
 				$messages[] = $result->get_error_message();
-				var_dump( $result ); die;
 				return $messages;
 			}
 
