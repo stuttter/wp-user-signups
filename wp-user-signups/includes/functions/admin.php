@@ -207,6 +207,7 @@ function wp_user_signups_handle_actions() {
 
 				// Skip erroneous signups
 				if ( is_wp_error( $signup ) ) {
+					$args['error'] = $signup->get_error_message();
 					continue;
 				}
 
@@ -231,6 +232,7 @@ function wp_user_signups_handle_actions() {
 
 				// Skip erroneous signups
 				if ( is_wp_error( $signup ) ) {
+					$args['error'] = $signup->get_error_message();
 					continue;
 				}
 
@@ -249,6 +251,7 @@ function wp_user_signups_handle_actions() {
 
 				// Skip erroneous signups
 				if ( is_wp_error( $signup ) ) {
+					$args['error'] = $signup->get_error_message();
 					continue;
 				}
 
@@ -272,8 +275,8 @@ function wp_user_signups_handle_actions() {
 			$signup    = WP_User_Signup::get_instance( $signup_id );
 
 			if ( is_wp_error( $signup ) ) {
-				$messages[] = $signup->get_error_message();
-				return $messages;
+				$args['error'] = $signup->get_error_message();
+				continue;
 			}
 
 			// Update
@@ -282,8 +285,8 @@ function wp_user_signups_handle_actions() {
 
 			// Bail if an error occurred
 			if ( is_wp_error( $result ) ) {
-				$messages[] = $result->get_error_message();
-				return $messages;
+				$args['error'] = $result->get_error_message();
+				continue;
 			}
 
 			$processed[] = $signup_id;
@@ -300,8 +303,9 @@ function wp_user_signups_handle_actions() {
 
 			// Bail if an error occurred
 			if ( is_wp_error( $result ) ) {
-				$messages[] = $result->get_error_message();
-				return $messages;
+				$args['error'] = $result->get_error_code();
+				$args['page']  = 'user_signup_edit';
+				continue;
 			}
 
 			$processed[] = $result->signup_id;
@@ -348,7 +352,7 @@ function wp_user_signups_output_edit_page() {
 
 	// URL
 	$action_url = wp_user_signups_admin_url( array(
-		'page'   => 'user_signups',
+		'page'   => 'user_signup_edit',
 		'action' => $action
 	) );
 
@@ -547,14 +551,25 @@ function wp_user_signups_output_admin_notices() {
 		return;
 	}
 
+	// Notice variables
 	$class      = 'notice-success';
 	$did_action = sanitize_key( $_REQUEST['did_action'] );
 	$processed  = ! empty( $_REQUEST['processed'] )
 		? wp_parse_id_list( (array) $_REQUEST['processed'] )
 		: array();
 
+	// Changed count
+	$count = count( $processed );
+
 	// Special case for single, as it's not really a "bulk" action
-	if ( count( $processed ) === 1 ) {
+	if ( empty( $count ) ) {
+		$bulk_messages = array();
+		$messages      = array(
+			esc_html__( 'An error has occurred.', 'wp-user-signups' )
+		);
+
+	// 1 item
+	} elseif ( 1 === $count ) {
 		$bulk_messages = array(
 			'activate' => esc_html__( 'Activated %s.', 'wp-user-signups' ),
 			'resend'   => esc_html__( 'Resent to %s.', 'wp-user-signups' ),
@@ -573,7 +588,6 @@ function wp_user_signups_output_admin_notices() {
 	// Note: we still use _n for languages which have special cases on
 	// e.g. 3, 5, 10, etc
 	} else {
-		$count         = count( $processed );
 		$placeholder   = number_format_i18n( $count );
 		$bulk_messages = array(
 			'activate' => _n( '%s signup activated.', '%s signups activated.', $count, 'wp-user-signups' ),
