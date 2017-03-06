@@ -199,7 +199,7 @@ class WP_User_Signup {
 
 		// Bail if missing login or email
 		if ( empty( $r['user_login'] ) || empty( $r['user_email'] ) ) {
-			return new WP_Error( 'wp_user_signups_invalid_id' );
+			return new WP_Error( 'wp_user_signups_empty_id' );
 		}
 
 		// Check for previous signup
