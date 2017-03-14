@@ -51,8 +51,8 @@ final class WP_User_Signup_DB {
 		$this->db = $GLOBALS['wpdb'];
 
 		// Force table on to the global database object
-		add_action( 'init',           array( $this, 'add_table_to_db_object' ) );
-		add_action( 'switch_to_blog', array( $this, 'add_table_to_db_object' ) );
+		add_action( 'init',        array( $this, 'add_table_to_db_object' ) );
+		add_action( 'switch_blog', array( $this, 'add_table_to_db_object' ) );
 
 		// Check if DB needs upgrading
 		if ( is_admin() ) {
