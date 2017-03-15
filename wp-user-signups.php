@@ -8,7 +8,7 @@
  * License:     GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Description: User signup management for WordPress
- * Version:     1.2.0
+ * Version:     2.0.0
  * Text Domain: wp-user-signups
  * Domain Path: /wp-user-signups/assets/languages/
  */
@@ -20,15 +20,6 @@ defined( 'ABSPATH' ) || exit;
 if ( class_exists( 'WP_User_Signup' ) ) {
 	return;
 }
-
-// Define the table variables
-if ( empty( $GLOBALS['wpdb']->signups ) ) {
-	$GLOBALS['wpdb']->signups            = $GLOBALS['wpdb']->base_prefix . 'signups';
-	$GLOBALS['wpdb']->ms_global_tables[] = 'signups';
-}
-
-// Ensure cache is shared
-wp_cache_add_global_groups( array( 'user_signups' ) );
 
 // Execute immediately
 _wp_user_signups();
@@ -44,9 +35,10 @@ function _wp_user_signups() {
 	$plugin_path = wp_user_signups_get_plugin_path();
 
 	// Classes
+	require_once $plugin_path . 'includes/classes/class-wp-db-table.php';
+	require_once $plugin_path . 'includes/classes/class-wp-db-table-user-signups.php';
 	require_once $plugin_path . 'includes/classes/class-wp-user-signup.php';
 	require_once $plugin_path . 'includes/classes/class-wp-user-signup-query.php';
-	require_once $plugin_path . 'includes/classes/class-wp-user-signups-db-table.php';
 
 	// Required Files
 	require_once $plugin_path . 'includes/functions/admin.php';
@@ -55,10 +47,16 @@ function _wp_user_signups() {
 	require_once $plugin_path . 'includes/functions/common.php';
 	require_once $plugin_path . 'includes/functions/capabilities.php';
 	require_once $plugin_path . 'includes/functions/hooks.php';
+
+	// Tables
+	new WP_DB_Table_User_Signups();
+
+	// Ensure cache is shared
+	wp_cache_add_global_groups( array( 'user_signups' ) );
 }
 
 /**
- * Return the plugin's root file
+ * Return the plugin root file
  *
  * @since 1.0.0
  *
@@ -69,7 +67,7 @@ function wp_user_signups_get_plugin_file() {
 }
 
 /**
- * Return the plugin's path
+ * Return the plugin path
  *
  * @since 1.0.0
  *
@@ -80,7 +78,7 @@ function wp_user_signups_get_plugin_path() {
 }
 
 /**
- * Return the plugin's URL
+ * Return the plugin URL
  *
  * @since 1.0.0
  *
@@ -98,5 +96,5 @@ function wp_user_signups_get_plugin_url() {
  * @return int
  */
 function wp_user_signups_get_asset_version() {
-	return 201611180001;
+	return 201703150001;
 }
