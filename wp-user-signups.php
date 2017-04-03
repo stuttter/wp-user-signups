@@ -1,15 +1,15 @@
 <?php
 
 /**
- * Plugin Name: WP User Signups
+ * Plugin Name: WP Signups
  * Plugin URI:  https://wordpress.org/plugins/wp-user-signups/
  * Author:      John James Jacoby
  * Author URI:  https://profiles.wordpress.org/johnjamesjacoby/
  * License:     GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Description: User signup management for WordPress
- * Version:     2.0.0
- * Text Domain: wp-user-signups
+ * Description: Signup management for WordPress
+ * Version:     3.0.0
+ * Text Domain: wp-signups
  * Domain Path: /wp-user-signups/assets/languages/
  */
 
@@ -17,28 +17,28 @@
 defined( 'ABSPATH' ) || exit;
 
 // Bail if core already supports this
-if ( class_exists( 'WP_User_Signup' ) ) {
+if ( class_exists( 'WP_Signup' ) ) {
 	return;
 }
 
 // Execute immediately
-_wp_user_signups();
+_wp_signups();
 
 /**
  * Include the required files
  *
  * @since 1.0.0
  */
-function _wp_user_signups() {
+function _wp_signups() {
 
 	// Get the plugin path
-	$plugin_path = wp_user_signups_get_plugin_path();
+	$plugin_path = wp_signups_get_plugin_path();
 
 	// Classes
 	require_once $plugin_path . 'includes/classes/class-wp-db-table.php';
 	require_once $plugin_path . 'includes/classes/class-wp-db-table-user-signups.php';
-	require_once $plugin_path . 'includes/classes/class-wp-user-signup.php';
-	require_once $plugin_path . 'includes/classes/class-wp-user-signup-query.php';
+	require_once $plugin_path . 'includes/classes/class-wp-signup.php';
+	require_once $plugin_path . 'includes/classes/class-wp-signup-query.php';
 
 	// Required Files
 	require_once $plugin_path . 'includes/functions/admin.php';
@@ -52,7 +52,7 @@ function _wp_user_signups() {
 	new WP_DB_Table_User_Signups();
 
 	// Ensure cache is shared
-	wp_cache_add_global_groups( array( 'user_signups' ) );
+	wp_cache_add_global_groups( array( 'signups' ) );
 }
 
 /**
@@ -62,7 +62,7 @@ function _wp_user_signups() {
  *
  * @return string
  */
-function wp_user_signups_get_plugin_file() {
+function wp_signups_get_plugin_file() {
 	return __FILE__;
 }
 
@@ -73,8 +73,8 @@ function wp_user_signups_get_plugin_file() {
  *
  * @return string
  */
-function wp_user_signups_get_plugin_path() {
-	return plugin_dir_path( __FILE__ ) . 'wp-user-signups/';
+function wp_signups_get_plugin_path() {
+	return plugin_dir_path( __FILE__ ) . 'wp-signups/';
 }
 
 /**
@@ -84,8 +84,8 @@ function wp_user_signups_get_plugin_path() {
  *
  * @return string
  */
-function wp_user_signups_get_plugin_url() {
-	return plugin_dir_url( wp_user_signups_get_plugin_file() ) . 'wp-user-signups/';
+function wp_signups_get_plugin_url() {
+	return plugin_dir_url( wp_signups_get_plugin_file() ) . 'wp-signups/';
 }
 
 /**
@@ -95,6 +95,6 @@ function wp_user_signups_get_plugin_url() {
  *
  * @return int
  */
-function wp_user_signups_get_asset_version() {
-	return 201703150001;
+function wp_signups_get_asset_version() {
+	return 201704030001;
 }

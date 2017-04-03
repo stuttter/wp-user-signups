@@ -3,7 +3,7 @@
 /**
  * User Sign-ups List Table
  *
- * @package Plugins/User/Signups/ListTable
+ * @package Plugins/Signups/ListTable
  */
 
 // Exit if accessed directly
@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * List table for sign-ups
  */
-final class WP_User_Signup_List_Table extends WP_List_Table {
+final class WP_Signup_List_Table extends WP_List_Table {
 
 	/**
 	 * Which status is selected
@@ -39,7 +39,7 @@ final class WP_User_Signup_List_Table extends WP_List_Table {
 	 */
 	public function __construct() {
 		$this->active   = (int) ! empty( $_GET['active'] );
-		$this->statuses = wp_user_signups_get_statuses();
+		$this->statuses = wp_signups_get_statuses();
 
 		parent::__construct();
 	}
@@ -62,7 +62,7 @@ final class WP_User_Signup_List_Table extends WP_List_Table {
 			: 'asc';
 
 		// Limit
-		$per_page = $this->get_items_per_page( 'edit_user_signups_per_page' );
+		$per_page = $this->get_items_per_page( 'edit_signups_per_page' );
 		$page_num = isset( $_GET['paged'] ) ? absint( $_GET['paged'] ) : 0;
 		$paged    = max( 1, $page_num );
 
@@ -71,7 +71,7 @@ final class WP_User_Signup_List_Table extends WP_List_Table {
 		$total = reset( $type );
 
 		// Query for signups
-		$query = new WP_User_Signup_Query( array(
+		$query = new WP_Signup_Query( array(
 			'active'  => $this->active,
 			'orderby' => $orderby,
 			'order'   => $order,
@@ -103,15 +103,15 @@ final class WP_User_Signup_List_Table extends WP_List_Table {
 		// All columns
 		$columns = array(
 			'cb'             => '<input type="checkbox" />',
-			'user'           => _x( 'User',       'wp-user-signups' ),
-			'site'           => _x( 'Site',       'wp-user-signups' ),
-			'activation_key' => _x( 'Key',        'wp-user-signups' ),
-			'registered'     => _x( 'Registered', 'wp-user-signups' ),
-			'activated'      => _x( 'Activated',  'wp-user-signups' )
+			'user'           => _x( 'User',       'wp-signups' ),
+			'site'           => _x( 'Site',       'wp-signups' ),
+			'activation_key' => _x( 'Key',        'wp-signups' ),
+			'registered'     => _x( 'Registered', 'wp-signups' ),
+			'activated'      => _x( 'Activated',  'wp-signups' )
 		);
 
 		// Remove site column if single-site
-		if ( ! wp_user_signups_is_multisite() ) {
+		if ( ! wp_signups_is_multisite() ) {
 			unset( $columns['site'] );
 		}
 
@@ -146,9 +146,9 @@ final class WP_User_Signup_List_Table extends WP_List_Table {
 
 		// Default actions
 		$actions = array(
-			'activate' => esc_html__( 'Activate', 'wp-user-signups' ),
-			'resend'   => esc_html__( 'Resend',   'wp-user-signups' ),
-			'delete'   => esc_html__( 'Delete',   'wp-user-signups' )
+			'activate' => esc_html__( 'Activate', 'wp-signups' ),
+			'resend'   => esc_html__( 'Resend',   'wp-signups' ),
+			'delete'   => esc_html__( 'Delete',   'wp-signups' )
 		);
 
 		// Remove activate action of already viewing active sign-ups
@@ -156,7 +156,7 @@ final class WP_User_Signup_List_Table extends WP_List_Table {
 			unset( $actions['activate'] );
 		}
 
-		return apply_filters( 'wp_user_signups_bulk_actions', $actions );
+		return apply_filters( 'wp_signups_bulk_actions', $actions );
 	}
 
 	/**
@@ -186,7 +186,7 @@ final class WP_User_Signup_List_Table extends WP_List_Table {
 			$this->_actions = apply_filters( "bulk_actions-{$this->screen->id}", $this->_actions );
 			$this->_actions = array_intersect_assoc( $this->_actions, $no_new_actions );
 			$two = '';
-			wp_nonce_field( 'user_signups-bulk' );
+			wp_nonce_field( 'signups-bulk' );
 		} else {
 			$two = '2';
 		}
@@ -195,7 +195,7 @@ final class WP_User_Signup_List_Table extends WP_List_Table {
 			return;
 		}
 
-		echo "<label for='bulk-action-selector-" . esc_attr( $which ) . "' class='screen-reader-text'>" . esc_html__( 'Select bulk action', 'wp-user-signups' ) . "</label>";
+		echo "<label for='bulk-action-selector-" . esc_attr( $which ) . "' class='screen-reader-text'>" . esc_html__( 'Select bulk action', 'wp-signups' ) . "</label>";
 		echo "<select name='bulk_action{$two}' id='bulk-action-selector-" . esc_attr( $which ) . "'>\n";
 		echo "<option value='-1' selected='selected'>" . __( 'Bulk Actions' ) . "</option>\n";
 
@@ -208,7 +208,7 @@ final class WP_User_Signup_List_Table extends WP_List_Table {
 		}
 
 		echo "</select>\n";
-		submit_button( __( 'Apply', 'wp-user-signups' ), 'action', false, false, array( 'id' => "doaction{$two}" ) );
+		submit_button( __( 'Apply', 'wp-signups' ), 'action', false, false, array( 'id' => "doaction{$two}" ) );
 		echo "\n";
 	}
 
@@ -241,11 +241,11 @@ final class WP_User_Signup_List_Table extends WP_List_Table {
 	 */
 	public function no_items() {
 		if ( 1 === $this->active ) {
-			esc_html_e( 'No active sign-ups.', 'wp-user-signups' );
+			esc_html_e( 'No active sign-ups.', 'wp-signups' );
 		} elseif ( 0 === $this->active ) {
-			esc_html_e( 'No pending sign-ups.', 'wp-user-signups' );
+			esc_html_e( 'No pending sign-ups.', 'wp-signups' );
 		} else {
-			esc_html_e( 'No sign-ups found.', 'wp-user-signups' );
+			esc_html_e( 'No sign-ups found.', 'wp-signups' );
 		}
 	}
 
@@ -275,7 +275,7 @@ final class WP_User_Signup_List_Table extends WP_List_Table {
 				: array();
 
 			// Build the URL for the status
-			$url = wp_user_signups_admin_url( $args );
+			$url = wp_signups_admin_url( $args );
 
 			// Add link to array
 			$view_links[ $status->id ] = "<a href='" . esc_url( $url ) . "' class='" . esc_attr( $class ) . "'>" . sprintf( _nx( $status->name . ' <span class="count">(%s)</span>', $status->name . ' <span class="count">(%s)</span>', $status->count, 'users' ), number_format_i18n( $status->count ) ) . '</a>';
@@ -291,7 +291,7 @@ final class WP_User_Signup_List_Table extends WP_List_Table {
 	 * @since 1.0.0
 	 * @access protected
 	 *
-	 * @param WP_User_Signup $signup Current sign-up item
+	 * @param WP_Signup $signup Current sign-up item
 	 * @return string HTML for the cell
 	 */
 	protected function column_cb( $signup ) {
@@ -299,7 +299,7 @@ final class WP_User_Signup_List_Table extends WP_List_Table {
 		$domain    = $signup->domain;
 
 		return '<label class="screen-reader-text" for="cb-select-' . esc_attr( $signup_id ) . '">'
-			. sprintf( __( 'Select %s', 'wp-user-signups' ), esc_html( $domain ) ) . '</label>'
+			. sprintf( __( 'Select %s', 'wp-signups' ), esc_html( $domain ) ) . '</label>'
 			. '<input type="checkbox" name="signup_ids[]" value="' . esc_attr( $signup_id )
 			. '" id="cb-select-' . esc_attr( $signup_id ) . '" />';
 	}
@@ -310,7 +310,7 @@ final class WP_User_Signup_List_Table extends WP_List_Table {
 	 * @since 1.0.0
 	 * @access protected
 	 *
-	 * @param WP_User_Signup $signup Current sign-up item
+	 * @param WP_Signup $signup Current sign-up item
 	 * @return string HTML for the cell
 	 */
 	protected function column_user( $signup ) {
@@ -325,45 +325,45 @@ final class WP_User_Signup_List_Table extends WP_List_Table {
 		$active    = (bool) $signup->active;
 
 		// Edit
-		$edit_link = wp_user_signups_admin_url( array(
+		$edit_link = wp_signups_admin_url( array(
 			'signup_ids' => $signup_id,
-			'page'       => 'user_signup_edit',
-			'referrer'   => wp_user_signups_is_list_page()
+			'page'       => 'signup_edit',
+			'referrer'   => wp_signups_is_list_page()
 				? 'network'
 				: 'site'
 		) );
 
 		// Active
-		$text   = __( 'Activate', 'wp-user-signups' );
+		$text   = __( 'Activate', 'wp-signups' );
 		$action = 'activate';
 
 		// Default args
 		$args = array(
 			'action'     => $action,
 			'signup_ids' => $signup_id,
-			'_wpnonce'   => wp_create_nonce( 'user_signups-bulk' )
+			'_wpnonce'   => wp_create_nonce( 'signups-bulk' )
 		);
 
-		$status_link = wp_user_signups_admin_url( $args );
+		$status_link = wp_signups_admin_url( $args );
 
 		// Resend
 		$resend_args           = $args;
 		$resend_args['action'] = 'resend';
-		$resend_link           = wp_user_signups_admin_url( $resend_args );
+		$resend_link           = wp_signups_admin_url( $resend_args );
 
 		// Delete
 		$delete_args           = $args;
 		$delete_args['action'] = 'delete';
-		$delete_link           = wp_user_signups_admin_url( $delete_args );
+		$delete_link           = wp_signups_admin_url( $delete_args );
 
 		// Edit
 		if ( current_user_can( 'edit_signup', $signup_id ) ) {
-			$actions['edit'] = sprintf( '<a href="%s">%s</a>', esc_url( $edit_link ), esc_html__( 'Edit', 'wp-user-signups' ) );
+			$actions['edit'] = sprintf( '<a href="%s">%s</a>', esc_url( $edit_link ), esc_html__( 'Edit', 'wp-signups' ) );
 		}
 
 		// Resend
 		if ( current_user_can( 'resend_signup', $signup_id ) ) {
-			$actions['resend'] = sprintf( '<a href="%s">%s</a>', esc_url( $resend_link ), esc_html__( 'Resend', 'wp-user-signups' ) );
+			$actions['resend'] = sprintf( '<a href="%s">%s</a>', esc_url( $resend_link ), esc_html__( 'Resend', 'wp-signups' ) );
 		}
 
 		// Activate
@@ -373,7 +373,7 @@ final class WP_User_Signup_List_Table extends WP_List_Table {
 
 		// Delete
 		if ( current_user_can( 'delete_signup', $signup_id ) ) {
-			$actions['delete'] = sprintf( '<a href="%s" class="submitdelete">%s</a>', esc_url( $delete_link ), esc_html__( 'Delete', 'wp-user-signups' ) );
+			$actions['delete'] = sprintf( '<a href="%s" class="submitdelete">%s</a>', esc_url( $delete_link ), esc_html__( 'Delete', 'wp-signups' ) );
 		}
 
 		// Get HTML from actions
@@ -388,7 +388,7 @@ final class WP_User_Signup_List_Table extends WP_List_Table {
 	 * @since 1.0.0
 	 * @access protected
 	 *
-	 * @param WP_User_Signup $signup Current sign-up item
+	 * @param WP_Signup $signup Current sign-up item
 	 * @return string HTML for the cell
 	 */
 	protected function column_user_email( $signup ) {
@@ -401,7 +401,7 @@ final class WP_User_Signup_List_Table extends WP_List_Table {
 	 * @since 1.0.0
 	 * @access protected
 	 *
-	 * @param WP_User_Signup $signup Current sign-up item
+	 * @param WP_Signup $signup Current sign-up item
 	 * @return string HTML for the cell
 	 */
 	protected function column_site( $signup ) {
@@ -416,7 +416,7 @@ final class WP_User_Signup_List_Table extends WP_List_Table {
 	 * @since 1.0.0
 	 * @access protected
 	 *
-	 * @param WP_User_Signup $signup Current sign-up item
+	 * @param WP_Signup $signup Current sign-up item
 	 * @return string HTML for the cell
 	 */
 	protected function column_activation_key( $signup ) {
@@ -429,7 +429,7 @@ final class WP_User_Signup_List_Table extends WP_List_Table {
 	 * @since 1.0.0
 	 * @access protected
 	 *
-	 * @param WP_User_Signup $signup Current sign-up item
+	 * @param WP_Signup $signup Current sign-up item
 	 *
 	 * @return string HTML for the cell
 	 */
@@ -444,7 +444,7 @@ final class WP_User_Signup_List_Table extends WP_List_Table {
 	 * @since 1.0.0
 	 * @access protected
 	 *
-	 * @param WP_User_Signup $signup Current sign-up item
+	 * @param WP_Signup $signup Current sign-up item
 	 *
 	 * @return string HTML for the cell
 	 */
@@ -452,7 +452,7 @@ final class WP_User_Signup_List_Table extends WP_List_Table {
 
 		// Not yet active
 		if (  '0000-00-00 00:00:00' === $signup->activated ) {
-			return esc_html__( '&mdash;', 'wp-user-signups' );
+			return esc_html__( '&mdash;', 'wp-signups' );
 
 		// Activated
 		} else {

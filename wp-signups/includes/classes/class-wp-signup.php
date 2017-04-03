@@ -1,9 +1,9 @@
 <?php
 
 /**
- * User Sign-ups Class
+ * Sign-ups Class
  *
- * @package Plugins/User/Signups/Class
+ * @package Plugins/Signups/Class
  */
 
 // Exit if accessed directly
@@ -14,7 +14,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @since 1.0.0
  */
-class WP_User_Signup {
+class WP_Signup {
 
 	/**
 	 * Signup data
@@ -84,7 +84,7 @@ class WP_User_Signup {
 
 		// Check for errors
 		if ( empty( $result ) && ! empty( $wpdb->last_error ) ) {
-			return new WP_Error( 'wp_user_signups_update_failed', esc_html__( 'An error has occurred.', 'wp-user-signups' ), $this );
+			return new WP_Error( 'wp_signups_update_failed', esc_html__( 'An error has occurred.', 'wp-signups' ), $this );
 		}
 
 		// Clone object to pass into object later
@@ -96,15 +96,15 @@ class WP_User_Signup {
 		}
 
 		// Clean item cache
-		clean_user_signup_cache( $this );
+		clean_signup_cache( $this );
 
 		/**
 		 * Fires after a signup has been updated.
 		 *
-		 * @param  WP_User_Signup  $signup  The signup object.
-		 * @param  WP_User_Signup  $signup  The previous signup object.
+		 * @param  WP_Signup  $signup  The signup object.
+		 * @param  WP_Signup  $signup  The previous signup object.
 		 */
-		do_action( 'wp_user_signups_updated', $this, $old_signup );
+		do_action( 'wp_signups_updated', $this, $old_signup );
 
 		return true;
 	}
@@ -126,18 +126,18 @@ class WP_User_Signup {
 
 		// Bail with error
 		if ( empty( $result ) ) {
-			return new WP_Error( 'wp_user_signups_delete_failed', esc_html__( 'Delete failed.', 'wp-user-signups' ), $this );
+			return new WP_Error( 'wp_signups_delete_failed', esc_html__( 'Delete failed.', 'wp-signups' ), $this );
 		}
 
 		// Delete cache
-		clean_user_signup_cache( $this );
+		clean_signup_cache( $this );
 
 		/**
 		 * Fires after a signup has been deleted.
 		 *
-		 * @param  WP_User_Signup  $signup The signup object.
+		 * @param  WP_Signup  $signup The signup object.
 		 */
-		do_action( 'wp_user_signups_deleted', $this );
+		do_action( 'wp_signups_deleted', $this );
 
 		return true;
 	}
@@ -147,23 +147,23 @@ class WP_User_Signup {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param int|WP_User_Signup $signup Signup ID or instance
-	 * @return WP_User_Signup Signup always, even if empty
+	 * @param int|WP_Signup $signup Signup ID or instance
+	 * @return WP_Signup Signup always, even if empty
 	 */
 	public static function get_instance( $signup ) {
 		global $wpdb;
 
 		// Allow passing a site object in
-		if ( $signup instanceof WP_User_Signup ) {
+		if ( $signup instanceof WP_Signup ) {
 			return $signup;
 		}
 
 		if ( ! is_numeric( $signup ) ) {
-			return new WP_Error( 'wp_user_signups_invalid_id', esc_html__( 'Signup not found.', 'wp-user-signups' ), $this );
+			return new WP_Error( 'wp_signups_invalid_id', esc_html__( 'Signup not found.', 'wp-signups' ), $this );
 		}
 
 		// Check cache first
-		$_signup = wp_cache_get( $signup, 'user_signups' );
+		$_signup = wp_cache_get( $signup, 'signups' );
 
 		// No cached alias
 		if ( false === $_signup ) {
@@ -175,14 +175,14 @@ class WP_User_Signup {
 
 			// Add alias to cache
 			if ( ! empty( $_signup ) && ! is_wp_error( $_signup ) ) {
-				wp_cache_add( $signup, $_signup, 'user_signups' );
+				wp_cache_add( $signup, $_signup, 'signups' );
 			} else {
 				$_signup = array();
 			}
 		}
 
 		// Signup exists
-		return new WP_User_Signup( $_signup );
+		return new WP_Signup( $_signup );
 	}
 
 	/**
@@ -190,7 +190,7 @@ class WP_User_Signup {
 	 *
 	 * @param array $args Array of signup details
 	 *
-	 * @return WP_User_Signup|WP_Error
+	 * @return WP_Signup|WP_Error
 	 */
 	public static function create( $args = array() ) {
 		global $wpdb;
@@ -199,11 +199,11 @@ class WP_User_Signup {
 
 		// Bail if missing login or email
 		if ( empty( $r['user_login'] ) || empty( $r['user_email'] ) ) {
-			return new WP_Error( 'wp_user_signups_empty_id', esc_html__( 'Signup not found.', 'wp-user-signups' ), $this );
+			return new WP_Error( 'wp_signups_empty_id', esc_html__( 'Signup not found.', 'wp-signups' ), $this );
 		}
 
 		// Check for previous signup
-		$query    = new WP_User_Signup_Query();
+		$query    = new WP_Signup_Query();
 		$existing = $query->query( array(
 			'user_email' => $r['user_email'],
 			'number'     => 1
@@ -211,7 +211,7 @@ class WP_User_Signup {
 
 		// Domain exists already...
 		if ( ! empty( $existing ) ) {
-			return new WP_Error( 'wp_user_signups_domain_exists', esc_html__( 'That signup already exists.', 'wp-user-signups' ), $this );
+			return new WP_Error( 'wp_signups_domain_exists', esc_html__( 'That signup already exists.', 'wp-signups' ), $this );
 		}
 
 		// Create the signup!
@@ -232,11 +232,11 @@ class WP_User_Signup {
 				$wpdb->print_error( $error['error_str'] );
 			}
 
-			return new WP_Error( 'wp_user_signups_insert_failed', esc_html__( 'Signup creation failed.', 'wp-user-signups' ), $this );
+			return new WP_Error( 'wp_signups_insert_failed', esc_html__( 'Signup creation failed.', 'wp-signups' ), $this );
 		}
 
 		// Ensure the cache is flushed
-		clean_user_signup_cache( $wpdb->insert_id );
+		clean_signup_cache( $wpdb->insert_id );
 
 		// Prime the cache
 		$signup = static::get_instance( $wpdb->insert_id );
@@ -244,9 +244,9 @@ class WP_User_Signup {
 		/**
 		 * Fires after a signup has been created.
 		 *
-		 * @param  WP_User_Signup  $signup  The signup object.
+		 * @param  WP_Signup  $signup  The signup object.
 		 */
-		do_action( 'wp_user_signups_created', $signup );
+		do_action( 'wp_signups_created', $signup );
 
 		// Sent notifications
 		$signup->notify();
@@ -270,8 +270,8 @@ class WP_User_Signup {
 		// Already active
 		if ( true === (bool) $this->active ) {
 			return empty( $this->domain )
-				? new WP_Error( 'already_active', esc_html__( 'The user is already active.', 'wp-user-signups' ), $this )
-				: new WP_Error( 'already_active', esc_html__( 'The site is already active.', 'wp-user-signups' ), $this );
+				? new WP_Error( 'already_active', esc_html__( 'The user is already active.', 'wp-signups' ), $this )
+				: new WP_Error( 'already_active', esc_html__( 'The site is already active.', 'wp-signups' ), $this );
 		}
 
 		// Prepare some signup info
@@ -294,7 +294,7 @@ class WP_User_Signup {
 
 		// Bail if no user was created
 		if ( empty( $user_id ) || ( true === $user_already_exists ) ) {
-			return new WP_Error( 'already_active', esc_html__( 'The user is already active.', 'wp-user-signups' ), $this );
+			return new WP_Error( 'already_active', esc_html__( 'The user is already active.', 'wp-signups' ), $this );
 		}
 
 		// Get the current time, we'll use it in a few places
@@ -311,7 +311,7 @@ class WP_User_Signup {
 
 		// Bail if update failed
 		if ( is_wp_error( $updated ) ) {
-			return new WP_Error( 'activation_failed', esc_html__( 'Sign up activation failed.', 'wp-user-signups' ), $this );
+			return new WP_Error( 'activation_failed', esc_html__( 'Sign up activation failed.', 'wp-signups' ), $this );
 		}
 
 		// Default return value
@@ -378,7 +378,7 @@ class WP_User_Signup {
 		if ( ! empty( $this->domain ) && ! empty( $this->path ) ) {
 
 			/**
-			 * Fires after site signup information has been written to the database.
+			 * Fires after signup information has been written to the database.
 			 *
 			 * @since 4.4.0
 			 *

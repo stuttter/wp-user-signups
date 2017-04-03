@@ -17,11 +17,11 @@ defined( 'ABSPATH' ) || exit;
  * @param array $args
  * @return array
  */
-function wp_user_signups_admin_url( $args = array() ) {
+function wp_signups_admin_url( $args = array() ) {
 
 	// Parse args
 	$r = wp_parse_args( $args, array(
-		'page' => 'user_signups'
+		'page' => 'signups'
 	) );
 
 	// Location
@@ -33,7 +33,7 @@ function wp_user_signups_admin_url( $args = array() ) {
 	$url = add_query_arg( $r, $admin_url );
 
 	// Add args and return
-	return apply_filters( 'wp_user_signups_admin_url', $url, $admin_url, $r, $args );
+	return apply_filters( 'wp_signups_admin_url', $url, $admin_url, $r, $args );
 }
 
 /**
@@ -43,8 +43,8 @@ function wp_user_signups_admin_url( $args = array() ) {
  *
  * @return bool
  */
-function wp_user_signups_is_list_page() {
-	return isset( $_GET['page'] ) && ( 'user_signups' === $_GET['page'] );
+function wp_signups_is_list_page() {
+	return isset( $_GET['page'] ) && ( 'signups' === $_GET['page'] );
 }
 
 /**
@@ -54,21 +54,21 @@ function wp_user_signups_is_list_page() {
  *
  * @return bool
  */
-function wp_user_signups_is_network_edit() {
+function wp_signups_is_network_edit() {
 	return isset( $_GET['referrer'] ) && ( 'network' === $_GET['referrer'] );
 }
 
 /**
- * Get all available site signup statuses
+ * Get all available signup statuses
  *
  * @since 1.0.0
  *
  * @return array
  */
-function wp_user_signups_get_statuses() {
+function wp_signups_get_statuses() {
 
 	// Pending count
-	$query = new WP_User_Signup_Query();
+	$query = new WP_Signup_Query();
 
 	// Pending
 	$pending = $query->query( array(
@@ -83,17 +83,17 @@ function wp_user_signups_get_statuses() {
 	) );
 
 	// Filter and return
-	return apply_filters( 'wp_user_signups_get_statuses', array(
+	return apply_filters( 'wp_signups_get_statuses', array(
 		(object) array(
 			'id'    => 'pending',
 			'value' => 0,
-			'name'  => _x( 'Pending', 'User sign-ups', 'wp-user-signups' ),
+			'name'  => _x( 'Pending', 'User sign-ups', 'wp-signups' ),
 			'count' => $pending
 		),
 		(object) array(
 			'id'    => 'activated',
 			'value' => 1,
-			'name'  => _x( 'Activated', 'User sign-ups', 'wp-user-signups' ),
+			'name'  => _x( 'Activated', 'User sign-ups', 'wp-signups' ),
 			'count' => $activated
 		),
 	) );
@@ -107,7 +107,7 @@ function wp_user_signups_get_statuses() {
  * @param bool $single
  * @return mixed
  */
-function wp_user_signups_sanitize_signup_ids( $single = false ) {
+function wp_signups_sanitize_signup_ids( $single = false ) {
 
 	// Default value
 	$retval = array();
@@ -123,7 +123,7 @@ function wp_user_signups_sanitize_signup_ids( $single = false ) {
 	}
 
 	// Filter & return
-	return (array) apply_filters( 'wp_user_signups_sanitize_signup_ids', $retval );
+	return (array) apply_filters( 'wp_signups_sanitize_signup_ids', $retval );
 }
 
 /**
@@ -135,6 +135,6 @@ function wp_user_signups_sanitize_signup_ids( $single = false ) {
  *
  * @since 1.3.0
  */
-function wp_user_signups_is_multisite() {
-	return (bool) apply_filters( 'wp_user_signups_is_multisite', is_multisite() );
+function wp_signups_is_multisite() {
+	return (bool) apply_filters( 'wp_signups_is_multisite', is_multisite() );
 }
