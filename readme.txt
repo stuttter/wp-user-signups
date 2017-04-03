@@ -82,6 +82,9 @@ http://github.com/stuttter/wp-user-signups
 
 == Changelog ==
 
+= [3.1.0] - 2017-04-03 =
+* Signup meta support
+
 = [3.0.0] - 2017-04-03 =
 * Rebrand internally to WP Signups
 
