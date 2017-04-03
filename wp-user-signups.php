@@ -36,7 +36,8 @@ function _wp_signups() {
 
 	// Classes
 	require_once $plugin_path . 'includes/classes/class-wp-db-table.php';
-	require_once $plugin_path . 'includes/classes/class-wp-db-table-user-signups.php';
+	require_once $plugin_path . 'includes/classes/class-wp-db-table-signups.php';
+	require_once $plugin_path . 'includes/classes/class-wp-db-table-signupmeta.php';
 	require_once $plugin_path . 'includes/classes/class-wp-signup.php';
 	require_once $plugin_path . 'includes/classes/class-wp-signup-query.php';
 
@@ -49,10 +50,11 @@ function _wp_signups() {
 	require_once $plugin_path . 'includes/functions/hooks.php';
 
 	// Tables
-	new WP_DB_Table_User_Signups();
+	new WP_DB_Table_Signups();
+	new WP_DB_Table_Signupmeta();
 
 	// Ensure cache is shared
-	wp_cache_add_global_groups( array( 'signups' ) );
+	wp_cache_add_global_groups( array( 'signups', 'signupmeta' ) );
 }
 
 /**

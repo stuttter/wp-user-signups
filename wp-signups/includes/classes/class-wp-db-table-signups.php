@@ -1,9 +1,9 @@
 <?php
 
 /**
- * User Signups Database: WP_DB_Table_User_Signups class
+ * User Signups Database: WP_DB_Table_Signups class
  *
- * @package Plugins/Users/Signups/Database/Object
+ * @package Plugins/Signups/Database/Object
  */
 
 // Exit if accessed directly
@@ -14,7 +14,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @since 2.0.0
  */
-final class WP_DB_Table_User_Signups extends WP_DB_Table {
+final class WP_DB_Table_Signups extends WP_DB_Table {
 
 	/**
 	 * @var string Table name
@@ -24,7 +24,7 @@ final class WP_DB_Table_User_Signups extends WP_DB_Table {
 	/**
 	 * @var string Database version
 	 */
-	protected $version = 201703150001;
+	protected $version = 201704030001;
 
 	/**
 	 * @var boolean This is a global table

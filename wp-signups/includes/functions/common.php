@@ -3,7 +3,7 @@
 /**
  * User Sign-ups Functions
  *
- * @package Plugins/Users/Signups/Functions
+ * @package Plugins/Signups/Functions
  */
 
 // Exit if accessed directly
