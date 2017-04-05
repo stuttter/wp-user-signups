@@ -76,7 +76,8 @@ class WP_Signup {
 		global $wpdb;
 
 		// Query
-		$where        = array( 'signup_id' => (int) $this->signup_id );
+		$signup_id    = (int) $this->signup_id;
+		$where        = array( 'signup_id' => $signup_id );
 		$where_format = array( '%d' );
 		$formats      = array( '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%s', '%s' );
 		$fields       = self::validate( (array) $data );
@@ -120,13 +121,20 @@ class WP_Signup {
 		global $wpdb;
 
 		// Delete
-		$where        = array( 'signup_id' => (int) $this->signup_id );
+		$signup_id    = (int) $this->signup_id;
+		$where        = array( 'signup_id' => $signup_id );
 		$where_format = array( '%d' );
 		$result       = $wpdb->delete( $wpdb->signups, $where, $where_format );
 
 		// Bail with error
 		if ( empty( $result ) ) {
 			return new WP_Error( 'wp_signups_delete_failed', esc_html__( 'Delete failed.', 'wp-signups' ), $this );
+		}
+
+		// Delete signup meta
+		$signup_meta_ids = $wpdb->get_col( $wpdb->prepare( "SELECT meta_id FROM {$wpdb->signups} WHERE signup_id = %d", $signup_id ) );
+		foreach ( $signup_meta_ids as $mid ) {
+			delete_metadata_by_mid( 'signup', $mid );
 		}
 
 		// Delete cache
@@ -303,7 +311,7 @@ class WP_Signup {
 		// Parse args
 		$args = wp_parse_args( array(
 			'active'    => 1,
-			'activated' => $now,			
+			'activated' => $now
 		), (array) $this->data );
 
 		// Update the signup
