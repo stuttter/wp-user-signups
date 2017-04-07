@@ -138,3 +138,42 @@ function wp_signups_sanitize_signup_ids( $single = false ) {
 function wp_signups_is_multisite() {
 	return (bool) apply_filters( 'wp_signups_is_multisite', is_multisite() );
 }
+
+/**
+ * Retrieves signup data given a signup ID or signup object.
+ *
+ * Signup data will be cached and returned after being passed through a filter.
+ *
+ * @since 3.1.0
+ *
+ * @param WP_Signup|int|null $signup Optional. Signup to retrieve.
+ * @return WP_Signup|null The signup object or null if not found.
+ */
+function get_signup( $signup = null ) {
+	if ( empty( $signup ) ) {
+		return null;
+	}
+
+	if ( $signup instanceof WP_Signup ) {
+		$_signup = $signup;
+	} elseif ( is_object( $signup ) ) {
+		$_signup = new WP_Signup( $signup );
+	} else {
+		$_signup = WP_Signup::get_instance( $signup );
+	}
+
+	if ( ! $_signup ) {
+		return null;
+	}
+
+	/**
+	 * Fires after a signup is retrieved.
+	 *
+	 * @since 3.1.0
+	 *
+	 * @param WP_Signup $_signup Signup data.
+	 */
+	$_signup = apply_filters( 'get_signup', $_signup );
+
+	return $_signup;
+}

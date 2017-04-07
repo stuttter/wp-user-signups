@@ -213,7 +213,8 @@ class WP_Signup_Query {
 			'activated_query'    => null, // See WP_Date_Query
 			'meta_query'         => null, // See WP_Meta_Query
 			'no_found_rows'      => true,
-			'update_signup_cache' => true,
+			'update_signup_cache'      => true,
+			'update_signup_meta_cache' => true,
 		);
 
 		if ( ! empty( $query ) ) {
@@ -287,74 +288,80 @@ class WP_Signup_Query {
 		$key          = md5( serialize( wp_array_slice_assoc( $this->query_vars, array_keys( $this->query_var_defaults ) ) ) );
 		$last_changed = wp_cache_get( 'last_changed', 'signups' );
 
+		// Set the last_changed value
 		if ( false === $last_changed ) {
 			$last_changed = microtime();
 			wp_cache_set( 'last_changed', $last_changed, 'signups' );
 		}
 
+		// Check the cache
 		$cache_key   = "get_signups:{$key}:{$last_changed}";
 		$cache_value = wp_cache_get( $cache_key, 'signups' );
 
+		// No cache value
 		if ( false === $cache_value ) {
 			$signup_ids = $this->get_signup_ids();
-			if ( ! empty( $signup_ids ) ) {
+
+			// Set the number of found signups (make sure it's not a count)
+			if ( ! empty( $signup_ids ) && is_array( $signup_ids ) ) {
 				$this->set_found_signups( $signup_ids );
 			}
 
+			// Format the cached value
 			$cache_value = array(
-				'signup_ids'         => $signup_ids,
-				'found_signups' => $this->found_signups,
+				'signup_ids'    => $signup_ids,
+				'found_signups' => intval( $this->found_signups ),
 			);
+
+			// Add value to the cache
 			wp_cache_add( $cache_key, $cache_value, 'signups' );
+
+		// Value exists in cache
 		} else {
-			$signup_ids = $cache_value['signup_ids'];
-			$this->found_signups = $cache_value['found_signups'];
+			$signup_ids          = $cache_value['signup_ids'];
+			$this->found_signups = intval( $cache_value['found_signups'] );
 		}
 
+		// Pagination
 		if ( $this->found_signups && $this->query_vars['number'] ) {
 			$this->max_num_pages = ceil( $this->found_signups / $this->query_vars['number'] );
 		}
 
-		// If querying for a count only, there's nothing more to do.
+		// Return an int of the count
 		if ( $this->query_vars['count'] ) {
-			// $signup_ids is actually a count in this case.
 			return intval( $signup_ids );
 		}
 
+		// Cast to integers
 		$signup_ids = array_map( 'intval', $signup_ids );
 
-		if ( 'ids' == $this->query_vars['fields'] ) {
+		// Prime signup caches.
+		if ( $this->query_vars['update_signup_cache'] ) {
+			_prime_signup_caches( $signup_ids, $this->query_vars['update_signup_meta_cache'] );
+		}
+
+		// Return the IDs
+		if ( 'ids' === $this->query_vars['fields'] ) {
 			$this->signups = $signup_ids;
 
 			return $this->signups;
 		}
 
-		// Prime site network caches.
-		if ( $this->query_vars['update_signup_cache'] ) {
-			_prime_signup_caches( $signup_ids );
-		}
-
-		// Fetch full signup objects from the primed cache.
-		$_signups = array();
-		foreach ( $signup_ids as $signup_id ) {
-			$_signup = WP_Signup::get_instance( $signup_id );
-			if ( ! empty( $_signup ) ) {
-				$_signups[] = $_signup;
-			}
-		}
+		// Get signup instances from IDs.
+		$_signups = array_map( 'get_signup', $signup_ids );
 
 		/**
 		 * Filters the site query results.
 		 *
 		 * @since 1.0.0
 		 *
-		 * @param array                $results An array of sign-ups.
+		 * @param array           $results An array of signups.
 		 * @param WP_Signup_Query &$this   Current instance of WP_Signup_Query, passed by reference.
 		 */
 		$_signups = apply_filters_ref_array( 'the_signups', array( $_signups, &$this ) );
 
-		// Convert to WP_Signup instances.
-		$this->signups = array_map( array( 'WP_Signup', 'get_instance' ), $_signups );
+		// Make sure signups are still signup instances.
+		$this->signups = array_map( 'get_signup', $_signups );
 
 		return $this->signups;
 	}

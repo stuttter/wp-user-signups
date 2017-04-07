@@ -19,16 +19,17 @@ defined( 'ABSPATH' ) || exit;
  * @see update_signup_cache()
  * @global wpdb $wpdb WordPress database abstraction object.
  *
- * @param array $ids ID list.
+ * @param array $ids               ID list.
+ * @param bool  $update_meta_cache Whether to update site alias cache. Default true.
  */
-function _prime_signup_caches( $ids = array() ) {
+function _prime_signup_caches( $ids = array(), $update_meta_cache = true ) {
 	global $wpdb;
 
 	$non_cached_ids = _get_non_cached_ids( $ids, 'signups' );
 	if ( ! empty( $non_cached_ids ) ) {
 		$fresh_signups = $wpdb->get_results( sprintf( "SELECT * FROM {$wpdb->signups} WHERE signup_id IN (%d)", join( ",", array_map( 'intval', $non_cached_ids ) ) ) );
 
-		update_signup_cache( $fresh_signups );
+		update_signup_cache( $fresh_signups, $update_meta_cache );
 	}
 }
 
@@ -37,9 +38,10 @@ function _prime_signup_caches( $ids = array() ) {
  *
  * @since 1.0.0
  *
- * @param array $signups Array of user signup objects.
+ * @param array $signups           Array of user signup objects.
+ * @param bool  $update_meta_cache Whether to update site alias cache. Default true.
  */
-function update_signup_cache( $signups = array() ) {
+function update_signup_cache( $signups = array(), $update_meta_cache = true ) {
 
 	// Bail if no signups
 	if ( empty( $signups ) ) {
@@ -50,6 +52,11 @@ function update_signup_cache( $signups = array() ) {
 	foreach ( $signups as $signup ) {
 		wp_cache_set( $signup->signup_id, $signup, 'signups' );
 	}
+
+	// Maybe update signup meta cache
+	if ( true === $update_meta_cache ) {
+		update_signupmeta_cache( wp_list_pluck( $signups, 'id' ) );
+	}
 }
 
 /**
@@ -57,7 +64,7 @@ function update_signup_cache( $signups = array() ) {
  *
  * @since 1.0.0
  *
- * @param int|WP_Signup $ignup Signup ID or signup object to remove from the cache
+ * @param int|WP_Signup $signup Signup ID or signup object to remove from the cache
  */
 function clean_signup_cache( $signup ) {
 	global $_wp_suspend_cache_invalidation;

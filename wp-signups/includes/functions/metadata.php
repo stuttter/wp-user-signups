@@ -81,3 +81,20 @@ function get_signup_meta( $id, $meta_key = '', $single = false ) {
 function update_signup_meta( $id, $meta_key, $meta_value, $prev_value = '' ) {
 	return update_metadata( 'signup', $id, $meta_key, $meta_value, $prev_value );
 }
+
+/**
+ * Updates metadata cache for list of signup IDs.
+ *
+ * Performs SQL query to retrieve the metadata for the signup IDs and
+ * updates the metadata cache for the signup. Therefore, the functions,
+ * which call this function, do not need to perform SQL queries on their own.
+ *
+ * @since 3.1.0
+ *
+ * @param array $ids List of signup IDs.
+ * @return array|false Returns false if there is nothing to update or an array
+ *                     of metadata.
+ */
+function update_signupmeta_cache( $ids ) {
+	return update_meta_cache( 'signup', $ids );
+}
