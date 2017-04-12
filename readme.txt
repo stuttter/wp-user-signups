@@ -3,7 +3,7 @@ Contributors: johnjamesjacoby, stuttter
 Tags: users, signups, admin, multisite
 Requires at least: 4.7
 Tested up to: 4.8
-Stable tag: 3.0.0
+Stable tag: 4.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9Q4F4EL5YJ62J
@@ -81,6 +81,9 @@ If you require immediate assistance, please consider a paid support subscription
 http://github.com/stuttter/wp-user-signups
 
 == Changelog ==
+
+= [4.0.0] - 2017-04-11 =
+* Database schema update
 
 = [3.1.0] - 2017-04-03 =
 * Signup meta support
