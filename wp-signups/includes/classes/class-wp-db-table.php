@@ -5,7 +5,7 @@
  *
  * @author  JJJ
  * @link    https://jjj.blog
- * @version 1.0.0
+ * @version 1.1.0
  * @license https://www.gnu.org/licenses/gpl-2.0.html
  */
 
@@ -239,7 +239,7 @@ abstract class WP_DB_Table {
 	/**
 	 * Set the database version to the table version.
 	 *
-	 * Saves global table version to "wp_sitemeta" with a site ID of -1
+	 * Saves global table version to "wp_sitemeta" to the main network
 	 *
 	 * @since 1.0.0
 	 */
@@ -250,21 +250,21 @@ abstract class WP_DB_Table {
 
 		// Update the DB version
 		( true === $this->global )
-			? update_network_option( -1, $this->db_version_key, $this->version )
-			:         update_option(     $this->db_version_key, $this->version );
+			? update_network_option( null, $this->db_version_key, $this->version )
+			:         update_option(       $this->db_version_key, $this->version );
 	}
 
 	/**
 	 * Get the table version from the database.
 	 *
-	 * Gets global table version from "wp_sitemeta" with a site ID of -1
+	 * Gets global table version from "wp_sitemeta" to the main network
 	 *
 	 * @since 1.0.0
 	 */
 	private function get_db_version() {
 		$this->db_version = ( true === $this->global )
-			? get_network_option( -1, $this->db_version_key, false )
-			:         get_option(     $this->db_version_key, false );
+			? get_network_option( null, $this->db_version_key, false )
+			:         get_option(       $this->db_version_key, false );
 	}
 
 	/**
