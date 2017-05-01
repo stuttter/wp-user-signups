@@ -170,12 +170,11 @@ function wp_signups_handle_actions() {
 	// Bail if no action
 	if ( ! empty( $_REQUEST['action'] ) && empty(  $_REQUEST['bulk_action2'] ) ) {
 		$request_action = $_REQUEST['action'];
-	} elseif ( ! empty( $_REQUEST['bulk_action'] ) ) {
-		$request_action = $_REQUEST['bulk_action'];
-	} elseif ( ! empty( $_REQUEST['bulk_action2'] ) ) {
-		$request_action = $_REQUEST['bulk_action2'];
 	} else {
-		return;
+		$request_action = $this->current_action();
+		if ( $request_action === false ) {
+			return;
+		}
 	}
 
 	// Get action
