@@ -55,7 +55,7 @@ function update_signup_cache( $signups = array(), $update_meta_cache = true ) {
 
 	// Maybe update signup meta cache
 	if ( true === $update_meta_cache ) {
-		update_signupmeta_cache( wp_list_pluck( $signups, 'id' ) );
+		update_signupmeta_cache( wp_list_pluck( $signups, 'signup_id' ) );
 	}
 }
 

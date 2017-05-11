@@ -31,7 +31,7 @@ function wp_signups_add_menu_item() {
 
 	// Network management of all signups
 	$hooks[] = add_menu_page( esc_html__( 'Sign ups', 'wp-signups' ), esc_html__( 'Sign ups', 'wp-signups' ), 'manage_signups', 'signups', 'wp_signups_output_list_page', 'dashicons-flag', $position );
-	$hooks[] = add_submenu_page( 'signups', esc_html__( 'Add New Signup', 'wp-signups' ), esc_html__( 'Add New', 'wp-signups' ), 'edit_signups', 'signup_edit', 'wp_signups_output_edit_page' );
+	$hooks[] = $add_new = add_submenu_page( 'signups', esc_html__( 'Add New Signup', 'wp-signups' ), esc_html__( 'Add New', 'wp-signups' ), 'edit_signups', 'signup_edit', 'wp_signups_output_edit_page' );
 
 	// Remove if user cannot create
 	if ( ! current_user_can( 'create_signups' ) ) {
@@ -43,6 +43,24 @@ function wp_signups_add_menu_item() {
 		add_action( "load-{$hook}", 'wp_signups_handle_actions'     );
 		add_action( "load-{$hook}", 'wp_signups_load_list_table'    );
 		add_action( "load-{$hook}", 'wp_signups_add_screen_options' );
+	}
+
+	add_action( "load-{$add_new}", 'wp_signups_modify_menu_highlight' );
+}
+
+/**
+ * Tells WordPress to highlight the correct submenu item.
+ *
+ * @since 5.0.0
+ *
+ * @global string $submenu_file
+ */
+function wp_signups_modify_menu_highlight() {
+	global $submenu_file;
+
+	// Highlight "Sign ups" when editing, instead of "Add New"
+	if ( wp_signups_sanitize_signup_ids() ) {
+		$submenu_file = 'signups';
 	}
 }
 
@@ -94,7 +112,7 @@ function wp_signups_load_list_table() {
 	require_once wp_signups_get_plugin_path() . 'includes/classes/class-wp-signups-list-table.php';
 
 	// Create a new list table object
-	$wp_list_table = new WP_Signup_List_Table();
+	$wp_list_table = new WP_Signups_List_Table();
 
 	$wp_list_table->prepare_items();
 }
@@ -162,17 +180,15 @@ function wp_signups_output_page_footer() {
  * processing, and exits.
  *
  * @since 1.0.0
- *
- * @param  string  $action  Action to perform
  */
 function wp_signups_handle_actions() {
 
-	// Bail if no action
-	if ( ! empty( $_REQUEST['action'] ) && empty(  $_REQUEST['bulk_action2'] ) ) {
+	// Get action or bail
+	if ( ! empty( $_REQUEST['action'] ) && empty( $_REQUEST['bulk_action'] ) && empty( $_REQUEST['bulk_action2'] ) ) {
 		$request_action = $_REQUEST['action'];
-	} elseif ( ! empty( $_REQUEST['bulk_action'] ) ) {
+	} elseif ( isset( $_REQUEST['bulk_action'] ) && ( -1 != $_REQUEST['bulk_action'] ) ) {
 		$request_action = $_REQUEST['bulk_action'];
-	} elseif ( ! empty( $_REQUEST['bulk_action2'] ) ) {
+	} elseif ( isset( $_REQUEST['bulk_action2'] ) && ( -1 != $_REQUEST['bulk_action2'] ) ) {
 		$request_action = $_REQUEST['bulk_action2'];
 	} else {
 		return;
@@ -207,7 +223,7 @@ function wp_signups_handle_actions() {
 
 				// Skip erroneous signups
 				if ( is_wp_error( $signup ) ) {
-					$args['error'] = $signup->get_error_message();
+					$args['error'] = $signup->get_error_code();
 					continue;
 				}
 
@@ -216,6 +232,7 @@ function wp_signups_handle_actions() {
 
 				// Maybe add to processed
 				if ( is_wp_error( $activated ) ) {
+					$args['error'] = $activated->get_error_code();
 					if ( 'already_active' !== $activated->get_error_code() ) {
 						$processed[] = $signup_id;
 					}
@@ -232,7 +249,7 @@ function wp_signups_handle_actions() {
 
 				// Skip erroneous signups
 				if ( is_wp_error( $signup ) ) {
-					$args['error'] = $signup->get_error_message();
+					$args['error'] = $signup->get_error_code();
 					continue;
 				}
 
@@ -251,7 +268,7 @@ function wp_signups_handle_actions() {
 
 				// Skip erroneous signups
 				if ( is_wp_error( $signup ) ) {
-					$args['error'] = $signup->get_error_message();
+					$args['error'] = $signup->get_error_code();
 					continue;
 				}
 
@@ -275,7 +292,7 @@ function wp_signups_handle_actions() {
 			$signup    = WP_Signup::get_instance( $signup_id );
 
 			if ( is_wp_error( $signup ) ) {
-				$args['error'] = $signup->get_error_message();
+				$args['error'] = $signup->get_error_code();
 				continue;
 			}
 
@@ -285,7 +302,7 @@ function wp_signups_handle_actions() {
 
 			// Bail if an error occurred
 			if ( is_wp_error( $result ) ) {
-				$args['error'] = $result->get_error_message();
+				$args['error'] = $result->get_error_code();
 				continue;
 			}
 
@@ -563,9 +580,14 @@ function wp_signups_output_admin_notices() {
 
 	// Special case for single, as it's not really a "bulk" action
 	if ( empty( $count ) ) {
-		$bulk_messages = array();
-		$messages      = array(
-			esc_html__( 'An error has occurred.', 'wp-signups' )
+		$class         = 'notice-warning';
+		$placeholder   = number_format_i18n( $count );
+		$bulk_messages = array(
+			'activate' => esc_html__( 'Signup not activated.', 'wp-signups' ),
+			'resend'   => esc_html__( 'Signup not resent.',    'wp-signups' ),
+			'delete'   => esc_html__( 'Signup not deleted.',   'wp-signups' ),
+			'add'      => esc_html__( 'Signup not added.',     'wp-signups' ),
+			'edit'     => esc_html__( 'Signup not updated.',   'wp-signups' )
 		);
 
 	// 1 item
@@ -608,7 +630,9 @@ function wp_signups_output_admin_notices() {
 
 	// Insert the placeholder
 	if ( ! empty( $bulk_messages[ $did_action ] ) ) {
-		$messages[] = sprintf( $bulk_messages[ $did_action ], $placeholder );
+		$messages[] = ( 0 === $count )
+			? $bulk_messages[ $did_action ]
+			: sprintf( $bulk_messages[ $did_action ], $placeholder );
 	}
 
 	// Bail if no messages

@@ -285,24 +285,29 @@ class WP_Signup {
 		// Prepare some signup info
 		$meta     = maybe_unserialize( $this->meta );
 		$password = wp_generate_password( 12, false );
-		$user_id  = username_exists( $this->user_login );
-		if ( empty( $user_id ) ) {
-			$user_id = email_exists( $this->user_email );
-		}
 
-		// Does the user already exist?
-		$user_already_exists = ( false !== $user_id );
+		// Check for username & email addresses
+		$un_id = username_exists( $this->user_login );
+		$em_id =    email_exists( $this->user_email );
 
 		// Try to create user
-		if ( false === $user_already_exists ) {
+		if ( ( false === $un_id ) && ( false === $em_id ) ) {
 			$user_id = is_multisite()
 				? wpmu_create_user( $this->user_login, $password, $this->user_email )
-				: wp_create_user( $this->user_login, $password, $this->user_email );
-		}
+				:   wp_create_user( $this->user_login, $password, $this->user_email );
 
-		// Bail if no user was created
-		if ( empty( $user_id ) || ( true === $user_already_exists ) ) {
-			return new WP_Error( 'already_active', esc_html__( 'The user is already active.', 'wp-signups' ), $this );
+			// Bail if no user was created
+			if ( empty( $user_id ) ) {
+				return new WP_Error( 'already_active', esc_html__( 'The user is already active.', 'wp-signups' ), $this );
+			}
+
+		// Username is already registered
+		} elseif ( false !== $un_id ) {
+			return new WP_Error( 'already_active', esc_html__( 'This username is already in use.', 'wp-signups' ), $this );
+
+		// Email is already registered
+		} elseif ( false !== $em_id ) {
+			return new WP_Error( 'already_active', esc_html__( 'This email address is already in use.', 'wp-signups' ), $this );
 		}
 
 		// Get the current time, we'll use it in a few places

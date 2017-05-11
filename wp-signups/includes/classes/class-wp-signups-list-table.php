@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * List table for sign-ups
  */
-final class WP_Signup_List_Table extends WP_List_Table {
+final class WP_Signups_List_Table extends WP_List_Table {
 
 	/**
 	 * Which status is selected
