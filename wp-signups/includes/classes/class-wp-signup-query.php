@@ -217,7 +217,9 @@ class WP_Signup_Query {
 			'update_signup_meta_cache' => true,
 		);
 
-		$this->query( $query );
+		if ( ! empty( $query ) ) {
+			$this->query( $query );
+		}
 	}
 
 	/**
