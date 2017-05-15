@@ -217,9 +217,7 @@ class WP_Signup_Query {
 			'update_signup_meta_cache' => true,
 		);
 
-		if ( ! empty( $query ) ) {
-			$this->query( $query );
-		}
+		$this->query( $query );
 	}
 
 	/**
@@ -286,13 +284,7 @@ class WP_Signup_Query {
 
 		// $args can include anything. Only use the args defined in the query_var_defaults to compute the key.
 		$key          = md5( serialize( wp_array_slice_assoc( $this->query_vars, array_keys( $this->query_var_defaults ) ) ) );
-		$last_changed = wp_cache_get( 'last_changed', 'signups' );
-
-		// Set the last_changed value
-		if ( false === $last_changed ) {
-			$last_changed = microtime();
-			wp_cache_set( 'last_changed', $last_changed, 'signups' );
-		}
+		$last_changed = wp_cache_get_last_changed( 'signups' );
 
 		// Check the cache
 		$cache_key   = "get_signups:{$key}:{$last_changed}";
