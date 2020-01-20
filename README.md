@@ -40,7 +40,6 @@ This plugin is largely inspired by:
 This plugin is free for anyone to use.
 
 * [Community support](https://wordpress.org/support/plugin/wp-user-signups) is provided for free by existing users.
-* [Priority support](https://chat.flox.io/support/channels/wp-user-signups) is available to paying customers & volunteer contributors.
 
 If you require immediate assistance, please consider a paid support subscription.
 
