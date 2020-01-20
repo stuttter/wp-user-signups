@@ -41,8 +41,6 @@ This plugin is free for anyone to use.
 
 * [Community support](https://wordpress.org/support/plugin/wp-user-signups) is provided for free by existing users.
 
-If you require immediate assistance, please consider a paid support subscription.
-
 ### How can I help?
 
 Please [open a new issue](/pull/new/master) to discuss whether the feature is a good fit for the project. Once you've decided to work on a pull request, please follow the [WordPress Coding Standards](http://make.wordpress.org/core/handbook/coding-standards/).
