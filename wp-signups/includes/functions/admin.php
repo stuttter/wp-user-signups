@@ -293,7 +293,7 @@ function wp_signups_handle_actions() {
 
 			if ( is_wp_error( $signup ) ) {
 				$args['error'] = $signup->get_error_code();
-				continue;
+				break;
 			}
 
 			// Update
@@ -303,7 +303,7 @@ function wp_signups_handle_actions() {
 			// Bail if an error occurred
 			if ( is_wp_error( $result ) ) {
 				$args['error'] = $result->get_error_code();
-				continue;
+				break;
 			}
 
 			$processed[] = $signup_id;
@@ -322,7 +322,7 @@ function wp_signups_handle_actions() {
 			if ( is_wp_error( $result ) ) {
 				$args['error'] = $result->get_error_code();
 				$args['page']  = 'signup_edit';
-				continue;
+				break;
 			}
 
 			$processed[] = $result->signup_id;
