@@ -21,5 +21,5 @@ function wp_signups_admin_enqueue_scripts() {
 	$ver = wp_signups_get_asset_version();
 
 	// Styles
-	wp_enqueue_style( 'wp-signups', $src . 'assets/css/signups.css', array(), $ver );
+	wp_enqueue_style( 'wp-user-signups', $src . 'assets/css/signups.css', array(), $ver );
 }

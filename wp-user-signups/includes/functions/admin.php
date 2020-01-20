@@ -30,8 +30,8 @@ function wp_signups_add_menu_item() {
 		: 70;
 
 	// Network management of all signups
-	$hooks[] = add_menu_page( esc_html__( 'Sign ups', 'wp-signups' ), esc_html__( 'Sign ups', 'wp-signups' ), 'manage_signups', 'signups', 'wp_signups_output_list_page', 'dashicons-flag', $position );
-	$hooks[] = $add_new = add_submenu_page( 'signups', esc_html__( 'Add New Signup', 'wp-signups' ), esc_html__( 'Add New', 'wp-signups' ), 'edit_signups', 'signup_edit', 'wp_signups_output_edit_page' );
+	$hooks[] = add_menu_page( esc_html__( 'Sign ups', 'wp-user-signups' ), esc_html__( 'Sign ups', 'wp-user-signups' ), 'manage_signups', 'signups', 'wp_signups_output_list_page', 'dashicons-flag', $position );
+	$hooks[] = $add_new = add_submenu_page( 'signups', esc_html__( 'Add New Signup', 'wp-user-signups' ), esc_html__( 'Add New', 'wp-user-signups' ), 'edit_signups', 'signup_edit', 'wp_signups_output_edit_page' );
 
 	// Remove if user cannot create
 	if ( ! current_user_can( 'create_signups' ) ) {
@@ -75,7 +75,7 @@ function wp_signups_add_screen_options() {
 		array(
 			'default' => 20,
 			'option' => 'edit_signups_per_page',
-			'label'   => _x( 'Sign ups', 'Signups per page (screen options)', 'wp-signups' )
+			'label'   => _x( 'Sign ups', 'Signups per page (screen options)', 'wp-user-signups' )
 		)
 	);
 }
@@ -135,12 +135,12 @@ function wp_signups_output_page_header( $signup_id = 0 ) {
 			$link_url = wp_signups_admin_url( array(
 				'page' => 'signup_edit'
 			) );
-			$title_link = '<a href="' . esc_url( $link_url ) . '" class="page-title-action">' . esc_html__( 'Add New', 'wp-signups' ) . '</a>';
-			$title =  sprintf( esc_html__( 'Sign ups %s', 'wp-signups' ), $title_link );
+			$title_link = '<a href="' . esc_url( $link_url ) . '" class="page-title-action">' . esc_html__( 'Add New', 'wp-user-signups' ) . '</a>';
+			$title =  sprintf( esc_html__( 'Sign ups %s', 'wp-user-signups' ), $title_link );
 
 		// Without "Add new" link
 		} else {
-			$title = esc_html__( 'Sign ups', 'wp-signups' );
+			$title = esc_html__( 'Sign ups', 'wp-user-signups' );
 		}
 
 	// Add/Edit
@@ -148,11 +148,11 @@ function wp_signups_output_page_header( $signup_id = 0 ) {
 
 		// Add
 		if ( empty( $signup_id ) || ! empty( $_POST['_wpnonce'] ) ) {
-			$title = esc_html__( 'Add New Sign up', 'wp-signups' );
+			$title = esc_html__( 'Add New Sign up', 'wp-user-signups' );
 
 		// Edit
 		} else {
-			$title = esc_html__( 'Edit Sign up', 'wp-signups' );
+			$title = esc_html__( 'Edit Sign up', 'wp-user-signups' );
 		}
 	}
 
@@ -378,13 +378,13 @@ function wp_signups_output_edit_page() {
 
 	<form method="post" action="<?php echo esc_url( $action_url ); ?>" novalidate="novalidate">
 		<?php if ( wp_signups_is_multisite() ) : ?>
-			<h3><?php esc_html_e( 'Site', 'wp-signups' ); ?></h3>
-			<p><?php esc_html_e( 'These details are for a new site at the same time as a user. (Empty if there is no site.)', 'wp-signups' ); ?></p>
+			<h3><?php esc_html_e( 'Site', 'wp-user-signups' ); ?></h3>
+			<p><?php esc_html_e( 'These details are for a new site at the same time as a user. (Empty if there is no site.)', 'wp-user-signups' ); ?></p>
 			<table class="form-table">
 				<tbody>
 					<tr>
 						<th scope="row">
-							<label for="domain"><?php echo esc_html_x( 'Domain', 'User signup', 'wp-signups' ); ?></label>
+							<label for="domain"><?php echo esc_html_x( 'Domain', 'User signup', 'wp-user-signups' ); ?></label>
 						</th>
 						<td>
 							<input type="text" class="regular-text" name="domain" id="domain" value="<?php echo esc_attr( $signup->domain ); ?>">
@@ -392,7 +392,7 @@ function wp_signups_output_edit_page() {
 					</tr>
 					<tr>
 						<th scope="row">
-							<label for="path"><?php echo esc_html_x( 'Path', 'User signup', 'wp-signups' ); ?></label>
+							<label for="path"><?php echo esc_html_x( 'Path', 'User signup', 'wp-user-signups' ); ?></label>
 						</th>
 						<td>
 							<input type="text" class="regular-text" name="path" id="path" value="<?php echo esc_attr( $signup->path ); ?>">
@@ -400,7 +400,7 @@ function wp_signups_output_edit_page() {
 					</tr>
 					<tr>
 						<th scope="row">
-							<label for="title"><?php echo esc_html_x( 'Title', 'User signup', 'wp-signups' ); ?></label>
+							<label for="title"><?php echo esc_html_x( 'Title', 'User signup', 'wp-user-signups' ); ?></label>
 						</th>
 						<td>
 							<input type="text" class="regular-text" name="title" id="title" value="<?php echo esc_attr( $signup->title ); ?>">
@@ -409,15 +409,15 @@ function wp_signups_output_edit_page() {
 				</tbody>
 			</table>
 
-			<h3><?php esc_html_e( 'User', 'wp-signups' ); ?></h3>
+			<h3><?php esc_html_e( 'User', 'wp-user-signups' ); ?></h3>
 		<?php endif; ?>
 
-		<p><?php esc_html_e( 'These details are for a new user account. (These fields are required.)', 'wp-signups' ); ?></p>
+		<p><?php esc_html_e( 'These details are for a new user account. (These fields are required.)', 'wp-user-signups' ); ?></p>
 		<table class="form-table">
 			<tbody>
 				<tr>
 					<th scope="row">
-						<label for="user_login"><?php echo esc_html_x( 'User Login', 'User signup', 'wp-signups' ); ?></label>
+						<label for="user_login"><?php echo esc_html_x( 'User Login', 'User signup', 'wp-user-signups' ); ?></label>
 					</th>
 					<td>
 						<input type="text" class="regular-text" name="user_login" id="user_login" value="<?php echo esc_attr( $signup->user_login ); ?>">
@@ -425,7 +425,7 @@ function wp_signups_output_edit_page() {
 				</tr>
 				<tr>
 					<th scope="row">
-						<label for="user_email"><?php echo esc_html_x( 'User Email', 'User signup', 'wp-signups' ); ?></label>
+						<label for="user_email"><?php echo esc_html_x( 'User Email', 'User signup', 'wp-user-signups' ); ?></label>
 					</th>
 					<td>
 						<input type="text" class="regular-text" name="user_email" id="user_email" value="<?php echo esc_attr( $signup->user_email ); ?>">
@@ -433,40 +433,40 @@ function wp_signups_output_edit_page() {
 				</tr>
 				<tr>
 					<th scope="row">
-						<label for="registered"><?php echo esc_html_x( 'Registered', 'User signup', 'wp-signups' ); ?></label>
+						<label for="registered"><?php echo esc_html_x( 'Registered', 'User signup', 'wp-user-signups' ); ?></label>
 					</th>
 					<td>
 						<input type="text" class="regular-text code" name="registered" id="registered" value="<?php echo esc_attr( $signup->registered ); ?>">
-						<p class="description"><?php esc_html_e( 'Leave blank to automatically generate to now.', 'wp-signups' ); ?></p>
+						<p class="description"><?php esc_html_e( 'Leave blank to automatically generate to now.', 'wp-user-signups' ); ?></p>
 					</td>
 				</tr>
 				<tr>
 					<th scope="row">
-						<label for="activated"><?php echo esc_html_x( 'Activated', 'User signup', 'wp-signups' ); ?></label>
+						<label for="activated"><?php echo esc_html_x( 'Activated', 'User signup', 'wp-user-signups' ); ?></label>
 					</th>
 					<td>
 						<input type="text" class="regular-text code" name="activated" id="activated" value="<?php echo esc_attr( $signup->activated ); ?>">
-						<p class="description"><?php esc_html_e( 'Leave blank to automatically format.', 'wp-signups' ); ?></p>
+						<p class="description"><?php esc_html_e( 'Leave blank to automatically format.', 'wp-user-signups' ); ?></p>
 					</td>
 				</tr>
 				<tr>
 					<th scope="row">
-						<label for="active"><?php echo esc_html_x( 'Status', 'User signup', 'wp-signups' ); ?></label>
+						<label for="active"><?php echo esc_html_x( 'Status', 'User signup', 'wp-user-signups' ); ?></label>
 					</th>
 					<td>
 						<select name="active" id="active">
-							<option value="0" <?php selected( false, (bool) $signup->active ); ?>><?php esc_html_e( 'Pending',   'wp-signups' ); ?></option>
-							<option value="1" <?php selected( true,  (bool) $signup->active ); ?>><?php esc_html_e( 'Activated', 'wp-signups' ); ?></option>
+							<option value="0" <?php selected( false, (bool) $signup->active ); ?>><?php esc_html_e( 'Pending',   'wp-user-signups' ); ?></option>
+							<option value="1" <?php selected( true,  (bool) $signup->active ); ?>><?php esc_html_e( 'Activated', 'wp-user-signups' ); ?></option>
 						</select>
 					</td>
 				</tr>
 				<tr>
 					<th scope="row">
-						<label for="activation_key"><?php echo esc_html_x( 'Activation Key', 'User signup', 'wp-signups' ); ?></label>
+						<label for="activation_key"><?php echo esc_html_x( 'Activation Key', 'User signup', 'wp-user-signups' ); ?></label>
 					</th>
 					<td>
 						<input type="text" class="regular-text code" name="activation_key" id="activation_key" value="<?php echo esc_attr( $signup->activation_key ); ?>">
-						<p class="description"><?php esc_html_e( 'Leave blank to automatically generate.', 'wp-signups' ); ?></p>
+						<p class="description"><?php esc_html_e( 'Leave blank to automatically generate.', 'wp-user-signups' ); ?></p>
 					</td>
 				</tr>
 			</tbody>
@@ -478,8 +478,8 @@ function wp_signups_output_edit_page() {
 		// Meta
 		if ( ! empty( $metas ) ) : ?>
 
-			<h3><?php esc_html_e( 'Meta', 'wp-signups' ); ?></h3>
-			<p><?php esc_html_e( 'These extra details help with activation. (Use caution when changing these values.)', 'wp-signups' ); ?></p>
+			<h3><?php esc_html_e( 'Meta', 'wp-user-signups' ); ?></h3>
+			<p><?php esc_html_e( 'These extra details help with activation. (Use caution when changing these values.)', 'wp-user-signups' ); ?></p>
 			<table class="form-table">
 				<tbody>
 
@@ -508,12 +508,12 @@ function wp_signups_output_edit_page() {
 		// Add
 		if ( 'add' === $action ) {
 			wp_nonce_field( 'signup_add' );
-			$submit_text = esc_html__( 'Add Signup', 'wp-signups' );
+			$submit_text = esc_html__( 'Add Signup', 'wp-user-signups' );
 
 		// Edit
 		} else {
 			wp_nonce_field( 'signup_edit' );
-			$submit_text = esc_html__( 'Save Signup', 'wp-signups' );
+			$submit_text = esc_html__( 'Save Signup', 'wp-user-signups' );
 		}
 
 		// Submit button
@@ -583,25 +583,25 @@ function wp_signups_output_admin_notices() {
 		$class         = 'notice-warning';
 		$placeholder   = number_format_i18n( $count );
 		$bulk_messages = array(
-			'activate' => esc_html__( 'Signup not activated.', 'wp-signups' ),
-			'resend'   => esc_html__( 'Signup not resent.',    'wp-signups' ),
-			'delete'   => esc_html__( 'Signup not deleted.',   'wp-signups' ),
-			'add'      => esc_html__( 'Signup not added.',     'wp-signups' ),
-			'edit'     => esc_html__( 'Signup not updated.',   'wp-signups' )
+			'activate' => esc_html__( 'Signup not activated.', 'wp-user-signups' ),
+			'resend'   => esc_html__( 'Signup not resent.',    'wp-user-signups' ),
+			'delete'   => esc_html__( 'Signup not deleted.',   'wp-user-signups' ),
+			'add'      => esc_html__( 'Signup not added.',     'wp-user-signups' ),
+			'edit'     => esc_html__( 'Signup not updated.',   'wp-user-signups' )
 		);
 
 	// 1 item
 	} elseif ( 1 === $count ) {
 		$bulk_messages = array(
-			'activate' => esc_html__( 'Activated %s.', 'wp-signups' ),
-			'resend'   => esc_html__( 'Resent to %s.', 'wp-signups' ),
-			'delete'   => esc_html__( 'Deleted %s.',   'wp-signups' ),
-			'add'      => esc_html__( 'Added %s.',     'wp-signups' ),
-			'edit'     => esc_html__( 'Updated %s.',   'wp-signups' )
+			'activate' => esc_html__( 'Activated %s.', 'wp-user-signups' ),
+			'resend'   => esc_html__( 'Resent to %s.', 'wp-user-signups' ),
+			'delete'   => esc_html__( 'Deleted %s.',   'wp-user-signups' ),
+			'add'      => esc_html__( 'Added %s.',     'wp-user-signups' ),
+			'edit'     => esc_html__( 'Updated %s.',   'wp-user-signups' )
 		);
 
 		if ( 'delete' === $did_action ) {
-			$placeholder = esc_html__( 'signup', 'wp-signups' );
+			$placeholder = esc_html__( 'signup', 'wp-user-signups' );
 		} else {
 			$signup      = WP_Signup::get_instance( $processed[0] );
 			$placeholder = '<code>' . esc_html( $signup->user_email ) . '</code>';
@@ -612,11 +612,11 @@ function wp_signups_output_admin_notices() {
 	} else {
 		$placeholder   = number_format_i18n( $count );
 		$bulk_messages = array(
-			'activate' => _n( '%s signup activated.', '%s signups activated.', $count, 'wp-signups' ),
-			'resend'   => _n( '%s signup resent.',    '%s signups resent.',    $count, 'wp-signups' ),
-			'delete'   => _n( '%s signup deleted.',   '%s signups deleted.',   $count, 'wp-signups' ),
-			'add'      => _n( '%s signup added.',     '%s signups added.',     $count, 'wp-signups' ),
-			'edit'     => _n( '%s signup updated.',   '%s signups updated.',   $count, 'wp-signups' )
+			'activate' => _n( '%s signup activated.', '%s signups activated.', $count, 'wp-user-signups' ),
+			'resend'   => _n( '%s signup resent.',    '%s signups resent.',    $count, 'wp-user-signups' ),
+			'delete'   => _n( '%s signup deleted.',   '%s signups deleted.',   $count, 'wp-user-signups' ),
+			'add'      => _n( '%s signup added.',     '%s signups added.',     $count, 'wp-user-signups' ),
+			'edit'     => _n( '%s signup updated.',   '%s signups updated.',   $count, 'wp-user-signups' )
 		);
 
 		// Warn if empty

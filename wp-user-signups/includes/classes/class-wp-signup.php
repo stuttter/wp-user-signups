@@ -85,7 +85,7 @@ class WP_Signup {
 
 		// Check for errors
 		if ( empty( $result ) && ! empty( $wpdb->last_error ) ) {
-			return new WP_Error( 'wp_signups_update_failed', esc_html__( 'An error has occurred.', 'wp-signups' ), $this );
+			return new WP_Error( 'wp_signups_update_failed', esc_html__( 'An error has occurred.', 'wp-user-signups' ), $this );
 		}
 
 		// Clone object to pass into object later
@@ -128,7 +128,7 @@ class WP_Signup {
 
 		// Bail with error
 		if ( empty( $result ) ) {
-			return new WP_Error( 'wp_signups_delete_failed', esc_html__( 'Delete failed.', 'wp-signups' ), $this );
+			return new WP_Error( 'wp_signups_delete_failed', esc_html__( 'Delete failed.', 'wp-user-signups' ), $this );
 		}
 
 		// Delete signup meta
@@ -167,7 +167,7 @@ class WP_Signup {
 		}
 
 		if ( ! is_numeric( $signup ) ) {
-			return new WP_Error( 'wp_signups_invalid_id', esc_html__( 'Signup not found.', 'wp-signups' ), $this );
+			return new WP_Error( 'wp_signups_invalid_id', esc_html__( 'Signup not found.', 'wp-user-signups' ), $this );
 		}
 
 		// Check cache first
@@ -207,7 +207,7 @@ class WP_Signup {
 
 		// Bail if missing login or email
 		if ( empty( $r['user_login'] ) || empty( $r['user_email'] ) ) {
-			return new WP_Error( 'wp_signups_empty_id', esc_html__( 'Signup not found.', 'wp-signups' ), $this );
+			return new WP_Error( 'wp_signups_empty_id', esc_html__( 'Signup not found.', 'wp-user-signups' ), $this );
 		}
 
 		// Check for previous signup
@@ -219,7 +219,7 @@ class WP_Signup {
 
 		// Domain exists already...
 		if ( ! empty( $existing ) ) {
-			return new WP_Error( 'wp_signups_domain_exists', esc_html__( 'That signup already exists.', 'wp-signups' ), $this );
+			return new WP_Error( 'wp_signups_domain_exists', esc_html__( 'That signup already exists.', 'wp-user-signups' ), $this );
 		}
 
 		// Create the signup!
@@ -240,7 +240,7 @@ class WP_Signup {
 				$wpdb->print_error( $error['error_str'] );
 			}
 
-			return new WP_Error( 'wp_signups_insert_failed', esc_html__( 'Signup creation failed.', 'wp-signups' ), $this );
+			return new WP_Error( 'wp_signups_insert_failed', esc_html__( 'Signup creation failed.', 'wp-user-signups' ), $this );
 		}
 
 		// Ensure the cache is flushed
@@ -278,8 +278,8 @@ class WP_Signup {
 		// Already active
 		if ( true === (bool) $this->active ) {
 			return empty( $this->domain )
-				? new WP_Error( 'already_active', esc_html__( 'The user is already active.', 'wp-signups' ), $this )
-				: new WP_Error( 'already_active', esc_html__( 'The site is already active.', 'wp-signups' ), $this );
+				? new WP_Error( 'already_active', esc_html__( 'The user is already active.', 'wp-user-signups' ), $this )
+				: new WP_Error( 'already_active', esc_html__( 'The site is already active.', 'wp-user-signups' ), $this );
 		}
 
 		// Prepare some signup info
@@ -298,16 +298,16 @@ class WP_Signup {
 
 			// Bail if no user was created
 			if ( empty( $user_id ) ) {
-				return new WP_Error( 'already_active', esc_html__( 'The user is already active.', 'wp-signups' ), $this );
+				return new WP_Error( 'already_active', esc_html__( 'The user is already active.', 'wp-user-signups' ), $this );
 			}
 
 		// Username is already registered
 		} elseif ( false !== $un_id ) {
-			return new WP_Error( 'already_active', esc_html__( 'This username is already in use.', 'wp-signups' ), $this );
+			return new WP_Error( 'already_active', esc_html__( 'This username is already in use.', 'wp-user-signups' ), $this );
 
 		// Email is already registered
 		} elseif ( false !== $em_id ) {
-			return new WP_Error( 'already_active', esc_html__( 'This email address is already in use.', 'wp-signups' ), $this );
+			return new WP_Error( 'already_active', esc_html__( 'This email address is already in use.', 'wp-user-signups' ), $this );
 		}
 
 		// Get the current time, we'll use it in a few places
@@ -324,7 +324,7 @@ class WP_Signup {
 
 		// Bail if update failed
 		if ( is_wp_error( $updated ) ) {
-			return new WP_Error( 'activation_failed', esc_html__( 'Sign up activation failed.', 'wp-signups' ), $this );
+			return new WP_Error( 'activation_failed', esc_html__( 'Sign up activation failed.', 'wp-user-signups' ), $this );
 		}
 
 		// Default return value

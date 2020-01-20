@@ -1,9 +1,9 @@
 === WP User Signups ===
 Contributors: johnjamesjacoby, stuttter
 Tags: users, signups, admin, multisite
-Requires at least: 4.7
-Tested up to: 4.8
-Stable tag: 4.0.0
+Requires at least: 5.0
+Tested up to: 5.3
+Stable tag: 4.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9Q4F4EL5YJ62J
@@ -22,9 +22,7 @@ Use it to:
 
 * [WP Chosen](https://wordpress.org/plugins/wp-chosen/ "Make long, unwieldy select boxes much more user-friendly.")
 * [WP Pretty Filters](https://wordpress.org/plugins/wp-pretty-filters/ "Makes post filters better match what's already in Media & Attachments.")
-* [WP Event Calendar](https://wordpress.org/plugins/wp-event-calendar/ "The best way to manage events in WordPress.")
 * [WP Media Categories](https://wordpress.org/plugins/wp-media-categories/ "Add categories to media & attachments.")
-* [WP Term Meta](https://wordpress.org/plugins/wp-term-meta/ "Metadata, for taxonomy terms.")
 * [WP Term Order](https://wordpress.org/plugins/wp-term-order/ "Sort taxonomy terms, your way.")
 * [WP Term Authors](https://wordpress.org/plugins/wp-term-authors/ "Authors for categories, tags, and other taxonomy terms.")
 * [WP Term Colors](https://wordpress.org/plugins/wp-term-colors/ "Pretty colors for categories, tags, and other taxonomy terms.")
@@ -43,9 +41,8 @@ This plugin is largely inspired by:
 
 == Screenshots ==
 
-1. Admin UI
-2. Add New
-3. Edit
+1. List Tables
+2. Add New/Edit
 
 == Installation ==
 
@@ -72,7 +69,6 @@ Ya know, I'm not really sure. Please test it with your favorite ones and let me 
 This plugin is free for anyone to use.
 
 [Community support](https://wordpress.org/support/plugin/wp-user-signups) is provided for free by existing users.
-[Priority support](https://chat.flox.io/support/channels/wp-user-signups) is available to paying customers & volunteer contributors.
 
 If you require immediate assistance, please consider a paid support subscription.
 
@@ -81,6 +77,10 @@ If you require immediate assistance, please consider a paid support subscription
 http://github.com/stuttter/wp-user-signups
 
 == Changelog ==
+
+= [5.0.0] - 2019-01-20 =
+* PHP 7.3 support
+* Rename text domain back to match WordPress.org plugin slug
 
 = [4.0.0] - 2017-04-11 =
 * Database schema update

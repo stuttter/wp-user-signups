@@ -1,6 +1,6 @@
-# WP Signups
+# WP User Signups
 
-WP Signups is the best way to manage user & site sign-ups in WordPress.
+This is the best way to manage user (and site) sign-ups in WordPress.
 
 Use it to:
 

@@ -103,11 +103,11 @@ final class WP_Signups_List_Table extends WP_List_Table {
 		// All columns
 		$columns = array(
 			'cb'             => '<input type="checkbox" />',
-			'user'           => _x( 'User',       'wp-signups' ),
-			'site'           => _x( 'Site',       'wp-signups' ),
-			'activation_key' => _x( 'Key',        'wp-signups' ),
-			'registered'     => _x( 'Registered', 'wp-signups' ),
-			'activated'      => _x( 'Activated',  'wp-signups' )
+			'user'           => _x( 'User',       'wp-user-signups' ),
+			'site'           => _x( 'Site',       'wp-user-signups' ),
+			'activation_key' => _x( 'Key',        'wp-user-signups' ),
+			'registered'     => _x( 'Registered', 'wp-user-signups' ),
+			'activated'      => _x( 'Activated',  'wp-user-signups' )
 		);
 
 		// Remove site column if single-site
@@ -146,9 +146,9 @@ final class WP_Signups_List_Table extends WP_List_Table {
 
 		// Default actions
 		$actions = array(
-			'activate' => esc_html__( 'Activate', 'wp-signups' ),
-			'resend'   => esc_html__( 'Resend',   'wp-signups' ),
-			'delete'   => esc_html__( 'Delete',   'wp-signups' )
+			'activate' => esc_html__( 'Activate', 'wp-user-signups' ),
+			'resend'   => esc_html__( 'Resend',   'wp-user-signups' ),
+			'delete'   => esc_html__( 'Delete',   'wp-user-signups' )
 		);
 
 		// Remove activate action of already viewing active sign-ups
@@ -195,7 +195,7 @@ final class WP_Signups_List_Table extends WP_List_Table {
 			return;
 		}
 
-		echo "<label for='bulk-action-selector-" . esc_attr( $which ) . "' class='screen-reader-text'>" . esc_html__( 'Select bulk action', 'wp-signups' ) . "</label>";
+		echo "<label for='bulk-action-selector-" . esc_attr( $which ) . "' class='screen-reader-text'>" . esc_html__( 'Select bulk action', 'wp-user-signups' ) . "</label>";
 		echo "<select name='bulk_action{$two}' id='bulk-action-selector-" . esc_attr( $which ) . "'>\n";
 		echo "<option value='-1' selected='selected'>" . __( 'Bulk Actions' ) . "</option>\n";
 
@@ -208,7 +208,7 @@ final class WP_Signups_List_Table extends WP_List_Table {
 		}
 
 		echo "</select>\n";
-		submit_button( __( 'Apply', 'wp-signups' ), 'action', false, false, array( 'id' => "doaction{$two}" ) );
+		submit_button( __( 'Apply', 'wp-user-signups' ), 'action', false, false, array( 'id' => "doaction{$two}" ) );
 		echo "\n";
 	}
 
@@ -241,11 +241,11 @@ final class WP_Signups_List_Table extends WP_List_Table {
 	 */
 	public function no_items() {
 		if ( 1 === $this->active ) {
-			esc_html_e( 'No active sign-ups.', 'wp-signups' );
+			esc_html_e( 'No active sign-ups.', 'wp-user-signups' );
 		} elseif ( 0 === $this->active ) {
-			esc_html_e( 'No pending sign-ups.', 'wp-signups' );
+			esc_html_e( 'No pending sign-ups.', 'wp-user-signups' );
 		} else {
-			esc_html_e( 'No sign-ups found.', 'wp-signups' );
+			esc_html_e( 'No sign-ups found.', 'wp-user-signups' );
 		}
 	}
 
@@ -299,7 +299,7 @@ final class WP_Signups_List_Table extends WP_List_Table {
 		$domain    = $signup->domain;
 
 		return '<label class="screen-reader-text" for="cb-select-' . esc_attr( $signup_id ) . '">'
-			. sprintf( __( 'Select %s', 'wp-signups' ), esc_html( $domain ) ) . '</label>'
+			. sprintf( __( 'Select %s', 'wp-user-signups' ), esc_html( $domain ) ) . '</label>'
 			. '<input type="checkbox" name="signup_ids[]" value="' . esc_attr( $signup_id )
 			. '" id="cb-select-' . esc_attr( $signup_id ) . '" />';
 	}
@@ -334,7 +334,7 @@ final class WP_Signups_List_Table extends WP_List_Table {
 		) );
 
 		// Active
-		$text   = __( 'Activate', 'wp-signups' );
+		$text   = __( 'Activate', 'wp-user-signups' );
 		$action = 'activate';
 
 		// Default args
@@ -358,12 +358,12 @@ final class WP_Signups_List_Table extends WP_List_Table {
 
 		// Edit
 		if ( current_user_can( 'edit_signup', $signup_id ) ) {
-			$actions['edit'] = sprintf( '<a href="%s">%s</a>', esc_url( $edit_link ), esc_html__( 'Edit', 'wp-signups' ) );
+			$actions['edit'] = sprintf( '<a href="%s">%s</a>', esc_url( $edit_link ), esc_html__( 'Edit', 'wp-user-signups' ) );
 		}
 
 		// Resend
 		if ( current_user_can( 'resend_signup', $signup_id ) ) {
-			$actions['resend'] = sprintf( '<a href="%s">%s</a>', esc_url( $resend_link ), esc_html__( 'Resend', 'wp-signups' ) );
+			$actions['resend'] = sprintf( '<a href="%s">%s</a>', esc_url( $resend_link ), esc_html__( 'Resend', 'wp-user-signups' ) );
 		}
 
 		// Activate
@@ -373,7 +373,7 @@ final class WP_Signups_List_Table extends WP_List_Table {
 
 		// Delete
 		if ( current_user_can( 'delete_signup', $signup_id ) ) {
-			$actions['delete'] = sprintf( '<a href="%s" class="submitdelete">%s</a>', esc_url( $delete_link ), esc_html__( 'Delete', 'wp-signups' ) );
+			$actions['delete'] = sprintf( '<a href="%s" class="submitdelete">%s</a>', esc_url( $delete_link ), esc_html__( 'Delete', 'wp-user-signups' ) );
 		}
 
 		// Get HTML from actions
@@ -452,7 +452,7 @@ final class WP_Signups_List_Table extends WP_List_Table {
 
 		// Not yet active
 		if (  '0000-00-00 00:00:00' === $signup->activated ) {
-			return esc_html__( '&mdash;', 'wp-signups' );
+			return esc_html__( '&mdash;', 'wp-user-signups' );
 
 		// Activated
 		} else {

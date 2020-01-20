@@ -87,13 +87,13 @@ function wp_signups_get_statuses() {
 		(object) array(
 			'id'    => 'pending',
 			'value' => 0,
-			'name'  => _x( 'Pending', 'User sign-ups', 'wp-signups' ),
+			'name'  => _x( 'Pending', 'User sign-ups', 'wp-user-signups' ),
 			'count' => $pending
 		),
 		(object) array(
 			'id'    => 'activated',
 			'value' => 1,
-			'name'  => _x( 'Activated', 'User sign-ups', 'wp-signups' ),
+			'name'  => _x( 'Activated', 'User sign-ups', 'wp-user-signups' ),
 			'count' => $activated
 		),
 	) );

@@ -10,8 +10,10 @@
 defined( 'ABSPATH' ) || exit;
 
 // Assets
-add_action( 'admin_print_styles-users_page_signups',     'wp_signups_admin_enqueue_scripts' );
-add_action( 'admin_print_styles-users_page_signup_edit', 'wp_signups_admin_enqueue_scripts' );
+add_action( 'admin_print_styles-toplevel_page_signups',     'wp_signups_admin_enqueue_scripts' );
+add_action( 'admin_print_styles-toplevel_page_signup_edit', 'wp_signups_admin_enqueue_scripts' );
+add_action( 'admin_print_styles-users_page_signups',        'wp_signups_admin_enqueue_scripts' );
+add_action( 'admin_print_styles-users_page_signup_edit',    'wp_signups_admin_enqueue_scripts' );
 
 // Capabilities
 add_filter( 'map_meta_cap', 'wp_signups_map_meta_cap', 10, 4 );
