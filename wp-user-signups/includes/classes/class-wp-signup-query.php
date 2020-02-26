@@ -561,6 +561,9 @@ class WP_Signup_Query {
 
 		$where = implode( ' AND ', $this->sql_clauses['where'] );
 
+		// Not currently used. Set to empty to prevent debug notices.
+		$groupby = '';
+
 		$pieces = array( 'fields', 'join', 'where', 'orderby', 'limits', 'groupby' );
 
 		/**
