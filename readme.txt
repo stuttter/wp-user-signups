@@ -3,7 +3,7 @@ Contributors: johnjamesjacoby, stuttter
 Tags: users, signups, admin, multisite
 Requires at least: 5.0
 Tested up to: 5.3
-Stable tag: 5.0.0
+Stable tag: 6.0.0-alpha-1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9Q4F4EL5YJ62J
