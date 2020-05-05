@@ -3,7 +3,7 @@ Contributors: johnjamesjacoby, stuttter
 Tags: users, signups, admin, multisite
 Requires at least: 5.0
 Tested up to: 5.3
-Stable tag: 4.1.0
+Stable tag: 5.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9Q4F4EL5YJ62J
@@ -78,7 +78,7 @@ http://github.com/stuttter/wp-user-signups
 
 == Changelog ==
 
-= [5.0.0] - 2019-01-20 =
+= [5.0.0] - 2020-05-05 =
 * PHP 7.3 support
 * Rename text domain back to match WordPress.org plugin slug
 
