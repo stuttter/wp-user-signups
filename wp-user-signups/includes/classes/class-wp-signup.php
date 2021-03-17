@@ -167,7 +167,7 @@ class WP_Signup {
 		}
 
 		if ( ! is_numeric( $signup ) ) {
-			return new WP_Error( 'wp_signups_invalid_id', esc_html__( 'Signup not found.', 'wp-user-signups' ), $this );
+			return new WP_Error( 'wp_signups_invalid_id', esc_html__( 'Signup not found.', 'wp-user-signups' ), $signup );
 		}
 
 		// Check cache first
@@ -207,7 +207,7 @@ class WP_Signup {
 
 		// Bail if missing login or email
 		if ( empty( $r['user_login'] ) || empty( $r['user_email'] ) ) {
-			return new WP_Error( 'wp_signups_empty_id', esc_html__( 'Signup not found.', 'wp-user-signups' ), $this );
+			return new WP_Error( 'wp_signups_empty_id', esc_html__( 'Signup not found.', 'wp-user-signups' ), $r );
 		}
 
 		// Check for previous signup
@@ -219,7 +219,7 @@ class WP_Signup {
 
 		// Domain exists already...
 		if ( ! empty( $existing ) ) {
-			return new WP_Error( 'wp_signups_domain_exists', esc_html__( 'That signup already exists.', 'wp-user-signups' ), $this );
+			return new WP_Error( 'wp_signups_domain_exists', esc_html__( 'That signup already exists.', 'wp-user-signups' ), $existing );
 		}
 
 		// Create the signup!
@@ -240,7 +240,7 @@ class WP_Signup {
 				$wpdb->print_error( $error['error_str'] );
 			}
 
-			return new WP_Error( 'wp_signups_insert_failed', esc_html__( 'Signup creation failed.', 'wp-user-signups' ), $this );
+			return new WP_Error( 'wp_signups_insert_failed', esc_html__( 'Signup creation failed.', 'wp-user-signups' ), $recent_errors );
 		}
 
 		// Ensure the cache is flushed
