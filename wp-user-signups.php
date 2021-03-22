@@ -4,11 +4,11 @@
  * Plugin Name: WP Signups
  * Plugin URI:  https://wordpress.org/plugins/wp-user-signups/
  * Author:      John James Jacoby
- * Author URI:  https://profiles.wordpress.org/johnjamesjacoby/
+ * Author URI:  https://jjj.blog
  * License:     GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Description: Signup management for WordPress
- * Version:     5.0.0
+ * Version:     5.0.1
  * Text Domain: wp-user-signups
  * Domain Path: /wp-user-signups/assets/languages/
  */
@@ -99,5 +99,5 @@ function wp_signups_get_plugin_url() {
  * @return int
  */
 function wp_signups_get_asset_version() {
-	return 202005050001;
+	return 202103210001;
 }

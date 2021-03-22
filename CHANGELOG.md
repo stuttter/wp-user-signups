@@ -1,3 +1,6 @@
+## 5.0.1 (2021-03-21)
+* Improved PHP 7.4 support
+
 ## 5.0.0 (2020-05-05)
 * PHP 7.3 support
 * Rename text domain back to match WordPress.org plugin slug

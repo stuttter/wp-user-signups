@@ -1,12 +1,13 @@
 === WP User Signups ===
-Contributors: johnjamesjacoby, stuttter
-Tags: users, signups, admin, multisite
+Contributors:      johnjamesjacoby, stuttter
+License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+License:           GNU General Public License v2 or later
+Donate link:       https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9Q4F4EL5YJ62J
+Tags:              users, signups, admin, multisite
+Requires PHP:      7.0.0
 Requires at least: 5.0
-Tested up to: 5.3
-Stable tag: 5.0.0
-License: GPLv2 or later
-License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9Q4F4EL5YJ62J
+Tested up to:      5.7
+Stable tag:        5.0.1
 
 == Description ==
 
@@ -77,6 +78,9 @@ If you require immediate assistance, please consider a paid support subscription
 http://github.com/stuttter/wp-user-signups
 
 == Changelog ==
+
+= [5.0.1] - 2021-03-21 =
+* Improved PHP 7.4 support
 
 = [5.0.0] - 2020-05-05 =
 * PHP 7.3 support
