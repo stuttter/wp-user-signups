@@ -1,16 +1,19 @@
 <?php
 
 /**
- * Plugin Name: WP Signups
- * Plugin URI:  https://wordpress.org/plugins/wp-user-signups/
- * Author:      John James Jacoby
- * Author URI:  https://jjj.blog
- * License:     GPLv2 or later
- * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Description: Signup management for WordPress
- * Version:     5.0.1
- * Text Domain: wp-user-signups
- * Domain Path: /wp-user-signups/assets/languages/
+ * Plugin Name:       WP Signups
+ * Description:       Signup management for WordPress
+ * Plugin URI:        https://wordpress.org/plugins/wp-user-signups/
+ * Author:            Triple J Software, Inc.
+ * Author URI:        https://jjj.software
+ * License:           GPLv2 or later
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+ * Text Domain:       wp-user-signups
+ * Domain Path:       /wp-user-signups/assets/languages
+ * Requires at least: 5.2
+ * Requires PHP:      7.2
+ * Tested up to:      5.8
+ * Version:           5.0.2
  */
 
 // Exit if accessed directly
@@ -48,6 +51,7 @@ function _wp_signups() {
 	require_once $plugin_path . 'includes/functions/common.php';
 	require_once $plugin_path . 'includes/functions/capabilities.php';
 	require_once $plugin_path . 'includes/functions/metadata.php';
+	require_once $plugin_path . 'includes/functions/sponsor.php';
 	require_once $plugin_path . 'includes/functions/hooks.php';
 
 	// Tables
@@ -99,5 +103,7 @@ function wp_signups_get_plugin_url() {
  * @return int
  */
 function wp_signups_get_asset_version() {
-	return 202103210001;
+	return defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG
+		? time()
+		: 202105290001;
 }

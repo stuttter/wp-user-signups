@@ -12,6 +12,7 @@ Use it to:
 
 * Download and install using the built in WordPress plugin installer.
 * Activate in the "Plugins" area of your network admin by clicking the "Activate" link.
+* Consider sponsoring future development by clicking "Sponsor".
 * No further setup or configuration is necessary.
 
 # FAQ
@@ -39,8 +40,9 @@ This plugin is largely inspired by:
 
 This plugin is free for anyone to use.
 
-* [Community support](https://wordpress.org/support/plugin/wp-user-signups) is provided for free by existing users.
+* Community: https://wordpress.org/support/plugin/wp-user-signups
+* Development: https://github.com/stuttter/wp-user-signups/discussions
 
-### How can I help?
+### Contributing
 
 Please [open a new issue](/pull/new/master) to discuss whether the feature is a good fit for the project. Once you've decided to work on a pull request, please follow the [WordPress Coding Standards](http://make.wordpress.org/core/handbook/coding-standards/).

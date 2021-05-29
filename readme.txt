@@ -1,13 +1,16 @@
 === WP User Signups ===
-Contributors:      johnjamesjacoby, stuttter
+Author:            Triple J Software, Inc.
+Author URI:        https://jjj.software
+Donate link:       https://buy.stripe.com/5kA4ghd8o2GC3pC8ww
+Plugin URI:        https://wordpress.org/plugins/wp-user-signups/
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
-License:           GNU General Public License v2 or later
-Donate link:       https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9Q4F4EL5YJ62J
-Tags:              users, signups, admin, multisite
-Requires PHP:      7.0.0
-Requires at least: 5.0
-Tested up to:      5.7
-Stable tag:        5.0.1
+License:           GPLv2 or later
+Contributors:      johnjamesjacoby
+Tags:              user, signups, admin, multisite
+Requires PHP:      7.2
+Requires at least: 5.2
+Tested up to:      5.8
+Stable tag:        5.0.2
 
 == Description ==
 
@@ -19,19 +22,26 @@ Use it to:
 * Resend activation emails to users who haven't received theirs yet
 * Manually edit & activate sign-ups for users who are having trouble
 
-= Also checkout =
+= Recommended Plugins =
 
-* [WP Chosen](https://wordpress.org/plugins/wp-chosen/ "Make long, unwieldy select boxes much more user-friendly.")
-* [WP Pretty Filters](https://wordpress.org/plugins/wp-pretty-filters/ "Makes post filters better match what's already in Media & Attachments.")
-* [WP Media Categories](https://wordpress.org/plugins/wp-media-categories/ "Add categories to media & attachments.")
-* [WP Term Order](https://wordpress.org/plugins/wp-term-order/ "Sort taxonomy terms, your way.")
-* [WP Term Authors](https://wordpress.org/plugins/wp-term-authors/ "Authors for categories, tags, and other taxonomy terms.")
-* [WP Term Colors](https://wordpress.org/plugins/wp-term-colors/ "Pretty colors for categories, tags, and other taxonomy terms.")
-* [WP Term Icons](https://wordpress.org/plugins/wp-term-icons/ "Pretty icons for categories, tags, and other taxonomy terms.")
-* [WP Term Visibility](https://wordpress.org/plugins/wp-term-visibility/ "Visibilities for categories, tags, and other taxonomy terms.")
-* [WP User Groups](https://wordpress.org/plugins/wp-user-groups/ "Group users together with taxonomies & terms.")
+If you like this plugin, you'll probably like these!
+
+* [WP User Profiles](https://wordpress.org/plugins/wp-user-profiles/ "A sophisticated way to edit users in WordPress.")
 * [WP User Activity](https://wordpress.org/plugins/wp-user-activity/ "The best way to log activity in WordPress.")
 * [WP User Avatars](https://wordpress.org/plugins/wp-user-avatars/ "Allow users to upload avatars or choose them from your media library.")
+* [WP User Groups](https://wordpress.org/plugins/wp-user-groups/ "Group users together with taxonomies & terms.")
+* [WP User Signups](https://wordpress.org/plugins/wp-user-signups/ "The best way to manage user & site sign-ups in WordPress.")
+* [WP Term Authors](https://wordpress.org/plugins/wp-term-authors/ "Authors for categories, tags, and other taxonomy terms.")
+* [WP Term Colors](https://wordpress.org/plugins/wp-term-colors/ "Pretty colors for categories, tags, and other taxonomy terms.")
+* [WP Term Families](https://wordpress.org/plugins/wp-term-families/ "Associate taxonomy terms with other taxonomy terms.")
+* [WP Term Icons](https://wordpress.org/plugins/wp-term-icons/ "Pretty icons for categories, tags, and other taxonomy terms.")
+* [WP Term Images](https://wordpress.org/plugins/wp-term-images/ "Pretty images for categories, tags, and other taxonomy terms.")
+* [WP Term Locks](https://wordpress.org/plugins/wp-term-locks/ "Protect categories, tags, and other taxonomy terms from being edited or deleted.")
+* [WP Term Order](https://wordpress.org/plugins/wp-term-order/ "Sort taxonomy terms, your way.")
+* [WP Term Visibility](https://wordpress.org/plugins/wp-term-visibility/ "Visibilities for categories, tags, and other taxonomy terms.")
+* [WP Media Categories](https://wordpress.org/plugins/wp-media-categories/ "Add categories to media & attachments.")
+* [WP Pretty Filters](https://wordpress.org/plugins/wp-pretty-filters/ "Makes post filters better match what's already in Media & Attachments.")
+* [WP Chosen](https://wordpress.org/plugins/wp-chosen/ "Make long, unwieldy select boxes much more user-friendly.")
 
 = Credits =
 
@@ -63,21 +73,18 @@ Yes. Yes. Yes.
 
 = Does this work with other membership plugins? =
 
-Ya know, I'm not really sure. Please test it with your favorite ones and let me know!
+I'm not really sure! Please test it with your favorite ones and let me know!
 
 = Where can I get support? =
 
-This plugin is free for anyone to use.
-
-[Community support](https://wordpress.org/support/plugin/wp-user-signups) is provided for free by existing users.
-
-If you require immediate assistance, please consider a paid support subscription.
-
-= Where can I find documentation? =
-
-http://github.com/stuttter/wp-user-signups
+* Community: https://wordpress.org/support/plugin/wp-user-signups
+* Development: https://github.com/stuttter/wp-user-signups/discussions
 
 == Changelog ==
+
+= [5.0.2] - 2021-05-29 =
+* Update author info
+* Add sponsor link
 
 = [5.0.1] - 2021-03-21 =
 * Improved PHP 7.4 support
