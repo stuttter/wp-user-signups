@@ -403,7 +403,7 @@ class WP_Signup {
 			 * @param string $key        The user's activation key
 			 * @param array  $meta       By default, contains the requested privacy setting and lang_id.
 			 */
-			do_action( 'after_signup_site', $this->domain, $this->path, $this->title, $this->user_login, $this->user_email, $this->key, $this->meta );
+			do_action( 'after_signup_site', $this->domain, $this->path, $this->title, $this->user_login, $this->user_email, $this->activation_key, $this->meta );
 
 		// User action
 		} else {
@@ -418,7 +418,7 @@ class WP_Signup {
 			 * @param string $key        The user's activation key
 			 * @param array  $meta       Additional signup meta. By default, this is an empty array.
 			 */
-			do_action( 'after_signup_user', $this->user_login, $this->user_email, $this->key, $this->meta );
+			do_action( 'after_signup_user', $this->user_login, $this->user_email, $this->activation_key, $this->meta );
 		}
 	}
 
