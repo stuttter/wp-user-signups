@@ -27,3 +27,6 @@ add_filter( 'set-screen-option', 'wp_signups_set_screen_option', 10, 3 );
 
 // Notices
 add_action( 'wp_signups_admin_notices', 'wp_signups_output_admin_notices' );
+
+// Cache
+add_action( 'after_signup_user', '__wp_signups_after_signup_user' );

@@ -95,3 +95,26 @@ function clean_signup_cache( $signup ) {
 
 	wp_cache_set( 'last_changed', microtime(), 'signups' );
 }
+
+/**
+ * Private helper function to set the last_changed signups cache, specifically
+ * after a user account is added via the single-site admin UI.
+ *
+ * This will likely be removed in a future version, so do not rely on this
+ * function existing in your own code.
+ *
+ * @see https://github.com/stuttter/wp-user-signups/issues/10
+ *
+ * @since 5.0.3
+ */
+function __wp_signups_after_signup_user() {
+
+	// WordPress 6.3 and higher
+	if ( function_exists( 'wp_cache_set_last_changed' ) ) {
+		wp_cache_set_last_changed( 'signups' );
+
+	// WordPress 6.2 and earlier
+	} else {
+		wp_cache_set( 'last_changed', microtime(), 'signups' );
+	}
+}

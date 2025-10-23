@@ -9,8 +9,8 @@ Contributors:      johnjamesjacoby
 Tags:              user, signups, admin, multisite
 Requires PHP:      7.2
 Requires at least: 5.2
-Tested up to:      5.8
-Stable tag:        5.0.2
+Tested up to:      6.9
+Stable tag:        5.0.3
 
 == Description ==
 
@@ -81,6 +81,9 @@ I'm not really sure! Please test it with your favorite ones and let me know!
 * Development: https://github.com/stuttter/wp-user-signups/discussions
 
 == Changelog ==
+
+= [5.0.3] - 2025-10-23 =
+* Fix bug causing users not to appear when added from single-site UI
 
 = [5.0.2] - 2021-05-29 =
 * Update author info

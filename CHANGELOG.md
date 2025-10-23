@@ -1,3 +1,10 @@
+## 5.0.3 (2025-10-23)
+* Fix bug causing users not to appear when added from single-site UI
+
+## 5.0.2 (2021-05-29)
+* Update author info
+* Add sponsor link
+
 ## 5.0.1 (2021-03-21)
 * Improved PHP 7.4 support
 
