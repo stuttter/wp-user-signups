@@ -25,18 +25,14 @@ function wp_parse_args( $args, $defaults = array() ) {
 	return array_merge( $defaults, (array) $args );
 }
 
-function apply_filters( $hook, $value ) {
-	$arguments = func_get_args();
-	array_shift( $arguments );
-	$result = wpus_test_call( 'apply_filters:' . $hook, $arguments );
+function apply_filters( $hook, $value, ...$arguments ) {
+	$filter_arguments = array_merge( array( $value ), $arguments );
+	$result           = wpus_test_call( 'apply_filters:' . $hook, $filter_arguments );
 
 	return null === $result ? $value : $result;
 }
 
-function do_action( $hook ) {
-	$arguments = func_get_args();
-	array_shift( $arguments );
-
+function do_action( $hook, ...$arguments ) {
 	wpus_test_call( 'do_action:' . $hook, $arguments );
 }
 
@@ -44,7 +40,7 @@ function absint( $value ) {
 	return abs( (int) $value );
 }
 
-function sanitize_user( $value ) {
+function sanitize_user( $value, $strict = false ) {
 	return strtolower( preg_replace( '/[^a-z0-9_-]/i', '', $value ) );
 }
 
@@ -60,7 +56,7 @@ function maybe_serialize( $value ) {
 	return is_array( $value ) || is_object( $value ) ? serialize( $value ) : $value;
 }
 
-function esc_html__( $text ) {
+function esc_html__( $text, $domain = 'default' ) {
 	return $text;
 }
 
@@ -84,32 +80,32 @@ function add_query_arg( $args, $url ) {
 	return $url . '?' . http_build_query( $args );
 }
 
-function wp_cache_set_last_changed() {
-	return wpus_test_call( __FUNCTION__, func_get_args() );
+function wp_cache_set_last_changed( $group ) {
+	return wpus_test_call( __FUNCTION__, array( $group ) );
 }
 
-function wp_cache_set() {
-	return wpus_test_call( __FUNCTION__, func_get_args() );
+function wp_cache_set( $key, $value, $group = '', $expire = 0 ) {
+	return wpus_test_call( __FUNCTION__, array( $key, $value, $group, $expire ) );
 }
 
-function add_metadata() {
-	return wpus_test_call( __FUNCTION__, func_get_args() );
+function add_metadata( ...$arguments ) {
+	return wpus_test_call( __FUNCTION__, $arguments );
 }
 
-function delete_metadata() {
-	return wpus_test_call( __FUNCTION__, func_get_args() );
+function delete_metadata( ...$arguments ) {
+	return wpus_test_call( __FUNCTION__, $arguments );
 }
 
-function get_metadata() {
-	return wpus_test_call( __FUNCTION__, func_get_args() );
+function get_metadata( ...$arguments ) {
+	return wpus_test_call( __FUNCTION__, $arguments );
 }
 
-function update_metadata() {
-	return wpus_test_call( __FUNCTION__, func_get_args() );
+function update_metadata( ...$arguments ) {
+	return wpus_test_call( __FUNCTION__, $arguments );
 }
 
-function update_meta_cache() {
-	return wpus_test_call( __FUNCTION__, func_get_args() );
+function update_meta_cache( ...$arguments ) {
+	return wpus_test_call( __FUNCTION__, $arguments );
 }
 
 class WP_Error {
