@@ -1,3 +1,6 @@
+## 5.0.4 (2026-09-10)
+* Declare compatibility with WordPress 7.1
+
 ## 5.0.3 (2026-09-10)
 * Fix activation keys passed to the signup completion actions
 * Fix users not appearing after being added from the single-site UI
