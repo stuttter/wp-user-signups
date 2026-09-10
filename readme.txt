@@ -82,8 +82,10 @@ I'm not really sure! Please test it with your favorite ones and let me know!
 
 == Changelog ==
 
-= [5.0.3] - 2025-10-23 =
-* Fix bug causing users not to appear when added from single-site UI
+= [5.0.3] - 2026-09-10 =
+* Fix activation keys passed to the signup completion actions
+* Fix users not appearing after being added from the single-site UI
+* Support Composer Installers 2 while retaining version 1 compatibility
 
 = [5.0.2] - 2021-05-29 =
 * Update author info
