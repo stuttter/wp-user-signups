@@ -1,0 +1,27 @@
+name: Codex issue implementation
+
+on:
+  issues:
+    types: [labeled]
+  workflow_dispatch:
+    inputs:
+      issue-number:
+        description: Open GitHub issue number to implement.
+        required: true
+        type: number
+
+permissions: {}
+
+jobs:
+  draft:
+    if: "${{ github.event_name == 'workflow_dispatch' || github.event.label.name == 'codex: ready' }}"
+    uses: stuttter/.github/.github/workflows/codex-issue.yml@main
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    with:
+      issue-number: ${{ github.event.issue.number || inputs.issue-number }}
+      base-branch: master
+    secrets:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}

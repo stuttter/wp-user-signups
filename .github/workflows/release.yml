@@ -1,0 +1,29 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Exact SemVer version without a leading v.
+        required: true
+        type: string
+      commit:
+        description: Full commit SHA currently at the release-branch head.
+        required: true
+        type: string
+
+permissions: {}
+
+jobs:
+  release:
+    uses: stuttter/.github/.github/workflows/wordpress-plugin-release.yml@main
+    permissions:
+      contents: write
+    with:
+      version: ${{ inputs.version }}
+      commit: ${{ inputs.commit }}
+      release-branch: master
+      environment: wordpress.org
+    secrets:
+      WORDPRESS_ORG_USERNAME: ${{ secrets.WORDPRESS_ORG_USERNAME }}
+      WORDPRESS_ORG_PASSWORD: ${{ secrets.WORDPRESS_ORG_PASSWORD }}

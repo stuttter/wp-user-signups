@@ -9,8 +9,8 @@ Contributors:      johnjamesjacoby
 Tags:              user, signups, admin, multisite
 Requires PHP:      7.2
 Requires at least: 5.2
-Tested up to:      6.9
-Stable tag:        5.0.3
+Tested up to:      7.1
+Stable tag:        5.0.4
 
 == Description ==
 
@@ -81,6 +81,9 @@ I'm not really sure! Please test it with your favorite ones and let me know!
 * Development: https://github.com/stuttter/wp-user-signups/discussions
 
 == Changelog ==
+
+= [5.0.4] - 2026-09-10 =
+* Declare compatibility with WordPress 7.1
 
 = [5.0.3] - 2026-09-10 =
 * Fix activation keys passed to the signup completion actions
