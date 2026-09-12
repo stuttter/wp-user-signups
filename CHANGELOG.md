@@ -1,3 +1,6 @@
+## Unreleased
+* Require PHP 7.4 or newer
+
 ## 5.0.4 (2026-09-10)
 * Declare compatibility with WordPress 7.1
 

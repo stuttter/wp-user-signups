@@ -11,7 +11,7 @@
  * Text Domain:       wp-user-signups
  * Domain Path:       /wp-user-signups/assets/languages
  * Requires at least: 5.2
- * Requires PHP:      7.2
+ * Requires PHP:      7.4
  * Tested up to:      7.1
  * Version:           5.0.4
  */
