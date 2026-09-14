@@ -21,7 +21,14 @@
 
 ## Automation
 
-Follow the organization-level safety boundaries. AI-authored implementation
-must remain a draft pull request and cannot modify workflows, release policy,
-ownership, security policy, dependencies, or this file. Releases require the
-protected `wordpress.org` environment and an exact commit from `master`.
+Follow the organization-level safety boundaries. Routine AI-authored changes
+may be marked ready and merged without repeated approval only when the exact
+head is signed and GitHub-verified, every required check is green, and complete
+exact-head review leaves no unresolved actionable finding. The change must not
+broaden permissions or secret access, publish a release, introduce unresolved
+behavior risk, or perform a destructive operation.
+
+Changes to workflows, release policy, ownership, security policy, dependencies,
+or this file still require explicit human approval. Release publication remains
+a human decision and requires the protected `wordpress.org` environment bound
+to an exact commit from `master`.
