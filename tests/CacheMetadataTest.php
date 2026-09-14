@@ -2,6 +2,10 @@
 
 use PHPUnit\Framework\TestCase;
 
+function _get_non_cached_ids( $ids, $group ) {
+	return wpus_test_call( __FUNCTION__, array( $ids, $group ) );
+}
+
 final class CacheMetadataTest extends TestCase {
 	protected function setUp(): void {
 		$GLOBALS['wpus_test'] = array();
@@ -31,5 +35,32 @@ final class CacheMetadataTest extends TestCase {
 		$this->assertSame( array( 'signup', 7, 'color', true ), $GLOBALS['wpus_test']['calls']['get_metadata'][0] );
 		$this->assertSame( array( 'signup', 7, 'color', 'green', 'blue' ), $GLOBALS['wpus_test']['calls']['update_metadata'][0] );
 		$this->assertSame( array( 'signup', 7, 'color', 'green' ), $GLOBALS['wpus_test']['calls']['delete_metadata'][0] );
+	}
+
+	public function test_signup_cache_query_prepares_one_integer_placeholder_per_id(): void {
+		$GLOBALS['wpus_test']['returns']['_get_non_cached_ids'] = array( 7, 12 );
+		$GLOBALS['wpdb'] = new class() {
+			public $signups = 'wp_signups';
+
+			public function prepare( $query, $arguments ) {
+				wpus_test_call( __FUNCTION__, array( $query, $arguments ) );
+
+				return 'prepared signup query';
+			}
+
+			public function get_results( $query ) {
+				wpus_test_call( __FUNCTION__, array( $query ) );
+
+				return array();
+			}
+		};
+
+		_prime_signup_caches( array( 7, 12 ), false );
+
+		$this->assertSame(
+			array( 'SELECT * FROM wp_signups WHERE signup_id IN (%d, %d)', array( 7, 12 ) ),
+			$GLOBALS['wpus_test']['calls']['prepare'][0]
+		);
+		$this->assertSame( array( 'prepared signup query' ), $GLOBALS['wpus_test']['calls']['get_results'][0] );
 	}
 }
