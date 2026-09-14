@@ -30,6 +30,7 @@ function _prime_signup_caches( $ids = array(), $update_meta_cache = true ) {
 		$placeholders = implode( ', ', array_fill( 0, count( $non_cached_ids ), '%d' ) );
 		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- The table name is registered internally; signup IDs use placeholders.
 		$query         = $wpdb->prepare( "SELECT * FROM {$wpdb->signups} WHERE signup_id IN ({$placeholders})", $non_cached_ids );
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The query is prepared immediately above with one integer placeholder per signup ID.
 		$fresh_signups = $wpdb->get_results( $query );
 
 		update_signup_cache( $fresh_signups, $update_meta_cache );
