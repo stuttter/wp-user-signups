@@ -146,9 +146,9 @@ final class WP_Signups_List_Table extends WP_List_Table {
 
 		// Default actions
 		$actions = array(
-			'activate' => esc_html__( 'Activate', 'wp-user-signups' ),
-			'resend'   => esc_html__( 'Resend',   'wp-user-signups' ),
-			'delete'   => esc_html__( 'Delete',   'wp-user-signups' )
+			'activate' => __( 'Activate', 'wp-user-signups' ),
+			'resend'   => __( 'Resend',   'wp-user-signups' ),
+			'delete'   => __( 'Delete',   'wp-user-signups' )
 		);
 
 		// Remove activate action of already viewing active sign-ups
@@ -278,7 +278,13 @@ final class WP_Signups_List_Table extends WP_List_Table {
 			$url = wp_signups_admin_url( $args );
 
 			// Add link to array
-			$view_links[ $status->id ] = "<a href='" . esc_url( $url ) . "' class='" . esc_attr( $class ) . "'>" . sprintf( '%1$s <span class="count">(%2$s)</span>', esc_html( $status->name ), esc_html( number_format_i18n( $status->count ) ) ) . '</a>';
+			$label = sprintf(
+				/* translators: 1: Signup status name. 2: Number of signups. */
+				_x( '%1$s <span class="count">(%2$s)</span>', 'signup status and count', 'wp-user-signups' ),
+				esc_html( $status->name ),
+				esc_html( number_format_i18n( $status->count ) )
+			);
+			$view_links[ $status->id ] = "<a href='" . esc_url( $url ) . "' class='" . esc_attr( $class ) . "'>" . $label . '</a>';
 		}
 
 		// Return links
