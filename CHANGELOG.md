@@ -1,4 +1,7 @@
-## Unreleased
+## 5.1.0 (2026-09-14)
+* Verify bulk-action nonces before handling signup actions
+* Prepare cache queries safely when clearing signup entries
+* Improve output escaping, translations, timestamps, and random key generation
 * Require PHP 7.4 or newer
 
 ## 5.0.4 (2026-09-10)
