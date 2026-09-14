@@ -446,7 +446,7 @@ class WP_Signup {
 		) );
 
 		// Get current date for use in `registered` and `activated` values
-		$now = date( 'Y-m-d H:i:s' );
+		$now = current_time( 'mysql', true );
 
 		// User login
 		if ( isset( $r['user_login'] ) ) {
@@ -460,14 +460,14 @@ class WP_Signup {
 
 		// Registered date
 		if ( ! empty( $r['registered'] ) ) {
-			$r['registered'] = date( 'Y-m-d H:i:s', strtotime( $r['registered'] ) );
+			$r['registered'] = gmdate( 'Y-m-d H:i:s', strtotime( $r['registered'] ) );
 		} else {
 			$r['registered'] = $now;
 		}
 
 		// Activated date
 		if ( ! empty( $r['activated'] ) && ( '0000-00-00 00:00:00' !== $r['activated'] ) ) {
-			$r['activated'] = date( 'Y-m-d H:i:s', strtotime( $r['activated'] ) );
+			$r['activated'] = gmdate( 'Y-m-d H:i:s', strtotime( $r['activated'] ) );
 		} else {
 			$r['activated'] = '0000-00-00 00:00:00';
 		}
@@ -496,7 +496,7 @@ class WP_Signup {
 
 			// Maybe set key if base is good
 			if ( ! empty( $base ) ) {
-				$r['activation_key'] = substr( md5( time() . rand() . $base ), 0, 16 );
+				$r['activation_key'] = substr( md5( time() . wp_rand() . $base ), 0, 16 );
 			}
 		}
 

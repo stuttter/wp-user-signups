@@ -12,6 +12,8 @@ Requires at least: 5.2
 Tested up to:      7.1
 Stable tag:        5.0.4
 
+Manage user and site sign-ups in WordPress.
+
 == Description ==
 
 WP User Signups is the best way to manage user & site sign-ups in WordPress.

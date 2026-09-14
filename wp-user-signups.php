@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Plugin Name:       WP Signups
+ * Plugin Name:       WP User Signups
  * Description:       Signup management for WordPress
  * Plugin URI:        https://wordpress.org/plugins/wp-user-signups/
  * Author:            Triple J Software, Inc.
@@ -9,7 +9,6 @@
  * License:           GPLv2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       wp-user-signups
- * Domain Path:       /wp-user-signups/assets/languages
  * Requires at least: 5.2
  * Requires PHP:      7.4
  * Tested up to:      7.1
