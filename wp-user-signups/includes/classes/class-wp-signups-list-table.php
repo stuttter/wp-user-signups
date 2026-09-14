@@ -103,11 +103,11 @@ final class WP_Signups_List_Table extends WP_List_Table {
 		// All columns
 		$columns = array(
 			'cb'             => '<input type="checkbox" />',
-			'user'           => _x( 'User',       'wp-user-signups' ),
-			'site'           => _x( 'Site',       'wp-user-signups' ),
-			'activation_key' => _x( 'Key',        'wp-user-signups' ),
-			'registered'     => _x( 'Registered', 'wp-user-signups' ),
-			'activated'      => _x( 'Activated',  'wp-user-signups' )
+			'user'           => _x( 'User',       'wp-user-signups', 'wp-user-signups' ),
+			'site'           => _x( 'Site',       'wp-user-signups', 'wp-user-signups' ),
+			'activation_key' => _x( 'Key',        'wp-user-signups', 'wp-user-signups' ),
+			'registered'     => _x( 'Registered', 'wp-user-signups', 'wp-user-signups' ),
+			'activated'      => _x( 'Activated',  'wp-user-signups', 'wp-user-signups' )
 		);
 
 		// Remove site column if single-site
@@ -146,9 +146,9 @@ final class WP_Signups_List_Table extends WP_List_Table {
 
 		// Default actions
 		$actions = array(
-			'activate' => esc_html__( 'Activate', 'wp-user-signups' ),
-			'resend'   => esc_html__( 'Resend',   'wp-user-signups' ),
-			'delete'   => esc_html__( 'Delete',   'wp-user-signups' )
+			'activate' => __( 'Activate', 'wp-user-signups' ),
+			'resend'   => __( 'Resend',   'wp-user-signups' ),
+			'delete'   => __( 'Delete',   'wp-user-signups' )
 		);
 
 		// Remove activate action of already viewing active sign-ups
@@ -195,16 +195,16 @@ final class WP_Signups_List_Table extends WP_List_Table {
 			return;
 		}
 
-		echo "<label for='bulk-action-selector-" . esc_attr( $which ) . "' class='screen-reader-text'>" . esc_html__( 'Select bulk action', 'wp-user-signups' ) . "</label>";
-		echo "<select name='bulk_action{$two}' id='bulk-action-selector-" . esc_attr( $which ) . "'>\n";
-		echo "<option value='-1' selected='selected'>" . __( 'Bulk Actions' ) . "</option>\n";
+		echo '<label for="bulk-action-selector-' . esc_attr( $which ) . '" class="screen-reader-text">' . esc_html__( 'Select bulk action', 'wp-user-signups' ) . '</label>';
+		echo '<select name="' . esc_attr( "bulk_action{$two}" ) . '" id="bulk-action-selector-' . esc_attr( $which ) . '">' . "\n";
+		echo '<option value="-1" selected="selected">' . esc_html__( 'Bulk Actions', 'wp-user-signups' ) . '</option>' . "\n";
 
 		foreach ( $this->_actions as $name => $title ) {
-			$class = ( 'edit' === $name )
-				? ' class="hide-if-no-js"'
-				: '';
-
-			echo "\t<option value='{$name}'{$class}>{$title}</option>\n";
+			echo "\t" . '<option value="' . esc_attr( $name ) . '"';
+			if ( 'edit' === $name ) {
+				echo ' class="hide-if-no-js"';
+			}
+			echo '>' . esc_html( $title ) . '</option>' . "\n";
 		}
 
 		echo "</select>\n";
@@ -221,12 +221,12 @@ final class WP_Signups_List_Table extends WP_List_Table {
 	 */
 	public function current_action() {
 
-		if ( isset( $_REQUEST['bulk_action'] ) && -1 != $_REQUEST['bulk_action'] ) {
-			return $_REQUEST['bulk_action'];
+		if ( isset( $_REQUEST['bulk_action'] ) && is_string( $_REQUEST['bulk_action'] ) && '-1' !== $_REQUEST['bulk_action'] ) {
+			return sanitize_key( wp_unslash( $_REQUEST['bulk_action'] ) );
 		}
 
-		if ( isset( $_REQUEST['bulk_action2'] ) && -1 != $_REQUEST['bulk_action2'] ) {
-			return $_REQUEST['bulk_action2'];
+		if ( isset( $_REQUEST['bulk_action2'] ) && is_string( $_REQUEST['bulk_action2'] ) && '-1' !== $_REQUEST['bulk_action2'] ) {
+			return sanitize_key( wp_unslash( $_REQUEST['bulk_action2'] ) );
 		}
 
 		return false;
@@ -278,7 +278,13 @@ final class WP_Signups_List_Table extends WP_List_Table {
 			$url = wp_signups_admin_url( $args );
 
 			// Add link to array
-			$view_links[ $status->id ] = "<a href='" . esc_url( $url ) . "' class='" . esc_attr( $class ) . "'>" . sprintf( _nx( $status->name . ' <span class="count">(%s)</span>', $status->name . ' <span class="count">(%s)</span>', $status->count, 'users' ), number_format_i18n( $status->count ) ) . '</a>';
+			$label = sprintf(
+				/* translators: 1: Signup status name. 2: Number of signups. */
+				_x( '%1$s <span class="count">(%2$s)</span>', 'signup status and count', 'wp-user-signups' ),
+				esc_html( $status->name ),
+				esc_html( number_format_i18n( $status->count ) )
+			);
+			$view_links[ $status->id ] = "<a href='" . esc_url( $url ) . "' class='" . esc_attr( $class ) . "'>" . $label . '</a>';
 		}
 
 		// Return links
@@ -298,8 +304,11 @@ final class WP_Signups_List_Table extends WP_List_Table {
 		$signup_id = $signup->signup_id;
 		$domain    = $signup->domain;
 
+		/* translators: %s: Signup domain. */
+		$label = sprintf( esc_html__( 'Select %s', 'wp-user-signups' ), esc_html( $domain ) );
+
 		return '<label class="screen-reader-text" for="cb-select-' . esc_attr( $signup_id ) . '">'
-			. sprintf( __( 'Select %s', 'wp-user-signups' ), esc_html( $domain ) ) . '</label>'
+			. $label . '</label>'
 			. '<input type="checkbox" name="signup_ids[]" value="' . esc_attr( $signup_id )
 			. '" id="cb-select-' . esc_attr( $signup_id ) . '" />';
 	}

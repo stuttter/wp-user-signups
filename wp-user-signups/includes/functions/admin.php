@@ -136,6 +136,7 @@ function wp_signups_output_page_header( $signup_id = 0 ) {
 				'page' => 'signup_edit'
 			) );
 			$title_link = '<a href="' . esc_url( $link_url ) . '" class="page-title-action">' . esc_html__( 'Add New', 'wp-user-signups' ) . '</a>';
+			/* translators: %s: Link to add a new signup. */
 			$title =  sprintf( esc_html__( 'Sign ups %s', 'wp-user-signups' ), $title_link );
 
 		// Without "Add new" link
@@ -158,7 +159,7 @@ function wp_signups_output_page_header( $signup_id = 0 ) {
 
 	// This is copied from WordPress core
 	?><div class="wrap">
-		<h1 id="edit-signup"><?php echo $title; // may contain HTML ?></h1><?php
+		<h1 id="edit-signup"><?php echo wp_kses_post( $title ); ?></h1><?php
 
 		// Admin notices
 		do_action( 'wp_signups_admin_notices' );
@@ -174,6 +175,22 @@ function wp_signups_output_page_footer() {
 }
 
 /**
+ * Verify the nonce for an action that changes signup data.
+ *
+ * Add and edit submissions retain their dedicated form nonces. Every other
+ * action originates from the signup list table and uses its bulk nonce.
+ *
+ * @since 5.1.0
+ *
+ * @param string $action Sanitized signup action.
+ */
+function wp_signups_check_action_nonce( $action ) {
+	if ( ! in_array( $action, array( 'add', 'edit' ), true ) ) {
+		check_admin_referer( 'signups-bulk' );
+	}
+}
+
+/**
  * Handle submission of the list page
  *
  * Handles bulk actions for the list page. Redirects back to itself after
@@ -184,18 +201,21 @@ function wp_signups_output_page_footer() {
 function wp_signups_handle_actions() {
 
 	// Get action or bail
-	if ( ! empty( $_REQUEST['action'] ) && empty( $_REQUEST['bulk_action'] ) && empty( $_REQUEST['bulk_action2'] ) ) {
+	if ( ! empty( $_REQUEST['action'] ) && is_string( $_REQUEST['action'] ) && empty( $_REQUEST['bulk_action'] ) && empty( $_REQUEST['bulk_action2'] ) ) {
 		$request_action = $_REQUEST['action'];
-	} elseif ( isset( $_REQUEST['bulk_action'] ) && ( -1 != $_REQUEST['bulk_action'] ) ) {
+	} elseif ( isset( $_REQUEST['bulk_action'] ) && is_string( $_REQUEST['bulk_action'] ) && ( '-1' !== $_REQUEST['bulk_action'] ) ) {
 		$request_action = $_REQUEST['bulk_action'];
-	} elseif ( isset( $_REQUEST['bulk_action2'] ) && ( -1 != $_REQUEST['bulk_action2'] ) ) {
+	} elseif ( isset( $_REQUEST['bulk_action2'] ) && is_string( $_REQUEST['bulk_action2'] ) && ( '-1' !== $_REQUEST['bulk_action2'] ) ) {
 		$request_action = $_REQUEST['bulk_action2'];
 	} else {
 		return;
 	}
 
-	// Get action
-	$action      = sanitize_key( $request_action );
+	// Verify every action before doing any further request processing.
+	$action = sanitize_key( wp_unslash( $request_action ) );
+	wp_signups_check_action_nonce( $action );
+
+	// Get redirect URL.
 	$redirect_to = remove_query_arg( array( 'did_action', 'processed', 'signup_ids', '_wpnonce' ), wp_get_referer() );
 
 	// Maybe fallback redirect
@@ -331,7 +351,6 @@ function wp_signups_handle_actions() {
 
 		// Any other bingos
 		default:
-			check_admin_referer( 'signups-bulk' );
 			do_action_ref_array( "signups_bulk_action-{$action}", array( $signups, &$processed, $action ) );
 
 			break;
@@ -570,9 +589,11 @@ function wp_signups_output_admin_notices() {
 
 	// Notice variables
 	$class      = 'notice-success';
-	$did_action = sanitize_key( $_REQUEST['did_action'] );
+	$did_action = is_string( $_REQUEST['did_action'] )
+		? sanitize_key( wp_unslash( $_REQUEST['did_action'] ) )
+		: '';
 	$processed  = ! empty( $_REQUEST['processed'] )
-		? wp_parse_id_list( (array) $_REQUEST['processed'] )
+		? wp_parse_id_list( (array) wp_unslash( $_REQUEST['processed'] ) )
 		: array();
 
 	// Changed count
@@ -593,10 +614,15 @@ function wp_signups_output_admin_notices() {
 	// 1 item
 	} elseif ( 1 === $count ) {
 		$bulk_messages = array(
+			/* translators: %s: Signup email address. */
 			'activate' => esc_html__( 'Activated %s.', 'wp-user-signups' ),
+			/* translators: %s: Signup email address. */
 			'resend'   => esc_html__( 'Resent to %s.', 'wp-user-signups' ),
+			/* translators: %s: Signup label. */
 			'delete'   => esc_html__( 'Deleted %s.',   'wp-user-signups' ),
+			/* translators: %s: Signup email address. */
 			'add'      => esc_html__( 'Added %s.',     'wp-user-signups' ),
+			/* translators: %s: Signup email address. */
 			'edit'     => esc_html__( 'Updated %s.',   'wp-user-signups' )
 		);
 
@@ -612,10 +638,15 @@ function wp_signups_output_admin_notices() {
 	} else {
 		$placeholder   = number_format_i18n( $count );
 		$bulk_messages = array(
+			/* translators: %s: Number of signups. */
 			'activate' => _n( '%s signup activated.', '%s signups activated.', $count, 'wp-user-signups' ),
+			/* translators: %s: Number of signups. */
 			'resend'   => _n( '%s signup resent.',    '%s signups resent.',    $count, 'wp-user-signups' ),
+			/* translators: %s: Number of signups. */
 			'delete'   => _n( '%s signup deleted.',   '%s signups deleted.',   $count, 'wp-user-signups' ),
+			/* translators: %s: Number of signups. */
 			'add'      => _n( '%s signup added.',     '%s signups added.',     $count, 'wp-user-signups' ),
+			/* translators: %s: Number of signups. */
 			'edit'     => _n( '%s signup updated.',   '%s signups updated.',   $count, 'wp-user-signups' )
 		);
 
@@ -641,5 +672,5 @@ function wp_signups_output_admin_notices() {
 	}
 
 	// Output notices
-	?><div id="message" class="notice <?php echo $class; ?>"><p><?php echo implode( '</p><p>', $messages ); ?></p></div><?php
+	?><div id="message" class="notice <?php echo esc_attr( $class ); ?>"><p><?php echo wp_kses_post( implode( '</p><p>', $messages ) ); ?></p></div><?php
 }

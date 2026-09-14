@@ -2,6 +2,18 @@
 
 use PHPUnit\Framework\TestCase;
 
+function current_time( $type, $gmt = false ) {
+	wpus_test_call( __FUNCTION__, array( $type, $gmt ) );
+
+	return '2026-09-14 20:00:00';
+}
+
+function wp_rand() {
+	wpus_test_call( __FUNCTION__, array() );
+
+	return 123456;
+}
+
 final class SignupTest extends TestCase {
 	protected function setUp(): void {
 		$GLOBALS['wpus_test'] = array();
@@ -22,6 +34,8 @@ final class SignupTest extends TestCase {
 		$this->assertSame( 16, strlen( $result['activation_key'] ) );
 		$this->assertSame( 'Hello', $result['meta'] );
 		$this->assertArrayNotHasKey( 'unknown', $result );
+		$this->assertSame( array( 'mysql', true ), $GLOBALS['wpus_test']['calls']['current_time'][0] );
+		$this->assertSame( array(), $GLOBALS['wpus_test']['calls']['wp_rand'][0] );
 	}
 
 	public function test_user_notification_uses_activation_key_property(): void {
