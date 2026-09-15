@@ -10,7 +10,7 @@ Tags:              user, signups, admin, multisite
 Requires PHP:      7.4
 Requires at least: 5.2
 Tested up to:      7.1
-Stable tag:        5.0.4
+Stable tag:        5.1.0
 
 Manage user and site sign-ups in WordPress.
 
@@ -83,6 +83,12 @@ I'm not really sure! Please test it with your favorite ones and let me know!
 * Development: https://github.com/stuttter/wp-user-signups/discussions
 
 == Changelog ==
+
+= [5.1.0] - 2026-09-14 =
+* Verify bulk-action nonces before handling signup actions
+* Prepare cache queries safely when clearing signup entries
+* Improve output escaping, translations, timestamps, and random key generation
+* Require PHP 7.4 or newer
 
 = [5.0.4] - 2026-09-10 =
 * Declare compatibility with WordPress 7.1

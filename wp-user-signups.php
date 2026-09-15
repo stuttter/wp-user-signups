@@ -12,7 +12,7 @@
  * Requires at least: 5.2
  * Requires PHP:      7.4
  * Tested up to:      7.1
- * Version:           5.0.4
+ * Version:           5.1.0
  */
 
 // Exit if accessed directly
