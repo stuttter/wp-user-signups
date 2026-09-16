@@ -1,3 +1,7 @@
+## Unreleased
+
+* Require WordPress 6.4 or newer
+
 ## 5.1.0 (2026-09-14)
 * Verify bulk-action nonces before handling signup actions
 * Prepare cache queries safely when clearing signup entries

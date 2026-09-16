@@ -2,7 +2,7 @@
 
 ## Compatibility
 
-- Preserve PHP 7.4 and WordPress 5.2 compatibility unless a dedicated pull
+- Preserve PHP 7.4 and WordPress 6.4 compatibility unless a dedicated pull
   request explicitly changes the published minimums.
 - Treat signup activation, user creation, database schema, cache invalidation,
   metadata, multisite, capabilities, and notification hooks as critical code.
