@@ -19,8 +19,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - label: WordPress 5.2 / PHP 7.4 / single-site
-            wordpress: '5.2'
+          - label: WordPress 6.4 / PHP 7.4 / single-site
+            wordpress: '6.4'
             php: '7.4'
             multisite: false
           - label: WordPress 7.1 / PHP 8.4 / single-site

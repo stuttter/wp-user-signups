@@ -55,7 +55,7 @@ composer test
 ```
 
 Pull requests also run syntax checks across the supported PHP matrix and smoke
-tests on WordPress 5.2 and the latest stable WordPress release in both
+tests on WordPress 6.4 and the latest stable WordPress release in both
 single-site and multisite configurations.
 
 ## Contributing
