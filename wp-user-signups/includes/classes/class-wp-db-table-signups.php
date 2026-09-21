@@ -22,7 +22,7 @@ final class WP_DB_Table_Signups extends WP_DB_Table {
 	protected $name = 'signups';
 
 	/**
-	 * @var string Database version
+	 * @var int Database version
 	 */
 	protected $version = 201704110001;
 
@@ -35,6 +35,7 @@ final class WP_DB_Table_Signups extends WP_DB_Table {
 	 * Setup the database schema
 	 *
 	 * @since 2.0.0
+	 * @return void
 	 */
 	protected function set_schema() {
 		$this->schema = "signup_id bigint(20) unsigned NOT NULL auto_increment,
@@ -59,11 +60,12 @@ final class WP_DB_Table_Signups extends WP_DB_Table {
 	 * Handle schema changes
 	 *
 	 * @since 2.0.0
+	 * @return void
 	 */
 	protected function upgrade() {
 
 		// 3.0.0 to 4.0.0
-		if ( version_compare( (int) $this->db_version, 201704110001, '<=' ) ) {
+		if ( version_compare( (string) $this->db_version, '201704110001', '<=' ) ) {
 			$this->db->query( "ALTER TABLE {$this->table_name} MODIFY `signup_id` BIGINT(20) unsigned NOT NULL AUTO_INCREMENT;" );
 		}
 	}

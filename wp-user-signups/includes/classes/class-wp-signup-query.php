@@ -29,7 +29,7 @@ class WP_Signup_Query {
 	 *
 	 * @since 1.0.0
 	 * @access protected
-	 * @var array
+	 * @var array{select: string, from: string, where: array<string, string>, groupby: string, orderby: string, limits: string}
 	 */
 	protected $sql_clauses = array(
 		'select'  => '',
@@ -45,7 +45,7 @@ class WP_Signup_Query {
 	 *
 	 * @since 1.0.0
 	 * @access public
-	 * @var object WP_Date_Query
+	 * @var WP_Date_Query|false
 	 */
 	public $registered_query = false;
 
@@ -54,7 +54,7 @@ class WP_Signup_Query {
 	 *
 	 * @since 1.0.0
 	 * @access public
-	 * @var object WP_Date_Query
+	 * @var WP_Date_Query|false
 	 */
 	public $activated_query = false;
 
@@ -63,7 +63,7 @@ class WP_Signup_Query {
 	 *
 	 * @since 1.0.0
 	 * @access public
-	 * @var object WP_Date_Query
+	 * @var WP_Meta_Query|false
 	 */
 	public $meta_query = false;
 
@@ -72,7 +72,7 @@ class WP_Signup_Query {
 	 *
 	 * @since 1.0.0
 	 * @access public
-	 * @var array
+	 * @var array<string, mixed>
 	 */
 	public $query_vars;
 
@@ -81,7 +81,7 @@ class WP_Signup_Query {
 	 *
 	 * @since 1.0.0
 	 * @access public
-	 * @var array
+	 * @var array<string, mixed>
 	 */
 	public $query_var_defaults;
 
@@ -90,7 +90,7 @@ class WP_Signup_Query {
 	 *
 	 * @since 1.0.0
 	 * @access public
-	 * @var array
+	 * @var array<int, int|WP_Signup>
 	 */
 	public $signups;
 
@@ -117,7 +117,7 @@ class WP_Signup_Query {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @var WPDB
+	 * @var wpdb
 	 */
 	private $db;
 
@@ -127,7 +127,7 @@ class WP_Signup_Query {
 	 * @since 1.0.0
 	 * @access public
 	 *
-	 * @param string|array $query {
+	 * @param string|array<string, mixed> $query {
 	 *     Optional. Array or query string of signup query parameters. Default empty.
 	 *
 	 *     @type int          $ID                 An signup ID to only return that signup. Default empty.
@@ -230,7 +230,8 @@ class WP_Signup_Query {
 	 *
 	 * @see WP_Signup_Query::__construct()
 	 *
-	 * @param string|array $query Array or string of WP_Signup_Query arguments. See WP_Signup_Query::__construct().
+	 * @param string|array<string, mixed> $query Array or string of WP_Signup_Query arguments. See WP_Signup_Query::__construct().
+	 * @return void
 	 */
 	public function parse_query( $query = '' ) {
 		if ( empty( $query ) ) {
@@ -255,8 +256,8 @@ class WP_Signup_Query {
 	 * @since 1.0.0
 	 * @access public
 	 *
-	 * @param string|array $query Array or URL query string of parameters.
-	 * @return array|int List of signups, or number of signups when 'count' is passed as a query var.
+	 * @param string|array<string, mixed> $query Array or URL query string of parameters.
+	 * @return array<int, int|WP_Signup>|int List of signups, or number of signups when 'count' is passed as a query var.
 	 */
 	public function query( $query ) {
 		$this->query_vars = wp_parse_args( $query );
@@ -270,7 +271,7 @@ class WP_Signup_Query {
 	 * @since 1.0.0
 	 * @access public
 	 *
-	 * @return array|int List of signups, or number of signups when 'count' is passed as a query var.
+	 * @return array<int, int|WP_Signup>|int List of signups, or number of signups when 'count' is passed as a query var.
 	 */
 	public function get_signups() {
 		$this->parse_query();
@@ -318,7 +319,7 @@ class WP_Signup_Query {
 
 		// Pagination
 		if ( $this->found_signups && $this->query_vars['number'] ) {
-			$this->max_num_pages = ceil( $this->found_signups / $this->query_vars['number'] );
+			$this->max_num_pages = (int) ceil( $this->found_signups / $this->query_vars['number'] );
 		}
 
 		// Return an int of the count
@@ -350,7 +351,7 @@ class WP_Signup_Query {
 		 * @since 1.0.0
 		 *
 		 * @param array           $results An array of signups.
-		 * @param WP_Signup_Query &$this   Current instance of WP_Signup_Query, passed by reference.
+		 * @param WP_Signup_Query $query   Current instance of WP_Signup_Query, passed by reference.
 		 */
 		$_signups = apply_filters_ref_array( 'the_signups', array( $_signups, &$this ) );
 
@@ -366,18 +367,24 @@ class WP_Signup_Query {
 	 * @since 1.0.0
 	 * @access protected
 	 *
-	 * @return int|array A single count of signup IDs if a count query. An array of signup IDs if a full query.
+	 * @return int|array<int, int> A single count of signup IDs if a count query. An array of signup IDs if a full query.
 	 */
 	protected function get_signup_ids() {
-		$order = $this->parse_order( $this->query_vars['order'] );
+		$limits = '';
+		$order  = $this->parse_order( $this->query_vars['order'] );
 
 		// Disable ORDER BY with 'none', an empty array, or boolean false.
 		if ( in_array( $this->query_vars['orderby'], array( 'none', array(), false ), true ) ) {
 			$orderby = '';
 		} elseif ( ! empty( $this->query_vars['orderby'] ) ) {
-			$ordersby = is_array( $this->query_vars['orderby'] ) ?
-				$this->query_vars['orderby'] :
-				preg_split( '/[,\s]/', $this->query_vars['orderby'] );
+			if ( is_array( $this->query_vars['orderby'] ) ) {
+				$ordersby = $this->query_vars['orderby'];
+			} else {
+				$ordersby = preg_split( '/[,\s]/', $this->query_vars['orderby'] );
+				if ( false === $ordersby ) {
+					$ordersby = array();
+				}
+			}
 
 			$orderby_array = array();
 			foreach ( $ordersby as $_key => $_value ) {
@@ -437,12 +444,12 @@ class WP_Signup_Query {
 
 		// Parse signup IDs for an IN clause.
 		if ( ! empty( $this->query_vars['signup__in'] ) ) {
-			$this->sql_clauses['where']['signup__in'] = "us.signup_id IN ( " . implode( ',', wp_parse_id_list( $this->query_vars['site__in'] ) ) . ' )';
+			$this->sql_clauses['where']['signup__in'] = 'us.signup_id IN ( ' . implode( ',', wp_parse_id_list( $this->query_vars['site__in'] ) ) . ' )';
 		}
 
 		// Parse signup IDs for a NOT IN clause.
 		if ( ! empty( $this->query_vars['signup__not_in'] ) ) {
-			$this->sql_clauses['where']['signup__not_in'] = "us.signup_id NOT IN ( " . implode( ',', wp_parse_id_list( $this->query_vars['site__not_in'] ) ) . ' )';
+			$this->sql_clauses['where']['signup__not_in'] = 'us.signup_id NOT IN ( ' . implode( ',', wp_parse_id_list( $this->query_vars['site__not_in'] ) ) . ' )';
 		}
 
 		// domain
@@ -452,12 +459,12 @@ class WP_Signup_Query {
 
 		// Parse signup domain for an IN clause.
 		if ( is_array( $this->query_vars['domain__in'] ) ) {
-			$this->sql_clauses['where']['domain__in'] = "us.domain IN ( '" . implode( "', '", $this->db->_escape( $this->query_vars['domain__in'] ) ) . "' )";
+			$this->sql_clauses['where']['domain__in'] = "us.domain IN ( '" . implode( "', '", (array) $this->db->_escape( $this->query_vars['domain__in'] ) ) . "' )";
 		}
 
 		// Parse signup domain for a NOT IN clause.
 		if ( is_array( $this->query_vars['domain__not_in'] ) ) {
-			$this->sql_clauses['where']['domain__not_in'] = "us.domain NOT IN ( '" . implode( "', '", $this->db->_escape( $this->query_vars['domain__not_in'] ) ) . "' )";
+			$this->sql_clauses['where']['domain__not_in'] = "us.domain NOT IN ( '" . implode( "', '", (array) $this->db->_escape( $this->query_vars['domain__not_in'] ) ) . "' )";
 		}
 
 		// path
@@ -467,12 +474,12 @@ class WP_Signup_Query {
 
 		// Parse signup path for an IN clause.
 		if ( is_array( $this->query_vars['path__in'] ) ) {
-			$this->sql_clauses['where']['path__in'] = "us.path IN ( '" . implode( "', '", $this->db->_escape( $this->query_vars['path__in'] ) ) . "' )";
+			$this->sql_clauses['where']['path__in'] = "us.path IN ( '" . implode( "', '", (array) $this->db->_escape( $this->query_vars['path__in'] ) ) . "' )";
 		}
 
 		// Parse signup path for a NOT IN clause.
 		if ( is_array( $this->query_vars['path__not_in'] ) ) {
-			$this->sql_clauses['where']['path__not_in'] = "us.path NOT IN ( '" . implode( "', '", $this->db->_escape( $this->query_vars['path__not_in'] ) ) . "' )";
+			$this->sql_clauses['where']['path__not_in'] = "us.path NOT IN ( '" . implode( "', '", (array) $this->db->_escape( $this->query_vars['path__not_in'] ) ) . "' )";
 		}
 
 		// user_login
@@ -482,12 +489,12 @@ class WP_Signup_Query {
 
 		// Parse signup user_login for an IN clause.
 		if ( is_array( $this->query_vars['user_login__in'] ) ) {
-			$this->sql_clauses['where']['user_login__in'] = "us.user_login IN ( '" . implode( "', '", $this->db->_escape( $this->query_vars['user_login__in'] ) ) . "' )";
+			$this->sql_clauses['where']['user_login__in'] = "us.user_login IN ( '" . implode( "', '", (array) $this->db->_escape( $this->query_vars['user_login__in'] ) ) . "' )";
 		}
 
 		// Parse signup user_login for a NOT IN clause.
 		if ( is_array( $this->query_vars['user_login__not_in'] ) ) {
-			$this->sql_clauses['where']['user_login__not_in'] = "us.user_login NOT IN ( '" . implode( "', '", $this->db->_escape( $this->query_vars['user_login__not_in'] ) ) . "' )";
+			$this->sql_clauses['where']['user_login__not_in'] = "us.user_login NOT IN ( '" . implode( "', '", (array) $this->db->_escape( $this->query_vars['user_login__not_in'] ) ) . "' )";
 		}
 
 		// user_email
@@ -497,12 +504,12 @@ class WP_Signup_Query {
 
 		// Parse signup user_email for an IN clause.
 		if ( is_array( $this->query_vars['user_email__in'] ) ) {
-			$this->sql_clauses['where']['user_email__in'] = "us.user_email IN ( '" . implode( "', '", $this->db->_escape( $this->query_vars['user_email__in'] ) ) . "' )";
+			$this->sql_clauses['where']['user_email__in'] = "us.user_email IN ( '" . implode( "', '", (array) $this->db->_escape( $this->query_vars['user_email__in'] ) ) . "' )";
 		}
 
 		// Parse signup user_email for a NOT IN clause.
 		if ( is_array( $this->query_vars['user_email__not_in'] ) ) {
-			$this->sql_clauses['where']['user_email__not_in'] = "us.user_email NOT IN ( '" . implode( "', '", $this->db->_escape( $this->query_vars['user_email__not_in'] ) ) . "' )";
+			$this->sql_clauses['where']['user_email__not_in'] = "us.user_email NOT IN ( '" . implode( "', '", (array) $this->db->_escape( $this->query_vars['user_email__not_in'] ) ) . "' )";
 		}
 
 		if ( isset( $this->query_vars['active'] ) ) {
@@ -530,7 +537,7 @@ class WP_Signup_Query {
 			 *
 			 * @param array         $search_columns Array of column names to be searched.
 			 * @param string        $search         Text being searched.
-			 * @param WP_Signup_Query $this           The current WP_Signup_Query instance.
+			 * @param WP_Signup_Query $query          The current WP_Signup_Query instance.
 			 */
 			$search_columns = apply_filters( 'signup_search_columns', $search_columns, $this->query_vars['search'], $this );
 
@@ -551,10 +558,14 @@ class WP_Signup_Query {
 
 		$meta_query = $this->query_vars['meta_query'];
 		if ( ! empty( $meta_query ) && is_array( $meta_query ) ) {
-			$this->meta_query                         = new WP_Meta_Query( $meta_query );
-			$clauses                                  = $this->meta_query->get_sql( 'blog_signup', 'us', 'id', $this );
-			$join                                     = $clauses['join'];
-			$this->sql_clauses['where']['meta_query'] = preg_replace( '/^\s*AND\s*/', '', $clauses['where'] );
+			$this->meta_query = new WP_Meta_Query( $meta_query );
+			$clauses          = $this->meta_query->get_sql( 'blog_signup', 'us', 'id', $this );
+			if ( false !== $clauses ) {
+				$join                                     = $clauses['join'];
+				$this->sql_clauses['where']['meta_query'] = preg_replace( '/^\s*AND\s*/', '', $clauses['where'] );
+			} else {
+				$join = '';
+			}
 		} else {
 			$join = '';
 		}
@@ -572,16 +583,16 @@ class WP_Signup_Query {
 		 * @since 1.0.0
 		 *
 		 * @param array $pieces A compacted array of signup query clauses.
-		 * @param WP_Signup_Query &$this Current instance of WP_Signup_Query, passed by reference.
+		 * @param WP_Signup_Query $query Current instance of WP_Signup_Query, passed by reference.
 		 */
-		$clauses = apply_filters_ref_array( 'signup_clauses', array( compact( $pieces ), &$this ) );
+		$clauses = (array) apply_filters_ref_array( 'signup_clauses', array( compact( $pieces ), &$this ) );
 
-		$fields  = isset( $clauses['fields']  ) ? $clauses['fields']  : '';
-		$join    = isset( $clauses['join']    ) ? $clauses['join']    : '';
-		$where   = isset( $clauses['where']   ) ? $clauses['where']   : '';
-		$orderby = isset( $clauses['orderby'] ) ? $clauses['orderby'] : '';
-		$limits  = isset( $clauses['limits']  ) ? $clauses['limits']  : '';
-		$groupby = isset( $clauses['groupby'] ) ? $clauses['groupby'] : '';
+		$fields  = isset( $clauses['fields'] ) && is_scalar( $clauses['fields'] ) ? (string) $clauses['fields'] : '';
+		$join    = isset( $clauses['join'] ) && is_scalar( $clauses['join'] ) ? (string) $clauses['join'] : '';
+		$where   = isset( $clauses['where'] ) && is_scalar( $clauses['where'] ) ? (string) $clauses['where'] : '';
+		$orderby = isset( $clauses['orderby'] ) && is_scalar( $clauses['orderby'] ) ? (string) $clauses['orderby'] : '';
+		$limits  = isset( $clauses['limits'] ) && is_scalar( $clauses['limits'] ) ? (string) $clauses['limits'] : '';
+		$groupby = isset( $clauses['groupby'] ) && is_scalar( $clauses['groupby'] ) ? (string) $clauses['groupby'] : '';
 
 		if ( $where ) {
 			$where = "WHERE {$where}";
@@ -624,7 +635,8 @@ class WP_Signup_Query {
 	 * @since 1.0.0
 	 * @access private
 	 *
-	 * @param  array $signup_ids Optional array of signup IDs
+	 * @param array<int, int> $signup_ids Optional array of signup IDs.
+	 * @return void
 	 */
 	private function set_found_signups( $signup_ids = array() ) {
 
@@ -651,8 +663,8 @@ class WP_Signup_Query {
 	 * @since 1.0.0
 	 * @access protected
 	 *
-	 * @param string $string  Search string.
-	 * @param array  $columns Columns to search.
+	 * @param string             $string  Search string.
+	 * @param array<int, string> $columns Columns to search.
 	 * @return string Search SQL.
 	 */
 	protected function get_search_sql( $string, $columns ) {
@@ -665,7 +677,7 @@ class WP_Signup_Query {
 
 		$searches = array();
 		foreach ( $columns as $column ) {
-			$searches[] = $this->db->prepare( "$column LIKE %s", $like );
+			$searches[] = $this->db->prepare( '%i LIKE %s', $column, $like );
 		}
 
 		return '(' . implode( ' OR ', $searches ) . ')';
@@ -715,7 +727,7 @@ class WP_Signup_Query {
 	 * @since 1.0.0
 	 * @access protected
 	 *
-	 * @param string $order The 'order' query variable.
+	 * @param mixed $order The 'order' query variable.
 	 * @return string The sanitized 'order' query variable.
 	 */
 	protected function parse_order( $order ) {

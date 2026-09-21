@@ -91,8 +91,8 @@ function update_signup_meta( $id, $meta_key, $meta_value, $prev_value = '' ) {
  *
  * @since 3.1.0
  *
- * @param array $ids List of signup IDs.
- * @return array|false Returns false if there is nothing to update or an array
+ * @param array<int, int> $ids List of signup IDs.
+ * @return array<int, mixed>|false Returns false if there is nothing to update or an array
  *                     of metadata.
  */
 function update_signupmeta_cache( $ids ) {

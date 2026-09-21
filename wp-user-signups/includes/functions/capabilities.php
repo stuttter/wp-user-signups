@@ -14,9 +14,16 @@ defined( 'ABSPATH' ) || exit;
  *
  * @since 1.0.0
  *
- * @param array   $caps
- * @param string  $cap
- * @param int     $user_id
+ * @param array  $caps    Primitive capabilities.
+ * @param string $cap     Requested capability.
+ * @param int    $user_id User ID.
+ * @param array  $args    Additional arguments.
+ *
+ * @phpstan-param array<int, string> $caps
+ * @phpstan-param array<int, mixed> $args
+ * @phpstan-return array<int, string>
+ *
+ * @return array<int, string>
  */
 function wp_signups_map_meta_cap( $caps = array(), $cap = '', $user_id = 0, $args = array() ) {
 

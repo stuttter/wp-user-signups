@@ -1,0 +1,11 @@
+parameters:
+    level: 7
+    phpVersion: 70400
+    paths:
+        - wp-user-signups.php
+        - wp-user-signups
+    scanFiles:
+        - vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
+    tmpDir: build/phpstan
+    parallel:
+        maximumNumberOfProcesses: 1

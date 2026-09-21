@@ -40,4 +40,42 @@ final class CommonFunctionsTest extends TestCase {
 		$this->assertSame( array( 7, 12, 0 ), wp_signups_sanitize_signup_ids() );
 		$this->assertSame( array( 7 ), wp_signups_sanitize_signup_ids( true ) );
 	}
+
+	/** Database result objects should be converted into signup instances. */
+	public function test_get_signup_accepts_a_database_row_object(): void {
+		$row = (object) array(
+			'signup_id'  => 42,
+			'user_login' => 'person',
+		);
+
+		$signup = get_signup( $row );
+
+		$this->assertInstanceOf( WP_Signup::class, $signup );
+		$this->assertSame( 42, $signup->signup_id );
+		$this->assertSame( 'person', $signup->user_login );
+	}
+
+	/** Custom row objects retain their public properties. */
+	public function test_get_signup_accepts_a_custom_row_object(): void {
+		$row = new class() {
+			/**
+			 * Signup ID.
+			 *
+			 * @var int
+			 */
+			public $signup_id = 43;
+			/**
+			 * Signup login.
+			 *
+			 * @var string
+			 */
+			public $user_login = 'other';
+		};
+
+		$signup = get_signup( $row );
+
+		$this->assertInstanceOf( WP_Signup::class, $signup );
+		$this->assertSame( 43, $signup->signup_id );
+		$this->assertSame( 'other', $signup->user_login );
+	}
 }

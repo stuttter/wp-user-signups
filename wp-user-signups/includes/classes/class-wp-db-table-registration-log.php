@@ -22,7 +22,7 @@ final class WP_DB_Table_Registration_Log extends WP_DB_Table {
 	protected $name = 'registration_log';
 
 	/**
-	 * @var string Database version
+	 * @var int Database version
 	 */
 	protected $version = 201705070001;
 
@@ -35,6 +35,7 @@ final class WP_DB_Table_Registration_Log extends WP_DB_Table {
 	 * Setup the database schema
 	 *
 	 * @since 2.0.0
+	 * @return void
 	 */
 	protected function set_schema() {
 		$this->schema = "ID bigint(20) NOT NULL auto_increment,
@@ -50,8 +51,8 @@ final class WP_DB_Table_Registration_Log extends WP_DB_Table {
 	 * Handle schema changes
 	 *
 	 * @since 2.0.0
+	 * @return void
 	 */
 	protected function upgrade() {
-
 	}
 }

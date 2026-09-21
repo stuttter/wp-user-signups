@@ -30,6 +30,7 @@ _wp_signups();
  * Include the required files
  *
  * @since 1.0.0
+ * @return void
  */
 function _wp_signups() {
 

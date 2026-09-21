@@ -53,7 +53,7 @@ abstract class WP_DB_Table {
 	protected $db_version_key = '';
 
 	/**
-	 * @var string Current database version
+	 * @var int|string Current database version
 	 */
 	protected $db_version = 0;
 
@@ -73,9 +73,9 @@ abstract class WP_DB_Table {
 	protected $charset_collation = '';
 
 	/**
-	 * @var WPDB Database object (usually $GLOBALS['wpdb'])
+	 * @var wpdb Database object (usually $GLOBALS['wpdb'])
 	 */
-	protected $db = false;
+	protected $db;
 
 	/** Methods ***************************************************************/
 
@@ -113,15 +113,19 @@ abstract class WP_DB_Table {
 	 * Setup this database table
 	 *
 	 * @since 1.0.0
+	 *
+	 * @return void
 	 */
-	protected abstract function set_schema();
+	abstract protected function set_schema();
 
 	/**
 	 * Upgrade this database table
 	 *
 	 * @since 1.0.0
+	 *
+	 * @return void
 	 */
-	protected abstract function upgrade();
+	abstract protected function upgrade();
 
 	/** Public ****************************************************************/
 
@@ -133,6 +137,8 @@ abstract class WP_DB_Table {
 	 * @since 1.0.0
 	 *
 	 * @param int $site_id
+	 *
+	 * @return void
 	 */
 	public function switch_blog( $site_id = 0 ) {
 
@@ -151,11 +157,13 @@ abstract class WP_DB_Table {
 	 * Hooked to the "admin_init" action.
 	 *
 	 * @since 1.0.0
+	 *
+	 * @return void
 	 */
 	public function maybe_upgrade() {
 
 		// Bail if no upgrade needed
-		if ( version_compare( (int) $this->db_version, (int) $this->version, '>=' ) ) {
+		if ( version_compare( (string) $this->db_version, (string) $this->version, '>=' ) ) {
 			return;
 		}
 
@@ -186,6 +194,8 @@ abstract class WP_DB_Table {
 	 * Setup the necessary WPDB variables
 	 *
 	 * @since 1.0.0
+	 *
+	 * @return void
 	 */
 	private function set_db() {
 
@@ -206,6 +216,8 @@ abstract class WP_DB_Table {
 	 * for manipulating them safely. It's pretty fragile, but oh well.
 	 *
 	 * @since 1.0.0
+	 *
+	 * @return void
 	 */
 	private function set_wpdb_tables() {
 
@@ -242,6 +254,8 @@ abstract class WP_DB_Table {
 	 * Saves global table version to "wp_sitemeta" to the main network
 	 *
 	 * @since 1.0.0
+	 *
+	 * @return void
 	 */
 	private function set_db_version() {
 
@@ -250,7 +264,7 @@ abstract class WP_DB_Table {
 
 		// Update the DB version
 		( true === $this->global )
-			? update_network_option( null, $this->db_version_key, $this->version )
+			? update_network_option( 0, $this->db_version_key, $this->version )
 			:         update_option(       $this->db_version_key, $this->version );
 	}
 
@@ -260,10 +274,12 @@ abstract class WP_DB_Table {
 	 * Gets global table version from "wp_sitemeta" to the main network
 	 *
 	 * @since 1.0.0
+	 *
+	 * @return void
 	 */
 	private function get_db_version() {
 		$this->db_version = ( true === $this->global )
-			? get_network_option( null, $this->db_version_key, false )
+			? get_network_option( 0, $this->db_version_key, false )
 			:         get_option(       $this->db_version_key, false );
 	}
 
@@ -271,6 +287,8 @@ abstract class WP_DB_Table {
 	 * Add class hooks to WordPress actions
 	 *
 	 * @since 1.0.0
+	 *
+	 * @return void
 	 */
 	private function add_hooks() {
 
@@ -286,6 +304,8 @@ abstract class WP_DB_Table {
 	 * Create the table
 	 *
 	 * @since 1.0.0
+	 *
+	 * @return bool
 	 */
 	private function create() {
 
@@ -304,7 +324,7 @@ abstract class WP_DB_Table {
 	 * @return bool
 	 */
 	private function exists() {
-		$query       = "SHOW TABLES LIKE %s";
+		$query       = 'SHOW TABLES LIKE %s';
 		$like        = $this->db->esc_like( $this->table_name );
 		$prepared    = $this->db->prepare( $query, $like );
 		$table_exist = $this->db->get_var( $prepared );

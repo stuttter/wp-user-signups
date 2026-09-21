@@ -21,6 +21,10 @@ defined( 'ABSPATH' ) || exit;
  *
  * @param array $ids               ID list.
  * @param bool  $update_meta_cache Whether to update site alias cache. Default true.
+ *
+ * @phpstan-param array<int, int> $ids
+ *
+ * @return void
  */
 function _prime_signup_caches( $ids = array(), $update_meta_cache = true ) {
 	global $wpdb;
@@ -44,6 +48,10 @@ function _prime_signup_caches( $ids = array(), $update_meta_cache = true ) {
  *
  * @param array $signups           Array of user signup objects.
  * @param bool  $update_meta_cache Whether to update site alias cache. Default true.
+ *
+ * @phpstan-param array<int, WP_Signup> $signups
+ *
+ * @return void
  */
 function update_signup_cache( $signups = array(), $update_meta_cache = true ) {
 
@@ -69,6 +77,7 @@ function update_signup_cache( $signups = array(), $update_meta_cache = true ) {
  * @since 1.0.0
  *
  * @param int|WP_Signup $signup Signup ID or signup object to remove from the cache
+ * @return void
  */
 function clean_signup_cache( $signup ) {
 	global $_wp_suspend_cache_invalidation;
@@ -80,7 +89,7 @@ function clean_signup_cache( $signup ) {
 
 	// Get signup, and bail if not found
 	$signup = WP_Signup::get_instance( $signup );
-	if ( empty( $signup ) || is_wp_error( $signup ) ) {
+	if ( is_wp_error( $signup ) ) {
 		return;
 	}
 
@@ -110,6 +119,7 @@ function clean_signup_cache( $signup ) {
  * @see https://github.com/stuttter/wp-user-signups/issues/10
  *
  * @since 5.0.3
+ * @return void
  */
 function __wp_signups_after_signup_user() {
 
