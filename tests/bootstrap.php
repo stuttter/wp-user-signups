@@ -56,6 +56,69 @@ function maybe_serialize( $value ) {
 	return is_array( $value ) || is_object( $value ) ? serialize( $value ) : $value;
 }
 
+/**
+ * Return the value unchanged for activation tests.
+ *
+ * @param mixed $value Value to return.
+ * @return mixed
+ */
+function maybe_unserialize( $value ) {
+	return $value;
+}
+
+/**
+ * Return a deterministic generated password.
+ *
+ * @return string
+ */
+function wp_generate_password() {
+	return 'generated-password';
+}
+
+/**
+ * Look up a username through the test harness.
+ *
+ * @param string $username Username to find.
+ * @return mixed
+ */
+function username_exists( $username ) {
+	return wpus_test_call( __FUNCTION__, array( $username ) );
+}
+
+/**
+ * Look up an email address through the test harness.
+ *
+ * @param string $email Email address to find.
+ * @return mixed
+ */
+function email_exists( $email ) {
+	return wpus_test_call( __FUNCTION__, array( $email ) );
+}
+
+/**
+ * Create a user through the test harness.
+ *
+ * @param string $username Username to create.
+ * @param string $password Password to assign.
+ * @param string $email    Email address to assign.
+ * @return mixed
+ */
+function wp_create_user( $username, $password, $email ) {
+	return wpus_test_call( __FUNCTION__, array( $username, $password, $email ) );
+}
+
+/**
+ * Create a multisite user through the test harness.
+ *
+ * @param string $username Username to create.
+ * @param string $password Password to assign.
+ * @param string $email    Email address to assign.
+ * @return mixed
+ */
+function wpmu_create_user( $username, $password, $email ) {
+	return wpus_test_call( __FUNCTION__, array( $username, $password, $email ) );
+}
+
 function esc_html__( $text, $domain = 'default' ) {
 	return $text;
 }
@@ -109,7 +172,25 @@ function update_meta_cache( ...$arguments ) {
 }
 
 class WP_Error {
+	/**
+	 * Attached error data.
+	 *
+	 * @var mixed
+	 */
+	public $data;
+
+	/** Create a test error. */
 	public function __construct() {}
+
+	/**
+	 * Attach data to this error.
+	 *
+	 * @param mixed $data Error data.
+	 * @return void
+	 */
+	public function add_data( $data ) {
+		$this->data = $data;
+	}
 }
 
 require_once dirname( __DIR__ ) . '/wp-user-signups/includes/classes/class-wp-signup.php';

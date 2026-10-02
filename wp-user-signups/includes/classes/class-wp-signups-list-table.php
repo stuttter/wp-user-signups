@@ -15,6 +15,13 @@ defined( 'ABSPATH' ) || exit;
 final class WP_Signups_List_Table extends WP_List_Table {
 
 	/**
+	 * Cached bulk actions.
+	 *
+	 * @var array<string, string>|null
+	 */
+	protected $_actions; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore -- Mirrors WP_List_Table's protected cache property.
+
+	/**
 	 * Which status is selected
 	 *
 	 * @since 1.0.0
@@ -28,7 +35,7 @@ final class WP_Signups_List_Table extends WP_List_Table {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @var int
+	 * @var array<int, object{id: string, name: string, value: int, count: int}>
 	 */
 	public $statuses = array();
 
@@ -48,6 +55,7 @@ final class WP_Signups_List_Table extends WP_List_Table {
 	 * Prepare items for the list table
 	 *
 	 * @since 1.0.0
+	 * @return void
 	 */
 	public function prepare_items() {
 
@@ -71,24 +79,28 @@ final class WP_Signups_List_Table extends WP_List_Table {
 		$total = reset( $type );
 
 		// Query for signups
-		$query = new WP_Signup_Query( array(
-			'active'  => $this->active,
-			'orderby' => $orderby,
-			'order'   => $order,
-			'offset'  => ( $paged * $per_page ) - $per_page,
-			'number'  => $per_page
-		) );
+		$query = new WP_Signup_Query(
+			array(
+				'active'  => $this->active,
+				'orderby' => $orderby,
+				'order'   => $order,
+				'offset'  => ( $paged * $per_page ) - $per_page,
+				'number'  => $per_page,
+			)
+		);
 
 		// Set items if any are found
-		if ( ! empty( $query->signups ) && ! is_wp_error( $query->signups ) ) {
+		if ( ! empty( $query->signups ) ) {
 			$this->items = $query->signups;
 		}
 
 		// Pagination
-		$this->set_pagination_args( array(
-			'total_items' => $total,
-			'per_page'    => $per_page
-		) );
+		$this->set_pagination_args(
+			array(
+				'total_items' => $total,
+				'per_page'    => $per_page,
+			)
+		);
 	}
 
 	/**
@@ -96,7 +108,7 @@ final class WP_Signups_List_Table extends WP_List_Table {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return array Map of column ID => title
+	 * @return array<string, string> Map of column ID => title
 	 */
 	public function get_columns() {
 
@@ -123,13 +135,13 @@ final class WP_Signups_List_Table extends WP_List_Table {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return array
+	 * @return array<string, string>
 	 */
 	public function get_sortable_columns() {
 		return array(
 			'user'       => 'user_login',
 			'registered' => 'registered',
-			'activated'  => 'activated'
+			'activated'  => 'activated',
 		);
 	}
 
@@ -140,7 +152,7 @@ final class WP_Signups_List_Table extends WP_List_Table {
 	 * @since 1.0.0
 	 * @access protected
 	 *
-	 * @return array
+	 * @return array<string, string>
 	 */
 	protected function get_bulk_actions() {
 
@@ -208,7 +220,7 @@ final class WP_Signups_List_Table extends WP_List_Table {
 		}
 
 		echo "</select>\n";
-		submit_button( __( 'Apply', 'wp-user-signups' ), 'action', false, false, array( 'id' => "doaction{$two}" ) );
+		submit_button( __( 'Apply', 'wp-user-signups' ), 'action', '', false, array( 'id' => "doaction{$two}" ) );
 		echo "\n";
 	}
 
@@ -238,6 +250,7 @@ final class WP_Signups_List_Table extends WP_List_Table {
 	 * @since 1.0.0
 	 *
 	 * @access public
+	 * @return void
 	 */
 	public function no_items() {
 		if ( 1 === $this->active ) {
@@ -254,7 +267,7 @@ final class WP_Signups_List_Table extends WP_List_Table {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return array
+	 * @return array<string, string>
 	 */
 	protected function get_views() {
 
@@ -307,10 +320,10 @@ final class WP_Signups_List_Table extends WP_List_Table {
 		/* translators: %s: Signup domain. */
 		$label = sprintf( esc_html__( 'Select %s', 'wp-user-signups' ), esc_html( $domain ) );
 
-		return '<label class="screen-reader-text" for="cb-select-' . esc_attr( $signup_id ) . '">'
+		return '<label class="screen-reader-text" for="cb-select-' . esc_attr( (string) $signup_id ) . '">'
 			. $label . '</label>'
-			. '<input type="checkbox" name="signup_ids[]" value="' . esc_attr( $signup_id )
-			. '" id="cb-select-' . esc_attr( $signup_id ) . '" />';
+			. '<input type="checkbox" name="signup_ids[]" value="' . esc_attr( (string) $signup_id )
+			. '" id="cb-select-' . esc_attr( (string) $signup_id ) . '" />';
 	}
 
 	/**
@@ -334,13 +347,15 @@ final class WP_Signups_List_Table extends WP_List_Table {
 		$active    = (bool) $signup->active;
 
 		// Edit
-		$edit_link = wp_signups_admin_url( array(
-			'signup_ids' => $signup_id,
-			'page'       => 'signup_edit',
-			'referrer'   => wp_signups_is_list_page()
-				? 'network'
-				: 'site'
-		) );
+		$edit_link = wp_signups_admin_url(
+			array(
+				'signup_ids' => $signup_id,
+				'page'       => 'signup_edit',
+				'referrer'   => wp_signups_is_list_page()
+					? 'network'
+						: 'site',
+			)
+		);
 
 		// Active
 		$text   = __( 'Activate', 'wp-user-signups' );
@@ -350,7 +365,7 @@ final class WP_Signups_List_Table extends WP_List_Table {
 		$args = array(
 			'action'     => $action,
 			'signup_ids' => $signup_id,
-			'_wpnonce'   => wp_create_nonce( 'signups-bulk' )
+			'_wpnonce'   => wp_create_nonce( 'signups-bulk' ),
 		);
 
 		$status_link = wp_signups_admin_url( $args );

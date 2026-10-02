@@ -13,6 +13,7 @@ defined( 'ABSPATH' ) || exit;
  * Add menus in network and site dashboards
  *
  * @since 1.0.0
+ * @return void
  */
 function wp_signups_add_menu_item() {
 
@@ -54,6 +55,7 @@ function wp_signups_add_menu_item() {
  * @since 5.0.0
  *
  * @global string $submenu_file
+ * @return void
  */
 function wp_signups_modify_menu_highlight() {
 	global $submenu_file;
@@ -68,6 +70,7 @@ function wp_signups_modify_menu_highlight() {
  * Add screen options, mostly for pagination
  *
  * @since 1.0.0
+ * @return void
  */
 function wp_signups_add_screen_options() {
 	add_screen_option(
@@ -89,7 +92,7 @@ function wp_signups_add_screen_options() {
  * @param string $option
  * @param int $value
  *
- * @return string
+ * @return int|string
  */
 function wp_signups_set_screen_option( $status = '', $option = '', $value = 20 ) {
 
@@ -104,6 +107,7 @@ function wp_signups_set_screen_option( $status = '', $option = '', $value = 20 )
  * Load the list table and populate some essentials
  *
  * @since 1.0.0
+ * @return void
  */
 function wp_signups_load_list_table() {
 	global $wp_list_table;
@@ -122,7 +126,8 @@ function wp_signups_load_list_table() {
  *
  * @since 1.0.0
  *
- * @param  int  $signup_id  Signup ID
+ * @param int $signup_id Signup ID.
+ * @return void
  */
 function wp_signups_output_page_header( $signup_id = 0 ) {
 	global $title;
@@ -159,7 +164,8 @@ function wp_signups_output_page_header( $signup_id = 0 ) {
 
 	// This is copied from WordPress core
 	?><div class="wrap">
-		<h1 id="edit-signup"><?php echo wp_kses_post( $title ); ?></h1><?php
+		<h1 id="edit-signup"><?php echo wp_kses_post( $title ); ?></h1>
+		<?php
 
 		// Admin notices
 		do_action( 'wp_signups_admin_notices' );
@@ -169,9 +175,12 @@ function wp_signups_output_page_header( $signup_id = 0 ) {
  * Close the .wrap div
  *
  * @since 1.0.0
+ * @return void
  */
 function wp_signups_output_page_footer() {
-	?></div><?php
+	?>
+	</div>
+	<?php
 }
 
 /**
@@ -183,6 +192,7 @@ function wp_signups_output_page_footer() {
  * @since 5.1.0
  *
  * @param string $action Sanitized signup action.
+ * @return void
  */
 function wp_signups_check_action_nonce( $action ) {
 	if ( ! in_array( $action, array( 'add', 'edit' ), true ) ) {
@@ -197,6 +207,7 @@ function wp_signups_check_action_nonce( $action ) {
  * processing, and exits.
  *
  * @since 1.0.0
+ * @return void
  */
 function wp_signups_handle_actions() {
 
@@ -230,7 +241,7 @@ function wp_signups_handle_actions() {
 	// Redirect args
 	$args = array(
 		'page'       => 'signups',
-		'did_action' => $action
+		'did_action' => $action,
 	);
 
 	// What's the action?
@@ -253,9 +264,6 @@ function wp_signups_handle_actions() {
 				// Maybe add to processed
 				if ( is_wp_error( $activated ) ) {
 					$args['error'] = $activated->get_error_code();
-					if ( 'already_active' !== $activated->get_error_code() ) {
-						$processed[] = $signup_id;
-					}
 				} else {
 					$processed[] = $signup_id;
 				}
@@ -369,6 +377,7 @@ function wp_signups_handle_actions() {
  * Output signup editing page
  *
  * @since 1.0.0
+ * @return void
  */
 function wp_signups_output_edit_page() {
 
@@ -385,15 +394,24 @@ function wp_signups_output_edit_page() {
 
 	// Try to get a signup
 	$signup = WP_Signup::get_instance( $signup_id );
+	if ( is_wp_error( $signup ) ) {
+		$signup = WP_Signup::get_instance( 0 );
+	}
+	if ( is_wp_error( $signup ) ) {
+		return;
+	}
 
 	// URL
-	$action_url = wp_signups_admin_url( array(
-		'page'   => 'signup_edit',
-		'action' => $action
-	) );
+	$action_url = wp_signups_admin_url(
+		array(
+			'page'   => 'signup_edit',
+			'action' => $action,
+		)
+	);
 
 	// Output the header, maybe with network site tabs
-	wp_signups_output_page_header( $signup_id ); ?>
+	wp_signups_output_page_header( $signup_id );
+	?>
 
 	<form method="post" action="<?php echo esc_url( $action_url ); ?>" novalidate="novalidate">
 		<?php if ( wp_signups_is_multisite() ) : ?>
@@ -489,13 +507,15 @@ function wp_signups_output_edit_page() {
 					</td>
 				</tr>
 			</tbody>
-		</table><?php
+		</table>
+		<?php
 
 		// Meta unserialize
 		$metas = (array) maybe_unserialize( $signup->meta );
 
 		// Meta
-		if ( ! empty( $metas ) ) : ?>
+		if ( ! empty( $metas ) ) :
+			?>
 
 			<h3><?php esc_html_e( 'Meta', 'wp-user-signups' ); ?></h3>
 			<p><?php esc_html_e( 'These extra details help with activation. (Use caution when changing these values.)', 'wp-user-signups' ); ?></p>
@@ -521,8 +541,8 @@ function wp_signups_output_edit_page() {
 		<?php endif; ?>
 
 		<input type="hidden" name="action"     value="<?php echo esc_attr( $action    ); ?>">
-		<input type="hidden" name="signup_id"  value="<?php echo esc_attr( $signup_id ); ?>">
-		<input type="hidden" name="signup_ids" value="<?php echo esc_attr( $signup_id ); ?>"><?php
+		<input type="hidden" name="signup_id"  value="<?php echo esc_attr( (string) $signup_id ); ?>">
+		<input type="hidden" name="signup_ids" value="<?php echo esc_attr( (string) $signup_id ); ?>"><?php
 
 		// Add
 		if ( 'add' === $action ) {
@@ -538,7 +558,9 @@ function wp_signups_output_edit_page() {
 		// Submit button
 		submit_button( $submit_text );
 
-	?></form><?php
+		?>
+	</form>
+	<?php
 
 	// Footer
 	wp_signups_output_page_footer();
@@ -548,6 +570,7 @@ function wp_signups_output_edit_page() {
  * Output signup editing page
  *
  * @since 1.0.0
+ * @return void
  */
 function wp_signups_output_list_page() {
 	global $wp_list_table;
@@ -556,7 +579,8 @@ function wp_signups_output_list_page() {
 	$form_url = wp_signups_admin_url( array( 'page' => 'signups' ) );
 
 	// Header
-	wp_signups_output_page_header(); ?>
+	wp_signups_output_page_header();
+	?>
 
 	<div class="form-wrap">
 		<?php $wp_list_table->views(); ?>
@@ -564,7 +588,8 @@ function wp_signups_output_list_page() {
 		<form method="post" action="<?php echo esc_url( $form_url ); ?>">
 			<?php $wp_list_table->display(); ?>
 		</form>
-	</div><?php
+	</div>
+	<?php
 
 	// Footer
 	wp_signups_output_page_footer();
@@ -576,6 +601,7 @@ function wp_signups_output_list_page() {
  * @since 1.0.0
  *
  * @global type $wp_list_table
+ * @return void
  */
 function wp_signups_output_admin_notices() {
 
@@ -600,7 +626,7 @@ function wp_signups_output_admin_notices() {
 	$count = count( $processed );
 
 	// Special case for single, as it's not really a "bulk" action
-	if ( empty( $count ) ) {
+	if ( 0 === $count ) {
 		$class         = 'notice-warning';
 		$placeholder   = number_format_i18n( $count );
 		$bulk_messages = array(
@@ -630,7 +656,9 @@ function wp_signups_output_admin_notices() {
 			$placeholder = esc_html__( 'signup', 'wp-user-signups' );
 		} else {
 			$signup      = WP_Signup::get_instance( $processed[0] );
-			$placeholder = '<code>' . esc_html( $signup->user_email ) . '</code>';
+			$placeholder = is_wp_error( $signup )
+				? esc_html__( 'signup', 'wp-user-signups' )
+				: '<code>' . esc_html( $signup->user_email ) . '</code>';
 		}
 
 	// Note: we still use _n for languages which have special cases on
@@ -649,11 +677,6 @@ function wp_signups_output_admin_notices() {
 			/* translators: %s: Number of signups. */
 			'edit'     => _n( '%s signup updated.',   '%s signups updated.',   $count, 'wp-user-signups' )
 		);
-
-		// Warn if empty
-		if ( empty( $count ) ) {
-			$class = 'notice-warning';
-		}
 	}
 
 	// Filter bulk messages, allowing for custom ones
@@ -672,5 +695,7 @@ function wp_signups_output_admin_notices() {
 	}
 
 	// Output notices
-	?><div id="message" class="notice <?php echo esc_attr( $class ); ?>"><p><?php echo wp_kses_post( implode( '</p><p>', $messages ) ); ?></p></div><?php
+	?>
+	<div id="message" class="notice <?php echo esc_attr( $class ); ?>"><p><?php echo wp_kses_post( implode( '</p><p>', $messages ) ); ?></p></div>
+	<?php
 }

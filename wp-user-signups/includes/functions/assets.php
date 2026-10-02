@@ -13,6 +13,7 @@ defined( 'ABSPATH' ) || exit;
  * Enqueue admin scripts
  *
  * @since 1.0.0
+ * @return void
  */
 function wp_signups_admin_enqueue_scripts() {
 
@@ -21,5 +22,5 @@ function wp_signups_admin_enqueue_scripts() {
 	$ver = wp_signups_get_asset_version();
 
 	// Styles
-	wp_enqueue_style( 'wp-user-signups', $src . 'assets/css/signups.css', array(), $ver );
+	wp_enqueue_style( 'wp-user-signups', $src . 'assets/css/signups.css', array(), (string) $ver );
 }

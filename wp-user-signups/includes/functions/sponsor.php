@@ -32,7 +32,11 @@ add_action( 'admin_init', function() {
 /**
  * Filter plugin action links, and add a sponsorship link.
  *
- * @param array $actions
+ * @param array $actions Plugin action links.
+ *
+ * @phpstan-param array<string, string> $actions
+ * @phpstan-return array<string, string>
+ *
  * @return array
  */
 function filter_plugin_action_links( $actions = array() ) {

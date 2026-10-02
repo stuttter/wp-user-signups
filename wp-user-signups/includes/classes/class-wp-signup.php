@@ -13,13 +13,25 @@ defined( 'ABSPATH' ) || exit;
  * Site Signup Class
  *
  * @since 1.0.0
+ *
+ * @property-read int    $signup_id
+ * @property-read string $domain
+ * @property-read string $path
+ * @property-read string $title
+ * @property-read string $user_login
+ * @property-read string $user_email
+ * @property-read string $registered
+ * @property-read string $activated
+ * @property-read int    $active
+ * @property-read string $activation_key
+ * @property-read mixed  $meta
  */
 class WP_Signup {
 
 	/**
 	 * Signup data
 	 *
-	 * @var array
+	 * @var array<string, mixed>|object
 	 */
 	public $data;
 
@@ -28,7 +40,7 @@ class WP_Signup {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param array $data Signup data
+	 * @param array<string, mixed>|object $data Signup data.
 	 */
 	protected function __construct( $data = array() ) {
 		$this->data = $data;
@@ -43,7 +55,9 @@ class WP_Signup {
 	 * @since 1.0.0
 	 */
 	public function __clone() {
-		$this->data = clone( $this->data );
+		if ( is_object( $this->data ) ) {
+			$this->data = clone( $this->data );
+		}
 	}
 
 	/**
@@ -55,8 +69,14 @@ class WP_Signup {
 	 * @return mixed Value if in data array. Null if not.
 	 */
 	public function __get( $key ) {
-		return isset( $this->data->{$key} )
-			? $this->data->{$key}
+		if ( is_object( $this->data ) ) {
+			return isset( $this->data->{$key} )
+				? $this->data->{$key}
+				: null;
+		}
+
+		return isset( $this->data[ $key ] )
+			? $this->data[ $key ]
 			: null;
 	}
 
@@ -68,7 +88,7 @@ class WP_Signup {
 	 * @since 1.0.0
 	 *
 	 * @global WPDB $wpdb
-	 * @param array|stdClass $data Signup fields (associative array or object properties)
+	 * @param array<string, mixed>|stdClass $data Signup fields (associative array or object properties)
 	 *
 	 * @return bool|WP_Error True if we updated, false if we didn't need to, or WP_Error if an error occurred
 	 */
@@ -93,7 +113,11 @@ class WP_Signup {
 
 		// Update internal state
 		foreach ( $fields as $key => $val ) {
-			$this->data->{$key} = $val;
+			if ( is_object( $this->data ) ) {
+				$this->data->{$key} = $val;
+			} else {
+				$this->data[ $key ] = $val;
+			}
 		}
 
 		// Clean item cache
@@ -155,8 +179,8 @@ class WP_Signup {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param int|WP_Signup $signup Signup ID or instance
-	 * @return WP_Signup Signup always, even if empty
+	 * @param mixed $signup Signup ID, row object, or instance.
+	 * @return WP_Signup|WP_Error Signup instance, or an error for an invalid ID.
 	 */
 	public static function get_instance( $signup ) {
 		global $wpdb;
@@ -166,24 +190,29 @@ class WP_Signup {
 			return $signup;
 		}
 
+		if ( is_object( $signup ) && isset( $signup->signup_id ) ) {
+			return new WP_Signup( $signup );
+		}
+
 		if ( ! is_numeric( $signup ) ) {
 			return new WP_Error( 'wp_signups_invalid_id', esc_html__( 'Signup not found.', 'wp-user-signups' ), $signup );
 		}
+		$signup_id = absint( $signup );
 
 		// Check cache first
-		$_signup = wp_cache_get( $signup, 'signups' );
+		$_signup = wp_cache_get( $signup_id, 'signups' );
 
 		// No cached alias
 		if ( false === $_signup ) {
 
 			// Suppress errors in case the table doesn't exist
 			$suppress = $wpdb->suppress_errors();
-			$_signup  = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->signups} WHERE signup_id = %d", absint( $signup ) ) );
+			$_signup  = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->signups} WHERE signup_id = %d", $signup_id ) );
 			$wpdb->suppress_errors( $suppress );
 
 			// Add alias to cache
 			if ( ! empty( $_signup ) && ! is_wp_error( $_signup ) ) {
-				wp_cache_add( $signup, $_signup, 'signups' );
+				wp_cache_add( $signup_id, $_signup, 'signups' );
 			} else {
 				$_signup = array();
 			}
@@ -196,7 +225,7 @@ class WP_Signup {
 	/**
 	 * Create a new signup
 	 *
-	 * @param array $args Array of signup details
+	 * @param array<string, mixed> $args Array of signup details
 	 *
 	 * @return WP_Signup|WP_Error
 	 */
@@ -212,10 +241,12 @@ class WP_Signup {
 
 		// Check for previous signup
 		$query    = new WP_Signup_Query();
-		$existing = $query->query( array(
-			'user_email' => $r['user_email'],
-			'number'     => 1
-		) );
+		$existing = $query->query(
+			array(
+				'user_email' => $r['user_email'],
+				'number'     => 1,
+			)
+		);
 
 		// Domain exists already...
 		if ( ! empty( $existing ) ) {
@@ -257,6 +288,10 @@ class WP_Signup {
 		do_action( 'wp_signups_created', $signup );
 
 		// Sent notifications
+		if ( is_wp_error( $signup ) ) {
+			return $signup;
+		}
+
 		$signup->notify();
 
 		return $signup;
@@ -270,7 +305,7 @@ class WP_Signup {
 	 * @since 1.0.0
 	 *
 	 * @global WPDB $wpdb
-	 * @return WP_Error
+	 * @return array<string, mixed>|WP_Error
 	 */
 	public function activate() {
 		global $wpdb;
@@ -301,6 +336,11 @@ class WP_Signup {
 				return new WP_Error( 'already_active', esc_html__( 'The user is already active.', 'wp-user-signups' ), $this );
 			}
 
+			if ( is_wp_error( $user_id ) ) {
+				$user_id->add_data( $this );
+				return $user_id;
+			}
+
 		// Username is already registered
 		} elseif ( false !== $un_id ) {
 			return new WP_Error( 'already_active', esc_html__( 'This username is already in use.', 'wp-user-signups' ), $this );
@@ -314,10 +354,13 @@ class WP_Signup {
 		$now = current_time( 'mysql', true );
 
 		// Parse args
-		$args = wp_parse_args( array(
-			'active'    => 1,
-			'activated' => $now
-		), (array) $this->data );
+		$args = wp_parse_args(
+			array(
+				'active'    => 1,
+				'activated' => $now,
+			),
+			(array) $this->data
+		);
 
 		// Update the signup
 		$updated = $this->update( $args );
@@ -331,7 +374,7 @@ class WP_Signup {
 		$retval = array(
 			'user_id'  => $user_id,
 			'password' => $password,
-			'meta'     => $meta
+			'meta'     => $meta,
 		);
 
 		// Try to create a site
@@ -384,6 +427,7 @@ class WP_Signup {
 	 * who have signed up for accounts, maybe with a new site too.
 	 *
 	 * @since 1.0.0
+	 * @return void
 	 */
 	public function notify() {
 
@@ -427,23 +471,27 @@ class WP_Signup {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param type $params
+	 * @param array<string, mixed> $params Signup fields.
+	 * @return array<string, mixed> Validated signup fields.
 	 */
 	public static function validate( $params = array() ) {
 
 		// Whitelist keys
-		$r = array_intersect_key( $params, array(
-			'domain'         => '',
-			'path'           => '/',
-			'title'          => '',
-			'user_login'     => '',
-			'user_email'     => '',
-			'registered'     => '',
-			'activated'      => '',
-			'active'         => '',
-			'activation_key' => '',
-			'meta'           => ''
-		) );
+		$r = array_intersect_key(
+			$params,
+			array(
+				'domain'         => '',
+				'path'           => '/',
+				'title'          => '',
+				'user_login'     => '',
+				'user_email'     => '',
+				'registered'     => '',
+				'activated'      => '',
+				'active'         => '',
+				'activation_key' => '',
+				'meta'           => '',
+			)
+		);
 
 		// Get current date for use in `registered` and `activated` values
 		$now = current_time( 'mysql', true );

@@ -14,15 +14,18 @@ defined( 'ABSPATH' ) || exit;
  *
  * @since 1.0.0
  *
- * @param array $args
- * @return array
+ * @param array<string, mixed> $args
+ * @return string
  */
 function wp_signups_admin_url( $args = array() ) {
 
 	// Parse args
-	$r = wp_parse_args( $args, array(
-		'page' => 'signups'
-	) );
+	$r = wp_parse_args(
+		$args,
+		array(
+			'page' => 'signups',
+		)
+	);
 
 	// Location
 	$admin_url = is_multisite()
@@ -63,7 +66,7 @@ function wp_signups_is_network_edit() {
  *
  * @since 1.0.0
  *
- * @return array
+ * @return array<int, object{id: string, name: string, value: int, count: int}>
  */
 function wp_signups_get_statuses() {
 
@@ -71,32 +74,39 @@ function wp_signups_get_statuses() {
 	$query = new WP_Signup_Query();
 
 	// Pending
-	$pending = $query->query( array(
-		'count'  => true,
-		'active' => 0
-	) );
+	$pending = $query->query(
+		array(
+			'count'  => true,
+			'active' => 0,
+		)
+	);
 
 	// Activated count
-	$activated = $query->query( array(
-		'count'  => true,
-		'active' => 1
-	) );
+	$activated = $query->query(
+		array(
+			'count'  => true,
+			'active' => 1,
+		)
+	);
 
 	// Filter and return
-	return apply_filters( 'wp_signups_get_statuses', array(
-		(object) array(
-			'id'    => 'pending',
-			'value' => 0,
-			'name'  => _x( 'Pending', 'User sign-ups', 'wp-user-signups' ),
-			'count' => $pending
-		),
-		(object) array(
-			'id'    => 'activated',
-			'value' => 1,
-			'name'  => _x( 'Activated', 'User sign-ups', 'wp-user-signups' ),
-			'count' => $activated
-		),
-	) );
+	return apply_filters(
+		'wp_signups_get_statuses',
+		array(
+			(object) array(
+				'id'    => 'pending',
+				'value' => 0,
+				'name'  => _x( 'Pending', 'User sign-ups', 'wp-user-signups' ),
+				'count' => $pending,
+			),
+			(object) array(
+				'id'    => 'activated',
+				'value' => 1,
+				'name'  => _x( 'Activated', 'User sign-ups', 'wp-user-signups' ),
+				'count' => $activated,
+			),
+		)
+	);
 }
 
 /**
@@ -134,6 +144,7 @@ function wp_signups_sanitize_signup_ids( $single = false ) {
  * between them.
  *
  * @since 1.3.0
+ * @return bool
  */
 function wp_signups_is_multisite() {
 	return (bool) apply_filters( 'wp_signups_is_multisite', is_multisite() );
@@ -146,8 +157,8 @@ function wp_signups_is_multisite() {
  *
  * @since 3.1.0
  *
- * @param WP_Signup|int|null $signup Optional. Signup to retrieve.
- * @return WP_Signup|null The signup object or null if not found.
+ * @param WP_Signup|object|int|null $signup Optional. Signup to retrieve.
+ * @return WP_Signup|WP_Error|null The signup object, an error for invalid input, or null if empty.
  */
 function get_signup( $signup = null ) {
 	if ( empty( $signup ) ) {
@@ -156,14 +167,8 @@ function get_signup( $signup = null ) {
 
 	if ( $signup instanceof WP_Signup ) {
 		$_signup = $signup;
-	} elseif ( is_object( $signup ) ) {
-		$_signup = new WP_Signup( $signup );
 	} else {
 		$_signup = WP_Signup::get_instance( $signup );
-	}
-
-	if ( ! $_signup ) {
-		return null;
 	}
 
 	/**
