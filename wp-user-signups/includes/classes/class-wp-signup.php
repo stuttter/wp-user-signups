@@ -31,7 +31,7 @@ class WP_Signup {
 	/**
 	 * Signup data
 	 *
-	 * @var object
+	 * @var array<string, mixed>|object
 	 */
 	public $data;
 
@@ -43,7 +43,7 @@ class WP_Signup {
 	 * @param array<string, mixed>|object $data Signup data.
 	 */
 	protected function __construct( $data = array() ) {
-		$this->data = (object) $data;
+		$this->data = $data;
 	}
 
 	/**
@@ -55,7 +55,9 @@ class WP_Signup {
 	 * @since 1.0.0
 	 */
 	public function __clone() {
-		$this->data = clone( $this->data );
+		if ( is_object( $this->data ) ) {
+			$this->data = clone( $this->data );
+		}
 	}
 
 	/**
@@ -67,8 +69,14 @@ class WP_Signup {
 	 * @return mixed Value if in data array. Null if not.
 	 */
 	public function __get( $key ) {
-		return isset( $this->data->{$key} )
-			? $this->data->{$key}
+		if ( is_object( $this->data ) ) {
+			return isset( $this->data->{$key} )
+				? $this->data->{$key}
+				: null;
+		}
+
+		return isset( $this->data[ $key ] )
+			? $this->data[ $key ]
 			: null;
 	}
 
@@ -105,7 +113,11 @@ class WP_Signup {
 
 		// Update internal state
 		foreach ( $fields as $key => $val ) {
-			$this->data->{$key} = $val;
+			if ( is_object( $this->data ) ) {
+				$this->data->{$key} = $val;
+			} else {
+				$this->data[ $key ] = $val;
+			}
 		}
 
 		// Clean item cache

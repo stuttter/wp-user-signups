@@ -264,9 +264,6 @@ function wp_signups_handle_actions() {
 				// Maybe add to processed
 				if ( is_wp_error( $activated ) ) {
 					$args['error'] = $activated->get_error_code();
-					if ( 'already_active' !== $activated->get_error_code() ) {
-						$processed[] = $signup_id;
-					}
 				} else {
 					$processed[] = $signup_id;
 				}

@@ -89,6 +89,22 @@ final class CommonFunctionsTest extends TestCase {
 		$this->assertInstanceOf( WP_Error::class, get_signup( (object) array( 'user_login' => 'invalid' ) ) );
 	}
 
+	/** Missing signups retain their established empty-array data shape. */
+	public function test_missing_signup_preserves_empty_array_data(): void {
+		$reflection  = new ReflectionClass( WP_Signup::class );
+		$constructor = $reflection->getConstructor();
+		$signup      = $reflection->newInstanceWithoutConstructor();
+		if ( PHP_VERSION_ID < 80100 ) {
+			$constructor->setAccessible( true );
+		}
+		$constructor->invoke( $signup );
+		$clone = clone $signup;
+
+		$this->assertSame( array(), $signup->data );
+		$this->assertSame( array(), $clone->data );
+		$this->assertNull( $signup->user_login );
+	}
+
 	/** User creation errors must not mark a signup active. */
 	public function test_activate_returns_user_creation_errors_without_updating_signup(): void {
 		$error = new WP_Error();
