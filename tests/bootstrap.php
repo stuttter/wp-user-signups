@@ -107,6 +107,18 @@ function wp_create_user( $username, $password, $email ) {
 	return wpus_test_call( __FUNCTION__, array( $username, $password, $email ) );
 }
 
+/**
+ * Create a multisite user through the test harness.
+ *
+ * @param string $username Username to create.
+ * @param string $password Password to assign.
+ * @param string $email    Email address to assign.
+ * @return mixed
+ */
+function wpmu_create_user( $username, $password, $email ) {
+	return wpus_test_call( __FUNCTION__, array( $username, $password, $email ) );
+}
+
 function esc_html__( $text, $domain = 'default' ) {
 	return $text;
 }

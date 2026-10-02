@@ -109,6 +109,28 @@ final class CommonFunctionsTest extends TestCase {
 
 		$this->assertSame( $error, $signup->activate() );
 		$this->assertSame( $signup, $error->data );
-		$this->assertArrayNotHasKey( 'wp_signups_updated', $GLOBALS['wpus_test']['calls'] ?? array() );
+		$this->assertArrayNotHasKey( 'do_action:wp_signups_updated', $GLOBALS['wpus_test']['calls'] ?? array() );
+	}
+
+	/** Multisite user creation failures must not mark a signup active. */
+	public function test_activate_handles_multisite_user_creation_failure_without_updating_signup(): void {
+		$GLOBALS['wpus_test']['multisite']                   = true;
+		$GLOBALS['wpus_test']['returns']['username_exists']  = false;
+		$GLOBALS['wpus_test']['returns']['email_exists']     = false;
+		$GLOBALS['wpus_test']['returns']['wpmu_create_user'] = false;
+
+		$signup = get_signup(
+			(object) array(
+				'signup_id'  => 45,
+				'user_login' => 'network-person',
+				'user_email' => 'network-person@example.test',
+				'active'     => 0,
+				'domain'     => 'site.example.test',
+				'meta'       => array(),
+			)
+		);
+
+		$this->assertInstanceOf( WP_Error::class, $signup->activate() );
+		$this->assertArrayNotHasKey( 'do_action:wp_signups_updated', $GLOBALS['wpus_test']['calls'] ?? array() );
 	}
 }

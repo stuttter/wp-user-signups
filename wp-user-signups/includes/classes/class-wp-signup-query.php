@@ -90,7 +90,7 @@ class WP_Signup_Query {
 	 *
 	 * @since 1.0.0
 	 * @access public
-	 * @var array<int, int|WP_Signup>
+	 * @var array<array-key, int|WP_Error|WP_Signup|null>
 	 */
 	public $signups;
 
@@ -257,7 +257,7 @@ class WP_Signup_Query {
 	 * @access public
 	 *
 	 * @param string|array<string, mixed> $query Array or URL query string of parameters.
-	 * @return array<int, int|WP_Signup>|int List of signups, or number of signups when 'count' is passed as a query var.
+	 * @return array<array-key, int|WP_Error|WP_Signup|null>|int List of signups, or number of signups when 'count' is passed as a query var.
 	 */
 	public function query( $query ) {
 		$this->query_vars = wp_parse_args( $query );
@@ -271,7 +271,7 @@ class WP_Signup_Query {
 	 * @since 1.0.0
 	 * @access public
 	 *
-	 * @return array<int, int|WP_Signup>|int List of signups, or number of signups when 'count' is passed as a query var.
+	 * @return array<array-key, int|WP_Error|WP_Signup|null>|int List of signups, or number of signups when 'count' is passed as a query var.
 	 */
 	public function get_signups() {
 		$this->parse_query();
@@ -356,15 +356,7 @@ class WP_Signup_Query {
 		$_signups = apply_filters_ref_array( 'the_signups', array( $_signups, &$this ) );
 
 		// Make sure signups are still signup instances.
-		$signups       = array_map( 'get_signup', $_signups );
-		$this->signups = array_values(
-			array_filter(
-				$signups,
-				static function ( $signup ) {
-					return $signup instanceof WP_Signup;
-				}
-			)
-		);
+		$this->signups = array_map( 'get_signup', $_signups );
 
 		return $this->signups;
 	}
