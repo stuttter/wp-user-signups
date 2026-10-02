@@ -178,7 +178,7 @@ class WP_Signup {
 			return $signup;
 		}
 
-		if ( is_object( $signup ) ) {
+		if ( is_object( $signup ) && isset( $signup->signup_id ) ) {
 			return new WP_Signup( $signup );
 		}
 

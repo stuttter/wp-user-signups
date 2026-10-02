@@ -158,7 +158,7 @@ function wp_signups_is_multisite() {
  * @since 3.1.0
  *
  * @param WP_Signup|object|int|null $signup Optional. Signup to retrieve.
- * @return WP_Signup|null The signup object or null if not found.
+ * @return WP_Signup|WP_Error|null The signup object, an error for invalid input, or null if empty.
  */
 function get_signup( $signup = null ) {
 	if ( empty( $signup ) ) {
@@ -169,10 +169,6 @@ function get_signup( $signup = null ) {
 		$_signup = $signup;
 	} else {
 		$_signup = WP_Signup::get_instance( $signup );
-	}
-
-	if ( is_wp_error( $_signup ) ) {
-		return null;
 	}
 
 	/**

@@ -356,7 +356,15 @@ class WP_Signup_Query {
 		$_signups = apply_filters_ref_array( 'the_signups', array( $_signups, &$this ) );
 
 		// Make sure signups are still signup instances.
-		$this->signups = array_map( 'get_signup', $_signups );
+		$signups       = array_map( 'get_signup', $_signups );
+		$this->signups = array_values(
+			array_filter(
+				$signups,
+				static function ( $signup ) {
+					return $signup instanceof WP_Signup;
+				}
+			)
+		);
 
 		return $this->signups;
 	}
@@ -677,7 +685,7 @@ class WP_Signup_Query {
 
 		$searches = array();
 		foreach ( $columns as $column ) {
-			$searches[] = $this->db->prepare( '%i LIKE %s', $column, $like );
+			$searches[] = $column . ' LIKE ' . $this->db->prepare( '%s', $like );
 		}
 
 		return '(' . implode( ' OR ', $searches ) . ')';
